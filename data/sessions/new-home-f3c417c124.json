@@ -1,0 +1,59 @@
+{
+  "session_id": "new-home-f3c417c124",
+  "project_name": "New Home",
+  "history": [
+    {
+      "role": "user",
+      "content": "hi"
+    },
+    {
+      "role": "assistant",
+      "content": "Hello! To get started, could you tell me the width and length of your plot in feet?"
+    },
+    {
+      "role": "user",
+      "content": "i have a 50*50 land"
+    },
+    {
+      "role": "assistant",
+      "content": "Great, a 50 × 50 ft plot recorded. How many bedrooms would you like?"
+    },
+    {
+      "role": "user",
+      "content": "well i want 3 bhk home and 3 bathroom and a pooja room and a kitchen and a dinning hall and a spacious living room and a car parkingwell i want 3 bhk home and 3 bathroom and a pooja room and a kitchen and a dinning hall and a spacious living room and a car parking"
+    },
+    {
+      "role": "assistant",
+      "content": "Got it—3 bedrooms, 3 bathrooms, and the listed rooms. How many floors would you like for this home?"
+    },
+    {
+      "role": "user",
+      "content": "one"
+    },
+    {
+      "role": "assistant",
+      "content": "All set! Your brief is ready—click “Generate 3D home” to see the design. Let me know if you’d like any style preferences, entrance direction, or budget notes before generating."
+    }
+  ],
+  "spec": {
+    "plot_width_ft": 50.0,
+    "plot_length_ft": 50.0,
+    "num_bedrooms": 3,
+    "num_bathrooms": 3,
+    "num_floors": 1,
+    "must_have_rooms": [
+      "pooja room",
+      "kitchen",
+      "dining hall",
+      "living room",
+      "car parking"
+    ],
+    "style_notes": null,
+    "entrance_facing": null,
+    "budget_notes": null,
+    "max_bathroom_area_sqft": 80.0,
+    "max_bathroom_bedroom_ratio": 0.75
+  },
+  "layout": null,
+  "layout_history": []
+}

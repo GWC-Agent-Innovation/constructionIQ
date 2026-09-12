@@ -1,0 +1,1360 @@
+{
+  "session_id": "gwc-house-9914ffca4f",
+  "project_name": "gwc_house",
+  "history": [
+    {
+      "role": "user",
+      "content": "hii"
+    },
+    {
+      "role": "assistant",
+      "content": "Hi! I’m here to help you plan your new home. Could you tell me the width of your plot in feet?"
+    },
+    {
+      "role": "user",
+      "content": "i have a 40*40 plot"
+    },
+    {
+      "role": "assistant",
+      "content": "Great, a 40 ft × 40 ft plot. How many bedrooms would you like?"
+    },
+    {
+      "role": "user",
+      "content": "i want a 2 bedroom with the attached bathroom"
+    },
+    {
+      "role": "assistant",
+      "content": "Got it—2 bedrooms with an attached bathroom. How many floors would you like for your home?"
+    },
+    {
+      "role": "user",
+      "content": "i need the attach batroom in the bedroom"
+    },
+    {
+      "role": "assistant",
+      "content": "Understood. So you’d like each bedroom to have its own attached bathroom, meaning 2 bathrooms total. I’ll record that. \n\n(If you’d like any other rooms, style preferences, or entrance direction, just let me know.)"
+    },
+    {
+      "role": "user",
+      "content": "i want the bathroom to be attachedvwith the bedroom"
+    },
+    {
+      "role": "assistant",
+      "content": "Thanks! We have the plot size, 2 bedrooms, and 2 attached bathrooms recorded. How many floors would you like? (We currently support single‑floor layouts.)"
+    },
+    {
+      "role": "user",
+      "content": "i want the batroom inside the bedroom"
+    },
+    {
+      "role": "assistant",
+      "content": "Your brief is now complete and the design is being updated and rebuilt automatically. Let me know if you’d like any extra rooms, a particular style, or an entrance direction before we finalize!"
+    }
+  ],
+  "spec": {
+    "plot_width_ft": 40.0,
+    "plot_length_ft": 40.0,
+    "num_bedrooms": 2,
+    "num_bathrooms": 2,
+    "num_floors": 1,
+    "must_have_rooms": [],
+    "style_notes": null,
+    "entrance_facing": null,
+    "budget_notes": null,
+    "max_bathroom_area_sqft": 80.0,
+    "max_bathroom_bedroom_ratio": 0.75
+  },
+  "layout": {
+    "version": 4,
+    "plot_width_ft": 40.0,
+    "plot_length_ft": 40.0,
+    "planning_notes": [],
+    "rooms": [
+      {
+        "id": "bedroom_0",
+        "name": "Bedroom 1",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 20.0,
+        "length": 14.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "south",
+            "position": 0.09,
+            "connects_to": "hall",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "north",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ]
+      },
+      {
+        "id": "bedroom_1",
+        "name": "Bedroom 2",
+        "x": 20.0,
+        "y": 0.0,
+        "width": 20.0,
+        "length": 14.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "south",
+            "position": 0.08999999999999986,
+            "connects_to": "hall",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "north",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ]
+      },
+      {
+        "id": "hall",
+        "name": "Hallway",
+        "x": 0.0,
+        "y": 14.0,
+        "width": 40.0,
+        "length": 5.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "south",
+            "position": 0.20454545454545453,
+            "connects_to": "living_0",
+            "width": 15.563636363636363,
+            "kind": "opening"
+          },
+          {
+            "wall": "south",
+            "position": 0.5795454545454545,
+            "connects_to": "dining_1",
+            "width": 12.836363636363636,
+            "kind": "opening"
+          },
+          {
+            "wall": "north",
+            "position": 0.045,
+            "connects_to": "bedroom_0",
+            "width": 2.8,
+            "kind": "door"
+          },
+          {
+            "wall": "north",
+            "position": 0.5449999999999999,
+            "connects_to": "bedroom_1",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "west",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ]
+      },
+      {
+        "id": "living_0",
+        "name": "Living Room",
+        "x": 0.0,
+        "y": 19.0,
+        "width": 16.363636363636363,
+        "length": 21.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "north",
+            "position": 0.5,
+            "connects_to": "hall",
+            "width": 15.563636363636363,
+            "kind": "opening"
+          },
+          {
+            "wall": "east",
+            "position": 0.5,
+            "connects_to": "dining_1",
+            "width": 20.2,
+            "kind": "opening"
+          },
+          {
+            "wall": "south",
+            "position": 0.5,
+            "connects_to": "outside",
+            "width": 3.0,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "west",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ]
+      },
+      {
+        "id": "dining_1",
+        "name": "Dining Room",
+        "x": 16.363636363636363,
+        "y": 19.0,
+        "width": 13.636363636363635,
+        "length": 21.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "north",
+            "position": 0.4999999999999999,
+            "connects_to": "hall",
+            "width": 12.836363636363636,
+            "kind": "opening"
+          },
+          {
+            "wall": "west",
+            "position": 0.5,
+            "connects_to": "living_0",
+            "width": 20.2,
+            "kind": "opening"
+          },
+          {
+            "wall": "east",
+            "position": 0.08571428571428558,
+            "connects_to": "kitchen",
+            "width": 2.8,
+            "kind": "door"
+          },
+          {
+            "wall": "east",
+            "position": 0.5619047619047618,
+            "connects_to": "bath_0",
+            "width": 2.8,
+            "kind": "door"
+          },
+          {
+            "wall": "east",
+            "position": 0.8238095238095237,
+            "connects_to": "bath_1",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "south",
+            "position": 0.4999999999999999,
+            "width": 4.0
+          }
+        ]
+      },
+      {
+        "id": "kitchen",
+        "name": "Kitchen",
+        "x": 30.0,
+        "y": 19.0,
+        "width": 10.0,
+        "length": 10.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "west",
+            "position": 0.17999999999999972,
+            "connects_to": "dining_1",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "east",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ]
+      },
+      {
+        "id": "bath_0",
+        "name": "Bathroom 1",
+        "x": 30.0,
+        "y": 29.0,
+        "width": 10.0,
+        "length": 5.5,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "west",
+            "position": 0.32727272727272677,
+            "connects_to": "dining_1",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "east",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ]
+      },
+      {
+        "id": "bath_1",
+        "name": "Bathroom 2",
+        "x": 30.0,
+        "y": 34.5,
+        "width": 10.0,
+        "length": 5.5,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "west",
+            "position": 0.32727272727272677,
+            "connects_to": "dining_1",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "south",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ]
+      }
+    ]
+  },
+  "layout_history": [
+    {
+      "version": 1,
+      "plot_width_ft": 40.0,
+      "plot_length_ft": 40.0,
+      "planning_notes": [],
+      "rooms": [
+        {
+          "id": "bedroom_0",
+          "name": "Bedroom 1",
+          "x": 0.0,
+          "y": 0.0,
+          "width": 20.0,
+          "length": 14.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.09,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "bedroom_1",
+          "name": "Bedroom 2",
+          "x": 20.0,
+          "y": 0.0,
+          "width": 20.0,
+          "length": 14.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.08999999999999986,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "hall",
+          "name": "Hallway",
+          "x": 0.0,
+          "y": 14.0,
+          "width": 40.0,
+          "length": 5.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.20454545454545453,
+              "connects_to": "living_0",
+              "width": 15.563636363636363,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.5795454545454545,
+              "connects_to": "dining_1",
+              "width": 12.836363636363636,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.045,
+              "connects_to": "bedroom_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.5449999999999999,
+              "connects_to": "bedroom_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "living_0",
+          "name": "Living Room",
+          "x": 0.0,
+          "y": 19.0,
+          "width": 16.363636363636363,
+          "length": 21.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 15.563636363636363,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.5,
+              "connects_to": "dining_1",
+              "width": 20.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.5,
+              "connects_to": "outside",
+              "width": 3.0,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "dining_1",
+          "name": "Dining Room",
+          "x": 16.363636363636363,
+          "y": 19.0,
+          "width": 13.636363636363635,
+          "length": 21.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.4999999999999999,
+              "connects_to": "hall",
+              "width": 12.836363636363636,
+              "kind": "opening"
+            },
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "living_0",
+              "width": 20.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.08571428571428558,
+              "connects_to": "kitchen",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "east",
+              "position": 0.8238095238095237,
+              "connects_to": "bath_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.4999999999999999,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "kitchen",
+          "name": "Kitchen",
+          "x": 30.0,
+          "y": 19.0,
+          "width": 10.0,
+          "length": 15.5,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.11612903225806433,
+              "connects_to": "dining_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "bath_0",
+          "name": "Bathroom",
+          "x": 30.0,
+          "y": 34.5,
+          "width": 10.0,
+          "length": 5.5,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.32727272727272677,
+              "connects_to": "dining_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": 2,
+      "plot_width_ft": 40.0,
+      "plot_length_ft": 40.0,
+      "planning_notes": [],
+      "rooms": [
+        {
+          "id": "bedroom_0",
+          "name": "Bedroom 1",
+          "x": 0.0,
+          "y": 0.0,
+          "width": 20.0,
+          "length": 14.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.09,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "bedroom_1",
+          "name": "Bedroom 2",
+          "x": 20.0,
+          "y": 0.0,
+          "width": 20.0,
+          "length": 14.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.08999999999999986,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "hall",
+          "name": "Hallway",
+          "x": 0.0,
+          "y": 14.0,
+          "width": 40.0,
+          "length": 5.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.20454545454545453,
+              "connects_to": "living_0",
+              "width": 15.563636363636363,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.5795454545454545,
+              "connects_to": "dining_1",
+              "width": 12.836363636363636,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.045,
+              "connects_to": "bedroom_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.5449999999999999,
+              "connects_to": "bedroom_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "living_0",
+          "name": "Living Room",
+          "x": 0.0,
+          "y": 19.0,
+          "width": 16.363636363636363,
+          "length": 21.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 15.563636363636363,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.5,
+              "connects_to": "dining_1",
+              "width": 20.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.5,
+              "connects_to": "outside",
+              "width": 3.0,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "dining_1",
+          "name": "Dining Room",
+          "x": 16.363636363636363,
+          "y": 19.0,
+          "width": 13.636363636363635,
+          "length": 21.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.4999999999999999,
+              "connects_to": "hall",
+              "width": 12.836363636363636,
+              "kind": "opening"
+            },
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "living_0",
+              "width": 20.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.08571428571428558,
+              "connects_to": "kitchen",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "east",
+              "position": 0.8238095238095237,
+              "connects_to": "bath_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.4999999999999999,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "kitchen",
+          "name": "Kitchen",
+          "x": 30.0,
+          "y": 19.0,
+          "width": 10.0,
+          "length": 15.5,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.11612903225806433,
+              "connects_to": "dining_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "bath_0",
+          "name": "Bathroom",
+          "x": 30.0,
+          "y": 34.5,
+          "width": 10.0,
+          "length": 5.5,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.32727272727272677,
+              "connects_to": "dining_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": 3,
+      "plot_width_ft": 40.0,
+      "plot_length_ft": 40.0,
+      "planning_notes": [],
+      "rooms": [
+        {
+          "id": "bedroom_0",
+          "name": "Bedroom 1",
+          "x": 0.0,
+          "y": 0.0,
+          "width": 20.0,
+          "length": 14.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.09,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "bedroom_1",
+          "name": "Bedroom 2",
+          "x": 20.0,
+          "y": 0.0,
+          "width": 20.0,
+          "length": 14.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.08999999999999986,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "hall",
+          "name": "Hallway",
+          "x": 0.0,
+          "y": 14.0,
+          "width": 40.0,
+          "length": 5.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.20454545454545453,
+              "connects_to": "living_0",
+              "width": 15.563636363636363,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.5795454545454545,
+              "connects_to": "dining_1",
+              "width": 12.836363636363636,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.045,
+              "connects_to": "bedroom_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.5449999999999999,
+              "connects_to": "bedroom_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "living_0",
+          "name": "Living Room",
+          "x": 0.0,
+          "y": 19.0,
+          "width": 16.363636363636363,
+          "length": 21.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 15.563636363636363,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.5,
+              "connects_to": "dining_1",
+              "width": 20.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.5,
+              "connects_to": "outside",
+              "width": 3.0,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "dining_1",
+          "name": "Dining Room",
+          "x": 16.363636363636363,
+          "y": 19.0,
+          "width": 13.636363636363635,
+          "length": 21.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.4999999999999999,
+              "connects_to": "hall",
+              "width": 12.836363636363636,
+              "kind": "opening"
+            },
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "living_0",
+              "width": 20.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.08571428571428558,
+              "connects_to": "kitchen",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "east",
+              "position": 0.5619047619047618,
+              "connects_to": "bath_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "east",
+              "position": 0.8238095238095237,
+              "connects_to": "bath_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.4999999999999999,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "kitchen",
+          "name": "Kitchen",
+          "x": 30.0,
+          "y": 19.0,
+          "width": 10.0,
+          "length": 10.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.17999999999999972,
+              "connects_to": "dining_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "bath_0",
+          "name": "Bathroom 1",
+          "x": 30.0,
+          "y": 29.0,
+          "width": 10.0,
+          "length": 5.5,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.32727272727272677,
+              "connects_to": "dining_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "bath_1",
+          "name": "Bathroom 2",
+          "x": 30.0,
+          "y": 34.5,
+          "width": 10.0,
+          "length": 5.5,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.32727272727272677,
+              "connects_to": "dining_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "version": 4,
+      "plot_width_ft": 40.0,
+      "plot_length_ft": 40.0,
+      "planning_notes": [],
+      "rooms": [
+        {
+          "id": "bedroom_0",
+          "name": "Bedroom 1",
+          "x": 0.0,
+          "y": 0.0,
+          "width": 20.0,
+          "length": 14.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.09,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "bedroom_1",
+          "name": "Bedroom 2",
+          "x": 20.0,
+          "y": 0.0,
+          "width": 20.0,
+          "length": 14.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.08999999999999986,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "hall",
+          "name": "Hallway",
+          "x": 0.0,
+          "y": 14.0,
+          "width": 40.0,
+          "length": 5.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.20454545454545453,
+              "connects_to": "living_0",
+              "width": 15.563636363636363,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.5795454545454545,
+              "connects_to": "dining_1",
+              "width": 12.836363636363636,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.045,
+              "connects_to": "bedroom_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.5449999999999999,
+              "connects_to": "bedroom_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "living_0",
+          "name": "Living Room",
+          "x": 0.0,
+          "y": 19.0,
+          "width": 16.363636363636363,
+          "length": 21.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 15.563636363636363,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.5,
+              "connects_to": "dining_1",
+              "width": 20.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.5,
+              "connects_to": "outside",
+              "width": 3.0,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "dining_1",
+          "name": "Dining Room",
+          "x": 16.363636363636363,
+          "y": 19.0,
+          "width": 13.636363636363635,
+          "length": 21.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.4999999999999999,
+              "connects_to": "hall",
+              "width": 12.836363636363636,
+              "kind": "opening"
+            },
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "living_0",
+              "width": 20.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.08571428571428558,
+              "connects_to": "kitchen",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "east",
+              "position": 0.5619047619047618,
+              "connects_to": "bath_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "east",
+              "position": 0.8238095238095237,
+              "connects_to": "bath_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.4999999999999999,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "kitchen",
+          "name": "Kitchen",
+          "x": 30.0,
+          "y": 19.0,
+          "width": 10.0,
+          "length": 10.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.17999999999999972,
+              "connects_to": "dining_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "bath_0",
+          "name": "Bathroom 1",
+          "x": 30.0,
+          "y": 29.0,
+          "width": 10.0,
+          "length": 5.5,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.32727272727272677,
+              "connects_to": "dining_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        },
+        {
+          "id": "bath_1",
+          "name": "Bathroom 2",
+          "x": 30.0,
+          "y": 34.5,
+          "width": 10.0,
+          "length": 5.5,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.32727272727272677,
+              "connects_to": "dining_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

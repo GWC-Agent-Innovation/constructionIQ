@@ -1,0 +1,76 @@
+{
+  "session_id": "new-home-0daed0e3ea",
+  "project_name": "New Home",
+  "history": [
+    {
+      "role": "user",
+      "content": "yes i want a 2 bhk home and a kitchen with a 2 attach bathroom and a common bathroom and a balcony and a dinning hall and a kitchen and a pooja room with the carparking and i want a 2 floor  house"
+    },
+    {
+      "role": "assistant",
+      "content": "This designer currently supports a single floor. Would you like to plan the ground floor first?"
+    },
+    {
+      "role": "user",
+      "content": "no i want the rooms in the ground floor and the rooms and the 2 attach bathrooms in the first floor and the common bathroom in the  ground floor"
+    },
+    {
+      "role": "assistant",
+      "content": "This designer currently supports a single floor. Would you like to plan the ground floor first?"
+    },
+    {
+      "role": "user",
+      "content": "ok"
+    },
+    {
+      "role": "assistant",
+      "content": "This designer currently supports a single floor. Would you like to plan the ground floor first?"
+    },
+    {
+      "role": "user",
+      "content": "yes"
+    },
+    {
+      "role": "assistant",
+      "content": "This designer currently supports a single floor. Would you like to plan the ground floor first?"
+    },
+    {
+      "role": "user",
+      "content": "ok i need the ground floor it self"
+    },
+    {
+      "role": "assistant",
+      "content": "This designer currently supports a single floor. Would you like to plan the ground floor first?"
+    },
+    {
+      "role": "user",
+      "content": "Ensure private bedroom zoning, attached bathrooms, and entrance facing East."
+    },
+    {
+      "role": "assistant",
+      "content": "Got it, let's plan the ground floor! Your brief is ready: 50 \u00d7 50 ft, 2 bedrooms and 3 bathrooms with private zoning, attached bathrooms, living, kitchen, balcony, dining, pooja room, parking, and East entrance. Click the Generate 3D home button to create your design!"
+    }
+  ],
+  "spec": {
+    "plot_width_ft": 50.0,
+    "plot_length_ft": 50.0,
+    "num_bedrooms": 2,
+    "num_bathrooms": 3,
+    "num_floors": 1,
+    "must_have_rooms": [
+      "Living Room",
+      "Kitchen",
+      "Balcony",
+      "Dining Hall",
+      "Pooja Room",
+      "Carparking"
+    ],
+    "style_notes": null,
+    "entrance_facing": "East",
+    "budget_notes": null,
+    "max_bathroom_area_sqft": 80.0,
+    "max_bathroom_bedroom_ratio": 0.75
+  },
+  "layout": null,
+  "layout_history": []
+}

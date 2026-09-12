@@ -1,0 +1,37 @@
+{
+  "session_id": "new-home-b692458735",
+  "project_name": "New Home",
+  "history": [
+    {
+      "role": "user",
+      "content": "hi"
+    },
+    {
+      "role": "assistant",
+      "content": "Hello! Let’s start with the basics. What are the dimensions of your plot (width × length in feet)?"
+    },
+    {
+      "role": "user",
+      "content": "i have a 50 * 50 land"
+    },
+    {
+      "role": "assistant",
+      "content": "Great, a 50 × 50 ft plot. How many bedrooms would you like?"
+    }
+  ],
+  "spec": {
+    "plot_width_ft": 50.0,
+    "plot_length_ft": 50.0,
+    "num_bedrooms": null,
+    "num_bathrooms": null,
+    "num_floors": null,
+    "must_have_rooms": [],
+    "style_notes": null,
+    "entrance_facing": null,
+    "budget_notes": null,
+    "max_bathroom_area_sqft": 80.0,
+    "max_bathroom_bedroom_ratio": 0.75
+  },
+  "layout": null,
+  "layout_history": []
+}

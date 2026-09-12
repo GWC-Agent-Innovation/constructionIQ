@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>ConstructIQ — Design studio</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<main class="app-shell" id="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="ConstructIQ home"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v11H3Z M9 21v-9h6v9"/></svg></span>Construct<span>IQ</span></a>
+      <span class="studio-label" id="project-title">Design studio</span>
+      <div class="topbar-actions">
+        <div class="connection"><span id="connection-dot"></span><span id="connection-text">Connecting</span></div>
+        <button class="secondary-button" id="theme-toggle" type="button" title="Toggle theme">🌓 Theme</button>
+        <a class="secondary-button hidden" id="open-viewer">Open 3D model</a>
+        <div class="project-switcher" id="project-switcher">
+          <button class="secondary-button" id="existing-projects-button" type="button" aria-expanded="false" aria-controls="existing-projects-dropdown">Existing projects ▾</button>
+          <section class="project-dropdown hidden" id="existing-projects-dropdown" aria-label="Existing projects">
+            <p class="project-dropdown-status" id="existing-projects-status" role="status"></p>
+            <div class="project-dropdown-list" id="existing-projects-list"></div>
+          </section>
+        </div>
+        <button class="secondary-button" id="new-project" type="button">+ New project</button>
+      </div>
+    </header>
+    <div class="studio chat-only" id="studio">
+      <!-- Dedicated Architect Sidebar matching Image 2 -->
+      <aside class="architect-sidebar" id="architect-sidebar">
+        <div class="bot-stage">
+          <div class="bot-card-frame" id="bot-card-frame">
+            <div class="bot-card-glow" id="bot-card-glow"></div>
+            <div class="bot-avatar-wrapper" id="bot-avatar-wrapper">
+              <img id="sidebar-bot-img" class="sidebar-bot-img" src="bot_reaction/Speaking.png?v=4" alt="Civil Engineering AI Architect" />
+            </div>
+          </div>
+          <div class="bot-status-block">
+            <div class="bot-status-heading">
+              <span class="bot-status-dot" id="sidebar-status-dot"></span>
+              <span class="bot-status-title">AI ARCHITECT</span>
+            </div>
+            <p class="bot-status-detail" id="sidebar-status-detail">Ready to listen</p>
+          </div>
+        </div>
+        <div class="sidebar-footer">
+          <button type="button" class="sidebar-new-btn" id="sidebar-new-project-btn">
+            <span class="plus-icon">+</span> New project
+          </button>
+        </div>
+      </aside>
+
+      <section class="chat-panel" aria-label="Home-design conversation">
+        <header class="chat-header-bar">
+          <h2 class="chat-header-title">Plan your space</h2>
+          <div class="chat-header-status">
+            <span class="chat-status-pulse"></span>
+            <span id="assistant-state" role="status">Ready to listen</span>
+          </div>
+        </header>
+        <div class="messages" id="messages" role="log" aria-label="Conversation" aria-relevant="additions">
+          <div class="welcome" id="welcome"><span class="eyebrow">LET’S MAKE ROOM</span><h2>A home that<br />starts with you.</h2><p>Tell me about your plot, the rooms you need, and how you want to live.</p></div>
+        </div>
+        <div class="chat-footer">
+          <div class="quick-prompts" id="quick-prompts" aria-label="Conversation starters">
+            <button type="button" data-prompt="Set plot dimensions to 50x50 ft with 3 bedrooms and 3 bathrooms.">Set plot and rooms</button>
+            <button type="button" data-prompt="Design with a modern contemporary style, open living and natural light.">Choose a modern style</button>
+            <button type="button" data-prompt="Ensure private bedroom zoning, attached bathrooms, and entrance facing East.">Add design priorities</button>
+          </div>
+          <form class="composer" id="composer">
+            <label class="sr-only" for="message-input">Describe your home</label>
+            <textarea id="message-input" rows="2" maxlength="8000" placeholder="Tell AI ARCHITECT about your dream home…"></textarea>
+            <button id="send-button" type="submit" aria-label="Send message">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>
+            </button>
+          </form>
+          <p class="composer-hint">Press Enter to send <span>Shift + Enter for a new line</span></p>
+        </div>
+      </section>
+
+    </div>
+    <div class="generation-overlay hidden" id="generation-overlay" role="status" aria-live="polite">
+      <div class="generation-overlay-card">
+        <span class="eyebrow">CONSTRUCTIQ</span>
+        <img id="generation-overlay-img" src="bot_reaction/working.png?v=4" alt="" />
+        <h1 id="generation-overlay-title">Your home is taking shape.</h1>
+        <p id="generation-overlay-message">Designing your 3D home… this can take a few minutes.</p>
+        <button class="secondary-button hidden" id="generation-overlay-close" type="button">Close</button>
+      </div>
+    </div>
+  </main>
+  <template id="message-template">
+    <article class="message">
+      <div class="message-avatar" aria-hidden="true"></div>
+      <div class="bubble"></div>
+    </article>
+  </template>
+  <template id="generate-card-template">
+    <article class="message generate-card">
+      <div class="message-avatar" aria-hidden="true"><img src="bot_reaction/Speaking.png?v=4" alt="AI Architect" /></div>
+      <div class="bubble">
+        <span class="eyebrow">BRIEF COMPLETE</span>
+        <h3 class="generate-card-summary">Your plan is ready to create</h3>
+        <p>We will validate the layout, draw the plan, then build the interactive 3D house.</p>
+        <button class="primary-button generate-card-button" type="button">Generate 3D home ↗</button>
+        <a class="primary-button saved-model-link hidden">Open 3D model ↗</a>
+      </div>
+    </article>
+  </template>
+  <script src="app.js"></script>
+</body>
+</html>
