@@ -3,7 +3,6 @@ import json
 import webbrowser
 from pathlib import Path
 from agent import spec_store
-from agent.blender_runner import run_blender
 from agent.layout_agent import generate_layout
 from agent.model3d import build_scene
 from agent.renderer import render_svg, render_png
@@ -12,19 +11,13 @@ from agent.viewer_html import build_viewer_html
 
 
 def build_3d_assets(session_id: str, layout: Layout, spec: HouseSpec, project_name: str | None = None) -> Path:
-    """Builds the .glb/.png/.blend via headless Blender, then the standalone
-    interactive HTML viewer on top of them. Returns the viewer's path.
-    Raises on failure â€” the caller decides whether that should be fatal."""
+    """Write scene geometry and a browser-rendered Three.js viewer."""
     out_dir = spec_store._path(session_id).parent
     out_dir.mkdir(parents=True, exist_ok=True)
     scene_path = out_dir / f"{session_id}_scene.json"
     scene_path.write_text(json.dumps(build_scene(layout).to_dict(), indent=2), encoding="utf-8")
-    print("  [3d] building mesh in Blender (headless)...", flush=True)
-    run_blender(scene_path, out_dir, session_id)
-    glb_bytes = (out_dir / f"{session_id}.glb").read_bytes()
-    poster_bytes = (out_dir / f"{session_id}_3d.png").read_bytes()
-    print("  [3d] building interactive viewer...", flush=True)
-    viewer_html = build_viewer_html(layout, spec, glb_bytes, poster_bytes, project_name=project_name)
+    print("  [3d] preparing Three.js viewer...", flush=True)
+    viewer_html = build_viewer_html(layout, spec, project_name=project_name)
     viewer_path = out_dir / f"{session_id}_3d.html"
     viewer_path.write_text(viewer_html, encoding="utf-8")
     return viewer_path

@@ -5250,3 +5250,279 @@
 [2026-09-12 19:08:13]   [3d] building interactive viewer...
 [2026-09-12 19:08:13] [Generate] [salema-cilla-bf6a55d5b6] Layout & 3D model successfully generated: salema-cilla-bf6a55d5b6.svg
 
+
+[2026-09-15 09:52:26] === server process starting ===
+
+[2026-09-15 09:52:27] [Project] Created new design session: 'My Home' (ID: my-home-6e5a13c8b1)
+
+[2026-09-15 09:52:41] [Project] Created new design session: 'My Home' (ID: my-home-72be7b1eb1)
+
+[2026-09-15 09:56:43] === server process starting ===
+
+[2026-09-15 09:59:12] [Chat] [salema-cilla-bf6a55d5b6] User: remove the pooja room
+[2026-09-15 09:59:12]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 09:59:14]     [llm] request finished after 2.0s
+[2026-09-15 09:59:14]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 09:59:17]     [llm] request finished after 2.5s
+[2026-09-15 09:59:17] [Chat] [salema-cilla-bf6a55d5b6] AI Architect: The pooja room has been removed from the design. The layout is being rebuilt now. Let me know if anything else needs adj...
+
+
+[2026-09-15 09:59:17] [Generate] [salema-cilla-bf6a55d5b6] Starting 3D layout computation & Blender model build...
+[2026-09-15 09:59:17]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 09:59:20]     [llm] request finished after 3.2s
+[2026-09-15 09:59:20]   [layout] solved deterministically
+[2026-09-15 09:59:30]   [3d] building mesh in Blender (headless)...
+[2026-09-15 10:01:17]   [3d] building interactive viewer...
+[2026-09-15 10:01:17] [Generate] [salema-cilla-bf6a55d5b6] Layout & 3D model successfully generated: salema-cilla-bf6a55d5b6.svg
+
+
+[2026-09-15 10:01:21] === server process starting ===
+
+[2026-09-15 10:01:27] === server process starting ===
+
+[2026-09-15 10:01:28] === server process starting ===
+
+[2026-09-15 10:01:30] === server process starting ===
+
+[2026-09-15 10:02:13] === server process starting ===
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:13]     [llm] request finished after 0.0s
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 0s
+[2026-09-15 10:02:13]     [llm] request finished after 0.1s
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:13]     [llm] request finished after 0.0s
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:13]     [llm] request finished after 0.0s
+[2026-09-15 10:02:13]   [hints] no usable design hints after retry; continuing with defaults
+[2026-09-15 10:02:13]   [hints] no usable design hints after retry; continuing with defaults
+[2026-09-15 10:02:13]   [layout] solved deterministically
+[2026-09-15 10:02:13]   [layout] solved deterministically
+[2026-09-15 10:02:13]   [hints] design-hints request failed, continuing with defaults: test
+[2026-09-15 10:02:13]   [layout] solved deterministically
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:13]     [llm] request finished after 0.0s
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:13]     [llm] Ollama Cloud stream failed: upstream disconnected [redacted]; retrying once within the remaining request budget
+[2026-09-15 10:02:13]     [llm] request finished after 0.0s
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:13]     [llm] Ollama Cloud returned HTTP 503: The provider supplied no error details. (status code: 503); retrying once within the remaining request budget
+[2026-09-15 10:02:13]     [llm] request finished after 0.0s
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:13]     [llm] request finished after 0.0s
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:13]     [llm] request finished after 0.0s
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:13]     [llm] Ollama Cloud stream failed: upstream connection closed; retrying once within the remaining request budget
+[2026-09-15 10:02:13]     [llm] request finished after 0.0s
+[2026-09-15 10:02:13]     [llm] gpt-oss:120b; request budget 0s
+[2026-09-15 10:02:13]     [llm] Ollama Cloud stream failed: upstream disconnected; retrying once within the remaining request budget
+[2026-09-15 10:02:13]     [llm] request finished after 0.1s
+
+[2026-09-15 10:02:13] [Project] Created new design session: 'Test Home' (ID: test-home-4ac00e6d5c)
+
+[2026-09-15 10:02:13] [Chat] [test-home-4ac00e6d5c] User: 2 BHK, 1 bathroom, 30 by 40 feet
+[2026-09-15 10:02:13] [Chat] [test-home-4ac00e6d5c] AI Architect: Your brief is ready. Click the Generate 3D home button to create your design....
+
+
+[2026-09-15 10:02:13] [Project] Created new design session: 'Our Dream Home' (ID: our-dream-home-2dffb70234)
+
+[2026-09-15 10:02:13] [Project] Created new design session: 'Our Dream Home' (ID: our-dream-home-3bd16fb2cb)
+[2026-09-15 10:02:13]   [3d] preparing Three.js viewer...
+[2026-09-15 10:02:13]   [hints] design-hints request failed, continuing with defaults: offline
+[2026-09-15 10:02:13]   [layout] solved deterministically
+
+[2026-09-15 10:02:13] [Generate] [test] Starting layout computation & Three.js scene preparation...
+[2026-09-15 10:02:14] [Generate] [test] Layout & 3D model successfully generated: test.svg
+
+[2026-09-15 10:02:14] ......................................
+[2026-09-15 10:02:14] ----------------------------------------------------------------------
+[2026-09-15 10:02:14] Ran 38 tests in 1.199s
+
+[2026-09-15 10:02:14] OK
+
+[2026-09-15 10:02:19] [Chat] [salema-cilla-bf6a55d5b6] User: add the poja room
+[2026-09-15 10:02:19]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:22]     [llm] request finished after 3.0s
+[2026-09-15 10:02:22]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:27]     [llm] request finished after 4.2s
+[2026-09-15 10:02:27] [Chat] [salema-cilla-bf6a55d5b6] AI Architect: Pooja room added back to the living‑room area. The design is being updated now. Let me know if you’d like any further mo...
+
+
+[2026-09-15 10:02:27] [Generate] [salema-cilla-bf6a55d5b6] Starting layout computation & Three.js scene preparation...
+[2026-09-15 10:02:27]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:02:30]     [llm] request finished after 2.7s
+[2026-09-15 10:02:30]   [layout] solved deterministically
+[2026-09-15 10:02:30]   [3d] preparing Three.js viewer...
+[2026-09-15 10:02:30] [Generate] [salema-cilla-bf6a55d5b6] Layout & 3D model successfully generated: salema-cilla-bf6a55d5b6.svg
+
+
+[2026-09-15 10:02:58] === server process starting ===
+
+[2026-09-15 10:05:24] === server process starting ===
+
+[2026-09-15 10:05:40] === server process starting ===
+
+[2026-09-15 10:12:47] === server process starting ===
+
+[2026-09-15 10:14:02] === server process starting ===
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:14:02]     [llm] request finished after 0.0s
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 0s
+[2026-09-15 10:14:02]     [llm] request finished after 0.1s
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:14:02]     [llm] request finished after 0.0s
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:14:02]     [llm] request finished after 0.0s
+[2026-09-15 10:14:02]   [hints] no usable design hints after retry; continuing with defaults
+[2026-09-15 10:14:02]   [hints] no usable design hints after retry; continuing with defaults
+[2026-09-15 10:14:02]   [layout] solved deterministically
+[2026-09-15 10:14:02]   [layout] solved deterministically
+[2026-09-15 10:14:02]   [hints] design-hints request failed, continuing with defaults: test
+[2026-09-15 10:14:02]   [layout] solved deterministically
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:14:02]     [llm] request finished after 0.0s
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:14:02]     [llm] Ollama Cloud stream failed: upstream disconnected [redacted]; retrying once within the remaining request budget
+[2026-09-15 10:14:02]     [llm] request finished after 0.0s
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:14:02]     [llm] Ollama Cloud returned HTTP 503: The provider supplied no error details. (status code: 503); retrying once within the remaining request budget
+[2026-09-15 10:14:02]     [llm] request finished after 0.0s
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:14:02]     [llm] request finished after 0.0s
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:14:02]     [llm] request finished after 0.0s
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:14:02]     [llm] Ollama Cloud stream failed: upstream connection closed; retrying once within the remaining request budget
+[2026-09-15 10:14:02]     [llm] request finished after 0.0s
+[2026-09-15 10:14:02]     [llm] gpt-oss:120b; request budget 0s
+[2026-09-15 10:14:02]     [llm] Ollama Cloud stream failed: upstream disconnected; retrying once within the remaining request budget
+[2026-09-15 10:14:02]     [llm] request finished after 0.1s
+
+[2026-09-15 10:14:02] [Project] Created new design session: 'Test Home' (ID: test-home-8d3c62f2be)
+
+[2026-09-15 10:14:02] [Chat] [test-home-8d3c62f2be] User: 2 BHK, 1 bathroom, 30 by 40 feet
+[2026-09-15 10:14:03] [Chat] [test-home-8d3c62f2be] AI Architect: Your brief is ready. Click the Generate 3D home button to create your design....
+
+
+[2026-09-15 10:14:03] [Project] Created new design session: 'Our Dream Home' (ID: our-dream-home-3d184861ee)
+
+[2026-09-15 10:14:03] [Project] Created new design session: 'Our Dream Home' (ID: our-dream-home-1be55bd2d8)
+[2026-09-15 10:14:03]   [3d] preparing Three.js viewer...
+[2026-09-15 10:14:03]   [hints] design-hints request failed, continuing with defaults: offline
+[2026-09-15 10:14:03]   [layout] solved deterministically
+
+[2026-09-15 10:14:03] [Generate] [test] Starting layout computation & Three.js scene preparation...
+[2026-09-15 10:14:07] [Generate] [test] Layout & 3D model successfully generated: test.svg
+
+[2026-09-15 10:14:07] ......................................
+[2026-09-15 10:14:07] ----------------------------------------------------------------------
+[2026-09-15 10:14:07] Ran 38 tests in 4.983s
+
+[2026-09-15 10:14:07] OK
+
+[2026-09-15 10:17:44] === server process starting ===
+
+[2026-09-15 10:24:03] === server process starting ===
+
+[2026-09-15 10:24:26] === server process starting ===
+
+[2026-09-15 10:26:01] === server process starting ===
+
+[2026-09-15 10:31:52] [Project] Created new design session: 'My Home' (ID: my-home-bf2ee5bf2a)
+
+[2026-09-15 10:33:46] === server process starting ===
+
+[2026-09-15 10:33:46] [Project] Created new design session: 'Test Home' (ID: test-home-a26ce610cd)
+
+[2026-09-15 10:33:46] [Chat] [test-home-a26ce610cd] User: 2 BHK, 1 bathroom, 30 by 40 feet
+[2026-09-15 10:33:46] [Chat] [test-home-a26ce610cd] AI Architect: Your brief is ready. Click the Generate 3D home button to create your design....
+
+
+[2026-09-15 10:33:46] [Project] Created new design session: 'Our Dream Home' (ID: our-dream-home-8c12027d8f)
+
+[2026-09-15 10:33:46] [Project] Created new design session: 'Our Dream Home' (ID: our-dream-home-69327d6593)
+[2026-09-15 10:33:46] .......
+[2026-09-15 10:33:46] ----------------------------------------------------------------------
+[2026-09-15 10:33:46] Ran 7 tests in 0.064s
+
+[2026-09-15 10:33:46] OK
+
+[2026-09-15 10:36:34] [Project] Created new design session: 'santhosh-home' (ID: santhosh-home-3d35ab05df)
+
+[2026-09-15 10:36:36] [Chat] [santhosh-home-3d35ab05df] User: hi
+[2026-09-15 10:36:36]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:36:37]     [llm] request finished after 1.3s
+[2026-09-15 10:36:37] [Chat] [santhosh-home-3d35ab05df] AI Architect: Hello! To get started, could you tell me the dimensions of your plot in feet (width × length)?...
+
+
+[2026-09-15 10:36:45] [Chat] [santhosh-home-3d35ab05df] User: i have a land of 40*40
+[2026-09-15 10:36:45]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:36:46]     [llm] request finished after 1.3s
+[2026-09-15 10:36:46]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:36:47]     [llm] request finished after 1.2s
+[2026-09-15 10:36:47] [Chat] [santhosh-home-3d35ab05df] AI Architect: Great, a 40 ft × 40 ft plot. How many bedrooms would you like?...
+
+
+[2026-09-15 10:37:06] [Chat] [santhosh-home-3d35ab05df] User: well i want to build  a 3 bhk home is that is possible ?
+[2026-09-15 10:37:06]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:37:08]     [llm] request finished after 1.6s
+[2026-09-15 10:37:08]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:37:09]     [llm] request finished after 1.2s
+[2026-09-15 10:37:09] [Chat] [santhosh-home-3d35ab05df] AI Architect: Yes, a 3‑bedroom home will fit nicely on that plot. How many bathrooms would you like?...
+
+
+[2026-09-15 10:37:37] [Chat] [santhosh-home-3d35ab05df] User: well i need 2 attach bathroom with the bedroom and a common bathroom
+[2026-09-15 10:37:37]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:37:39]     [llm] request finished after 1.6s
+[2026-09-15 10:37:39] [Chat] [santhosh-home-3d35ab05df] AI Architect: Got it—so you’d like a total of **3 bathrooms**: two attached to bedrooms and one common bathroom. Which bedrooms should...
+
+
+[2026-09-15 10:37:55] [Chat] [santhosh-home-3d35ab05df] User: bedroom 1 and bedroom 2
+[2026-09-15 10:37:55]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:37:56]     [llm] request finished after 1.5s
+[2026-09-15 10:37:56]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:37:57]     [llm] request finished after 1.2s
+[2026-09-15 10:37:57] [Chat] [santhosh-home-3d35ab05df] AI Architect: Thanks! All required details are now set. You can click **“Generate 3D home”** to create your design. Let me know if you...
+
+
+[2026-09-15 10:38:08] [Chat] [santhosh-home-3d35ab05df] User: well also add a spacious living room
+[2026-09-15 10:38:08]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:38:09]     [llm] request finished after 1.3s
+[2026-09-15 10:38:09]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:38:10]     [llm] request finished after 1.2s
+[2026-09-15 10:38:10] [Chat] [santhosh-home-3d35ab05df] AI Architect: Living room added. Anything else you’d like to specify—style, entrance direction, or budget—before generating?...
+
+
+[2026-09-15 10:38:21] [Chat] [santhosh-home-3d35ab05df] User: kitchen and a small dining area
+[2026-09-15 10:38:21]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:38:22]     [llm] request finished after 1.3s
+[2026-09-15 10:38:22]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:38:24]     [llm] request finished after 1.1s
+[2026-09-15 10:38:24] [Chat] [santhosh-home-3d35ab05df] AI Architect: Living room, kitchen, and a small dining area are noted. Let me know any style preferences, entrance direction, or budge...
+
+
+[2026-09-15 10:38:28] [Generate] [santhosh-home-3d35ab05df] Starting layout computation & Three.js scene preparation...
+[2026-09-15 10:38:28]     [llm] gpt-oss:120b; request budget 90s
+[2026-09-15 10:38:31]     [llm] request finished after 2.7s
+[2026-09-15 10:38:31]   [layout] solved deterministically
+[2026-09-15 10:38:31]   [3d] preparing Three.js viewer...
+[2026-09-15 10:38:31] [Generate] [santhosh-home-3d35ab05df] Layout & 3D model successfully generated: santhosh-home-3d35ab05df.svg
+
+
+[2026-09-15 11:03:03] === server process starting ===
+
+[2026-09-15 11:04:12] === server process starting ===
+[2026-09-15 11:04:12]   [3d] preparing Three.js viewer...
+[2026-09-15 11:04:12] ...
+[2026-09-15 11:04:12] ----------------------------------------------------------------------
+[2026-09-15 11:04:12] Ran 3 tests in 0.053s
+
+[2026-09-15 11:04:12] OK
+
+[2026-09-15 11:06:13] === server process starting ===
+
+[2026-09-15 11:08:34] === server process starting ===
+
+[2026-09-15 11:11:32] === server process starting ===
+
+[2026-09-15 11:35:53] === server process starting ===

@@ -2,7 +2,7 @@
 
 The API wraps the existing agent pipeline. It does not duplicate design logic:
 messages still go to spec_agent, generation still goes to layout_agent and
-validator, and accepted plans still use the normal renderer and Blender path.
+validator, and accepted plans still use the 2D renderer and Three.js viewer.
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Path as ApiPath, status
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 from dotenv import load_dotenv
@@ -24,6 +24,7 @@ from agent.logging_setup import configure_server_logging
 from agent.pipeline import generate_and_save
 from agent.spec_agent import run_turn
 from agent.schemas import SessionState
+from agent.viewer_html import build_viewer_html
 
 # Mirror console output into data/logs/backend.log before anything else prints,
 # so every [Chat]/[Generate]/[layout] line survives an uvicorn --reload restart.
@@ -101,8 +102,7 @@ def _load_session_or_404(session_id: str) -> SessionState:
 def _asset_paths(session_id: str) -> dict[str, Path]:
     folder = _session_path_or_400(session_id).parent
     candidates = (
-        f"{session_id}.svg", f"{session_id}.png", f"{session_id}.glb",
-        f"{session_id}_3d.png", f"{session_id}_3d.html",
+        f"{session_id}.svg", f"{session_id}.png", f"{session_id}_3d.html",
     )
     return {name: folder / name for name in candidates if (folder / name).is_file()}
 
@@ -179,7 +179,7 @@ async def generate(body: GenerationRequest, session_id: str = ApiPath(pattern=r"
     """Synchronously create a validated plan and optional 3D model for one session."""
     async with _lock_for(session_id):
         session = _load_session_or_404(session_id)
-        print(f"\n[Generate] [{session_id}] Starting 3D layout computation & Blender model build...", flush=True)
+        print(f"\n[Generate] [{session_id}] Starting layout computation & Three.js scene preparation...", flush=True)
         try:
             output, messages = await run_in_threadpool(
                 generate_and_save, session, body.edit_request, body.build_3d, False,
@@ -213,10 +213,17 @@ async def get_asset(
     session_id: str = ApiPath(pattern=r"^[A-Za-z0-9_-]{1,80}$"),
     asset_name: str = ApiPath(pattern=r"^[A-Za-z0-9_.-]{1,100}$"),
 ) -> FileResponse:
-    _load_session_or_404(session_id)
+    session = _load_session_or_404(session_id)
     asset = _asset_paths(session_id).get(asset_name)
     if asset is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Asset not found.")
+    if asset_name == f"{session_id}_3d.html":
+        if session.layout is None or session.model_3d_version not in (None, session.layout.version):
+            raise HTTPException(status_code=404, detail="Generate a 3D model for the current plan first.")
+        # Existing saved homes also use the current Three.js renderer on open.
+        html = await run_in_threadpool(build_viewer_html, session.layout, session.spec,
+                                       session.project_name)
+        return HTMLResponse(html, headers={"Cache-Control": "no-store"})
     media_types = {
         ".svg": "image/svg+xml", ".png": "image/png", ".html": "text/html", ".glb": "model/gltf-binary",
     }

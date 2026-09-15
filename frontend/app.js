@@ -5,6 +5,33 @@ let progressTimer = null; // tracked at module scope so a bfcache restore can al
 const messages = $("#messages");
 const input = $("#message-input");
 const sendButton = $("#send-button");
+const projectDialog = $("#project-dialog");
+const projectNameForm = $("#project-name-form");
+const projectNameInput = $("#project-name-input");
+let returnToProjectChooser = true;
+
+function showProjectChooser() {
+  closeProjectDropdown();
+  projectNameForm.classList.add("hidden");
+  $("#project-choices").classList.remove("hidden");
+  $("#project-dialog-title").textContent = "Where would you like to start?";
+  $("#project-dialog-description").textContent = "Start a new home or continue one of your saved projects.";
+  $("#project-dialog-status").textContent = "";
+  $("#project-dialog-list").replaceChildren();
+  if (!projectDialog.open) projectDialog.showModal();
+}
+
+projectDialog.addEventListener("cancel", event => {
+  event.preventDefault();
+  if (!projectNameForm.classList.contains("hidden")) cancelProjectName();
+});
+$("#cancel-project-name").addEventListener("click", cancelProjectName);
+projectNameInput.addEventListener("input", () => projectNameInput.setCustomValidity(""));
+projectNameForm.addEventListener("submit", createNamedProject);
+$("#choose-new-project").addEventListener("click", newProject);
+$("#choose-existing-project").addEventListener("click", () => {
+  if (!state.busy) loadExistingProjects($("#project-dialog-status"), $("#project-dialog-list"));
+});
 const generationOverlay = $("#generation-overlay");
 const generationOverlayImg = $("#generation-overlay-img");
 const generationOverlayTitle = $("#generation-overlay-title");
@@ -160,6 +187,8 @@ function syncGenerateCard(summaryText) {
 
 function setBusy(busy) {
   state.busy = busy;
+  projectNameInput.disabled = busy;
+  projectDialog.querySelectorAll("button").forEach(button => { button.disabled = busy; });
   sendButton.disabled = busy || !state.sessionId;
   input.disabled = busy || !state.sessionId;
   const cardBtn = generateCardNode?.querySelector(".generate-card-button");
@@ -233,10 +262,10 @@ function displaySession(result) {
   assistantState("idle", "Ready to listen");
 }
 
-async function startSession() {
+async function startSession(projectName) {
   assistantState("thinking", "Preparing your chat");
   const result = await request("/sessions", {
-    method: "POST", body: JSON.stringify({ project_name: "My Home" })
+    method: "POST", body: JSON.stringify({ project_name: projectName })
   });
   displaySession(result);
 }
@@ -257,6 +286,11 @@ async function showExistingProjects() {
   $("#existing-projects-button").setAttribute("aria-expanded", "true");
   const status = $("#existing-projects-status");
   const list = $("#existing-projects-list");
+  await loadExistingProjects(status, list);
+}
+
+async function loadExistingProjects(status, list) {
+  setBusy(true);
   status.textContent = "Loading saved projects…";
   list.replaceChildren();
   try {
@@ -282,17 +316,20 @@ async function showExistingProjects() {
         try {
           displaySession(await request(`/sessions/${encodeURIComponent(session.session_id)}`));
           closeProjectDropdown();
+          if (projectDialog.open) projectDialog.close();
         } catch (error) {
           status.textContent = `Could not open project: ${error.message}`;
         } finally {
           setBusy(false);
-          if (dropdown.classList.contains("hidden")) input.focus();
+          if (!projectDialog.open && $("#existing-projects-dropdown").classList.contains("hidden")) input.focus();
         }
       });
       list.appendChild(button);
     }
   } catch (error) {
-    status.textContent = `Could not load projects: ${error.message}. Close and reopen to retry.`;
+    status.textContent = `Could not load projects: ${error.message}. Select Existing project again to retry.`;
+  } finally {
+    setBusy(false);
   }
 }
 
@@ -307,28 +344,6 @@ document.addEventListener("keydown", event => {
   }
 });
 
-async function restoreOrStart() {
-  setBusy(true);
-  try {
-    if (state.sessionId) {
-      try {
-        displaySession(await request(`/sessions/${state.sessionId}`));
-        return;
-      } catch (error) {
-        if (error.status !== 404) throw error;
-        state.sessionId = null;
-        localStorage.removeItem("constructiq-session");
-      }
-    }
-    await startSession();
-  } catch (error) {
-    assistantState("idle", "Unable to connect");
-    $("#connection-text").textContent = "Design service unavailable";
-    addMessage("assistant", error.message, true);
-  } finally {
-    setBusy(false);
-  }
-}
 async function sendMessage(text) {
   if (!text.trim() || state.busy || !state.sessionId) return;
   addMessage("user", text.trim());
@@ -425,16 +440,54 @@ if (botCard) {
   });
 }
 
-async function newProject() {
+function newProject() {
   if (state.busy) return;
+  returnToProjectChooser = projectDialog.open;
+  closeProjectDropdown();
+  $("#project-choices").classList.add("hidden");
+  $("#project-dialog-list").replaceChildren();
+  $("#project-dialog-status").textContent = "";
+  $("#project-dialog-title").textContent = "Name your project";
+  $("#project-dialog-description").textContent = "This name will identify your saved session.";
+  projectNameForm.classList.remove("hidden");
+  projectNameForm.reset();
+  projectNameInput.setCustomValidity("");
+  if (!projectDialog.open) projectDialog.showModal();
+  projectNameInput.focus();
+}
+
+function cancelProjectName() {
+  if (state.busy) return;
+  if (returnToProjectChooser) {
+    showProjectChooser();
+    $("#choose-new-project").focus();
+  } else {
+    projectDialog.close();
+    input.focus();
+  }
+}
+
+async function createNamedProject(event) {
+  event.preventDefault();
+  if (state.busy) return;
+  const projectName = projectNameInput.value.trim();
+  if (!projectName) {
+    projectNameInput.setCustomValidity("Enter a project name.");
+    projectNameInput.reportValidity();
+    return;
+  }
   setBusy(true);
+  if (projectDialog.open) $("#project-dialog-status").textContent = "Creating your project...";
   try {
-    await startSession();
+    await startSession(projectName);
+    if (projectDialog.open) projectDialog.close();
   } catch (error) {
-    addMessage("assistant", error.message, true);
+    if (projectDialog.open) $("#project-dialog-status").textContent = `Could not create project: ${error.message}. Please try again.`;
+    else addMessage("assistant", error.message, true);
   } finally {
     setBusy(false);
-    input.focus();
+    if (!projectDialog.open) input.focus();
+    else projectNameInput.focus();
   }
 }
 $("#new-project").addEventListener("click", newProject);
@@ -493,22 +546,22 @@ async function handleGenerate3D() {
   }
 }
 
-// Theme Toggle & Persistence - Dark Theme Default
-let savedTheme = localStorage.getItem("constructiq-theme");
-if (!savedTheme || savedTheme === "light") {
+// Preserve the user's light/dark preference across visits.
+let savedTheme = localStorage.getItem("constructiq-theme-v3");
+if (!["dark", "light"].includes(savedTheme)) {
   savedTheme = "dark";
-  localStorage.setItem("constructiq-theme", "dark");
+  localStorage.setItem("constructiq-theme-v3", "dark");
 }
 document.documentElement.setAttribute("data-theme", savedTheme);
 const themeBtn = $("#theme-toggle");
 if (themeBtn) {
-  themeBtn.textContent = savedTheme === "dark" ? "☀️ Light" : "🌙 Dark";
+  themeBtn.textContent = savedTheme === "dark" ? "Light mode" : "Dark mode";
   themeBtn.addEventListener("click", () => {
     const current = document.documentElement.getAttribute("data-theme") || "dark";
     const next = current === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
-    localStorage.setItem("constructiq-theme", next);
-    themeBtn.textContent = next === "dark" ? "☀️ Light" : "🌙 Dark";
+    localStorage.setItem("constructiq-theme-v3", next);
+    themeBtn.textContent = next === "dark" ? "Light mode" : "Dark mode";
   });
 }
 
@@ -522,8 +575,10 @@ window.addEventListener("pageshow", (event) => {
   window.clearInterval(progressTimer);
   hideGenerationOverlay();
   setBusy(false);
-  restoreOrStart();
+  showProjectChooser();
 });
 
 // Run Initial Check
-restoreOrStart();
+setBusy(false);
+$("#connection-text").textContent = "Choose a project";
+showProjectChooser();

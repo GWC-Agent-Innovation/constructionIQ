@@ -24,14 +24,15 @@ Start the local FastAPI service:
 Open `http://127.0.0.1:8000/docs` for interactive API documentation. The core
 flow is `POST /sessions`, `POST /sessions/{id}/messages`, then
 `POST /sessions/{id}/generate`. Generation is synchronous: the request returns
-when the validated 2D plan and optional Blender 3D output are ready.
+when the validated 2D plan and optional Three.js viewer are ready.
 
 The browser has two pages: the requirements chat and the 3D model with its
-AI Designer editing chat. New visitors start directly in a saved chat session;
-returning visitors resume their current session. **New project** starts another
-chat immediately. **Existing projects** in the chat header opens a dropdown
+AI Designer editing chat. Opening or refreshing the frontend shows a project
+chooser over a blurred screen. **New project** asks for a name, then creates a
+fresh chat using that name; **Existing project** lists saved projects to resume.
+No session is created until a nonblank name is submitted. The header and sidebar
+**New project** buttons use the same naming form. **Existing projects** in the chat header opens a dropdown
 of saved projects; selecting one restores its chat and **Open 3D model** link.
-There are no separate project-picker or project-naming screens.
 Once the brief is ready, **Generate 3D home** shows progress over the chat and
 opens the finished 3D model in the same tab. **Open 3D model** returns to an
 existing model, and its back button opens the requirements chat. Refreshing
@@ -58,8 +59,8 @@ HTTP 200 response stream also get one retry, except recognizable
 account/configuration errors. Partial output is discarded before retrying.
 Provider error details are shown with credentials redacted; retries never
 reset the request deadline. Configure limits with `.env.example`.
-Blender runs only after layout validation and has its own 180-second timeout.
-The browser displays service/validation errors and Blender failure details.
+Three.js builds the house directly in the browser from validated scene geometry.
+Generation no longer launches Blender. The browser displays service and rendering errors.
 Existing-layout edits currently re-solve from the current specification and
 hints rather than preserving unrelated room positions from the previous
 layout.
@@ -79,9 +80,13 @@ Offline timeout regression checks: `./.venv/Scripts/python.exe -m unittest disco
 
 ## Project folders
 
+The interface uses a midnight violet studio theme with cyan accents shared by the chat,
+project chooser and 3D viewer. `frontend/studio-theme.css` holds the common
+palette and styling. The Light/Dark mode choice persists across visits.
+
 - `agent/` contains the LLM requirement agent, the LLM design-hints agent
   (`layout_agent.py`), the deterministic layout solver (`layout_solver.py`),
-  validation, geometry, 2D renderer, 3D scene builder, Blender integration
+  validation, geometry, 2D renderer, 3D scene builder, Three.js renderer
   and browser viewer.
 - `backend/` contains the FastAPI routes that expose the agent to a frontend.
 - `agent/` also contains the terminal commands for chat, planning, and rendering.
@@ -89,7 +94,7 @@ Offline timeout regression checks: `./.venv/Scripts/python.exe -m unittest disco
 Example message:
 
 The chat command opens your default browser on the 3D model after a successful
-generation and Blender build. For a single command without interactive chat:
+generation and viewer preparation. For a single command without interactive chat:
 
 ```powershell
 ./.venv/Scripts/python.exe agent/chat.py myhouse --requirements "40 by 30 feet, 2 bedrooms, 1 bathroom, one floor, south entrance"
@@ -113,15 +118,29 @@ re-run the same deterministic solver from the current specification.
 Outputs are `data/sessions/<session>.svg` and `.png`; session JSON preserves
 layout history. Each accepted revision also gets `.v1.svg`/`.v1.png`, `.v2`, etc.
 
-The optional Blender step produces `<session>.glb`, `<session>.blend`,
-`<session>_3d.png`, and `<session>_3d.html`, keeping the 2D PNG intact.
-Open the HTML for the interactive 3D model with an editing chat,
-plus roof, wireframe, furniture and label controls.
-The SVG and PNG files remain available as separate generated 2D assets.
-`<session>.png` is the 2D drawing; `<session>_3d.png` is the open-roof 3D render.
-The rendered preview works offline; interactive 3D requires internet access
-to load Three.js and a browser with WebGL. Set `BLENDER_EXE` if Blender is not
-installed at the default path. Blender builds time out after three minutes.
+The 3D step produces `<session>_scene.json` and `<session>_3d.html`.
+Three.js creates walls, floors, framed windows and the optional roof directly
+from the same geometry used by the 2D plan. The viewer retains furniture, room
+labels, camera controls, measurements, the 2D Plan view and AI Designer edits.
+Existing saved models opened through the backend use this renderer too.
+
+The SVG and PNG remain 2D assets. New generation no longer creates Blender,
+GLB or rendered 3D PNG files. Interactive 3D requires internet access to load
+the pinned Three.js modules and a browser with WebGL.
+
+Choose **Walk inside** on the 3D model to explore at eye level. Drag the view
+to look around, use WASD to walk and arrow keys to look, or hold the on-screen
+directional buttons on the left to move and the joystick on the right to look.
+Hold a direction to walk; release to stop. Both controls work together on touchscreens.
+**Go to room** jumps to a selected room.
+Walls and windows block walking; doorways remain passable. Furniture is
+illustrative and does not block movement. The tour shows the roof and hides
+measurement overlays; **Exit walk** or Escape restores your previous view
+and display settings. Use **Show measurements** in the walking controls to
+toggle dimensions at eye level, with lengths in red and widths in yellow.
+Top View, Reset Camera and 2D Plan also exit the tour.
+
+Walk navigation checks: `node --test tests/test_walk_tour.cjs`.
 
 The drawing sheet includes a revision/title block and dimensions in feet.
 Room allocation is weighted by function, with bathrooms targeting 40–60 sq ft.

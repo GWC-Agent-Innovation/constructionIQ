@@ -6,6 +6,10 @@
   <link rel="icon" href="data:," />
   <title>ConstructIQ — Design studio</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="studio-theme.css" />
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem('constructiq-theme-v3') === 'light' ? 'light' : 'dark'; } catch (_) {}
+  </script>
 </head>
 <body>
 <main class="app-shell" id="app-shell">
@@ -29,6 +33,7 @@
     <div class="studio chat-only" id="studio">
       <!-- Dedicated Architect Sidebar matching Image 2 -->
       <aside class="architect-sidebar" id="architect-sidebar">
+        <div class="studio-intro"><span class="eyebrow">YOUR PERSONAL DESIGN STUDIO</span><h1>Your ideas.<br>Your future home.</h1><p>From your first idea to a home you can walk through. Let's make it yours.</p></div>
         <div class="bot-stage">
           <div class="bot-card-frame" id="bot-card-frame">
             <div class="bot-card-glow" id="bot-card-glow"></div>
@@ -90,6 +95,37 @@
       </div>
     </div>
   </main>
+  <dialog id="project-dialog" aria-labelledby="project-dialog-title" aria-describedby="project-dialog-description">
+    <section class="project-modal-step">
+      <span class="eyebrow">CONSTRUCTIQ DESIGN STUDIO</span>
+      <h1 id="project-dialog-title">Where would you like to start?</h1>
+      <p id="project-dialog-description">Start a new home or continue one of your saved projects.</p>
+      <div class="choice-grid" id="project-choices">
+        <button class="choice-card" id="choose-new-project" type="button" autofocus>
+          <span class="choice-number" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v11H3Z M9 21v-9h6v9"/></svg></span>
+          <h2>New project</h2>
+          <p>Start a fresh conversation and plan your home.</p>
+          <span class="choice-action">Create a project &rarr;</span>
+        </button>
+        <button class="choice-card" id="choose-existing-project" type="button">
+          <span class="choice-number" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7V4h7l2 3h9v13H3Z M3 10h18"/></svg></span>
+          <h2>Existing project</h2>
+          <p>Pick up where you left off with a saved home.</p>
+          <span class="choice-action">Browse projects &rarr;</span>
+        </button>
+      </div>
+      <form class="project-form hidden" id="project-name-form">
+        <label for="project-name-input">Project name</label>
+        <input id="project-name-input" name="project_name" type="text" required maxlength="80" autocomplete="off" placeholder="e.g. Our Dream Home" />
+        <div class="project-form-actions">
+          <button class="secondary-button" id="cancel-project-name" type="button">Cancel</button>
+          <button class="primary-button" id="create-named-project" type="submit">Create project</button>
+        </div>
+      </form>
+      <p id="project-dialog-status" role="status" aria-live="polite"></p>
+      <div class="project-dropdown-list" id="project-dialog-list"></div>
+    </section>
+  </dialog>
   <template id="message-template">
     <article class="message">
       <div class="message-avatar" aria-hidden="true"></div>

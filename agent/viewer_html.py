@@ -1,20 +1,13 @@
-"""Builds a self-contained interactive 3D viewer (HTML) from a house layout
-and its rendered .glb/.png, so a session's 3D model can be dragged/orbited in
-any browser with no server and no Blender at view time.
-
-Walls/roof/floor come from the .glb (built by Blender via blender_script.py).
-Furniture and room-name labels are placeholder boxes/sprites built directly
-in-browser from the layout JSON, so they always match the current layout
-without needing another Blender pass.
-"""
+"""Build a Three.js viewer directly from validated layout geometry."""
 from __future__ import annotations
 
-import base64
 import json
 from html import escape
+from pathlib import Path
 
 from agent.schemas import HouseSpec, Layout
 from agent.renderer import render_svg
+from agent.model3d import build_scene
 
 
 THREE_VERSION = "0.160.0"
@@ -58,10 +51,12 @@ def _furniture_category(name: str) -> str | None:
     return None
 
 
-def build_viewer_html(layout: Layout, spec: HouseSpec, glb_bytes: bytes, poster_png_bytes: bytes,
+def build_viewer_html(layout: Layout, spec: HouseSpec,
                       project_name: str | None = None) -> str:
-    glb_b64 = base64.b64encode(glb_bytes).decode("ascii")
-    poster_b64 = base64.b64encode(poster_png_bytes).decode("ascii")
+    house_builder = Path(__file__).with_name("three_house.js").read_text(encoding="utf-8")
+    walk_tour = Path(__file__).with_name("walk_tour.js").read_text(encoding="utf-8")
+    studio_theme = (Path(__file__).resolve().parent.parent / "frontend" / "studio-theme.css").read_text(encoding="utf-8")
+    scene_json = json.dumps(build_scene(layout).to_dict()).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
 
     rooms = sorted(layout.rooms, key=lambda r: -(r.width * r.length))
     total_area = sum(r.width * r.length for r in layout.rooms)
@@ -97,13 +92,14 @@ def build_viewer_html(layout: Layout, spec: HouseSpec, glb_bytes: bytes, poster_
 
 
     return f"""<!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" class="viewer-theme">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title} | ConstructIQ</title>
 <script>
 
 if (new URLSearchParams(location.search).get('embed') === '1') document.documentElement.classList.add('embedded');
+try {{ document.documentElement.dataset.theme = localStorage.getItem('constructiq-theme-v3') === 'light' ? 'light' : 'dark'; }} catch (_) {{}}
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -186,6 +182,54 @@ body {{
 .stage-wrap {{ flex: 1; min-height: 0; position: relative; width: 100%; background: #05070a; overflow: hidden; }}
 .stage-wrap canvas {{ display: block; width: 100%; height: 100%; cursor: grab; }}
 .stage-wrap canvas:active {{ cursor: grabbing; }}
+.walk-panel {{ position: absolute; bottom: 20px; left: 24px; right: 24px; display: grid; grid-template-columns: 130px minmax(0, 360px) 130px; justify-content: space-between; align-items: end; gap: 16px; color: #edf2ee; pointer-events: none; }}
+.walk-panel[hidden] {{ display: none; }}
+.walk-info {{ position: relative; padding: 5px; border: 1px solid #ffffff20; border-radius: 999px; background: #111a14e8; backdrop-filter: blur(12px); pointer-events: auto; width: 100%; max-width: 300px; justify-self: center; }}
+.walk-panel p {{ margin: 6px 0 10px; font-size: 11px; color: #b8c8be; }}
+.walk-panel select, .walk-panel button {{ background: #203829; color: #edf2ee; border: 1px solid #53745d; border-radius: 6px; padding: 9px 12px; font: inherit; }}
+.walk-panel select {{ width: 100%; margin: 6px 0 10px; }}
+.walk-panel label {{ font-size: 11px; color: #b8c8be; }}
+.walk-info-heading {{ display: flex; align-items: center; justify-content: space-between; gap: 5px; }}
+.walk-info-heading button {{ font-size: 12px; border-radius: 999px; white-space: nowrap; }}
+.walk-info-heading #walk-options-toggle {{ display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; border: 0; background: transparent; padding: 8px 10px; text-align: left; min-height: 36px; }}
+#walk-current-room {{ font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+.walk-room-dot {{ width: 6px; height: 6px; border-radius: 50%; flex: none; background: #94e1e4; }}
+.walk-options-arrow {{ margin-left: auto; font-size: 10px; }}
+.walk-options {{ position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; padding: 14px; border-radius: 16px; border: 1px solid #666083; background: #1a1e2ef5; box-shadow: 0 10px 30px #0005; max-height: min(260px, 45dvh); overflow-y: auto; }}
+.walk-options[hidden] {{ display: none; }}
+.walk-options #walk-room {{ font-size: 12px; padding: 8px; }}
+.walk-info .walk-measurements {{ display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: #edf2ee; cursor: pointer; }}
+.walk-measurements input {{ width: 18px; height: 18px; accent-color: #67b983; }}
+.walk-stick-wrap {{ display: grid; justify-items: center; gap: 10px; }}
+.walk-dpad {{ display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); pointer-events: auto; }}
+.walk-dpad button {{ padding: 0; font-size: 23px; border-radius: 10px; touch-action: none; user-select: none; background: linear-gradient(#3b4e41, #1b2b21); box-shadow: 0 3px 7px #0006; }}
+.walk-dpad button.is-active {{ background: #467b57; border-color: #a8dfb8; transform: translateY(2px); }}
+.walk-dpad [data-move="KeyW"] {{ grid-column: 2; grid-row: 1; }}
+.walk-dpad [data-move="KeyA"] {{ grid-column: 1; grid-row: 2; }}
+.walk-dpad [data-move="KeyD"] {{ grid-column: 3; grid-row: 2; }}
+.walk-dpad [data-move="KeyS"] {{ grid-column: 2; grid-row: 3; }}
+.walk-stick-label {{ font-size: 10px; letter-spacing: 2px; font-weight: 700; text-shadow: 0 2px 4px #000; }}
+.walk-stick {{ width: 130px; height: 130px; position: relative; border-radius: 50%; border: 1px solid #ffffff40; background: radial-gradient(circle, #26352dd9 0 35%, #111a14c9 36% 67%, #ffffff12 68%); box-shadow: inset 0 0 24px #0008, 0 8px 26px #0005; pointer-events: auto; touch-action: none; user-select: none; cursor: grab; }}
+.walk-stick::before, .walk-stick::after {{ content: ''; position: absolute; background: #ffffff20; left: 50%; top: 14%; width: 1px; height: 72%; }}
+.walk-stick::after {{ transform: rotate(90deg); }}
+.walk-stick-knob {{ position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px; border-radius: 50%; background: radial-gradient(circle at 35% 25%, #66766c, #26372e 70%); border: 2px solid #a8dfb880; box-shadow: 0 5px 12px #0009, inset 0 1px 3px #ffffff50; z-index: 1; pointer-events: none; }}
+.walk-stick.is-active {{ border-color: #a8dfb8; cursor: grabbing; }}
+.walk-stick.is-active .walk-stick-knob {{ border-color: #a8dfb8; }}
+.walk-stick:focus-visible {{ outline: 2px solid #a8dfb8; outline-offset: 4px; }}
+@media (max-width: 850px) {{
+  .walk-panel {{ grid-template-columns: 132px 1fr 110px; left: 12px; right: 12px; gap: 10px; }}
+  .walk-stick {{ width: 110px; height: 110px; }}
+  .walk-info {{ padding: 5px; }}
+}}
+@media (max-width: 560px) {{
+  .walk-panel {{ grid-template-columns: 132px 110px; }}
+  .walk-info {{ grid-column: 1 / -1; grid-row: 1; }}
+  .walk-info p {{ display: none; }}
+  .walk-info select {{ margin-bottom: 0; padding: 6px; }}
+}}
+.walk-panel button:focus-visible, .walk-panel select:focus-visible, #stage-canvas:focus-visible {{ outline: 2px solid #a8dfb8; outline-offset: -2px; }}
+.is-walking .toggle-row {{ display: none; }}
+.is-walking canvas {{ touch-action: none; }}
 .stage-wrap .poster {{
   position: absolute; inset: 0; background: #05070a;
   display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease;
@@ -339,6 +383,7 @@ footer {{ margin-top: 18px; font-size: 0.75rem; color: var(--muted); }}
   thead {{ display: table-header-group; }}
   tr {{ break-inside: avoid; }}
 }}
+{studio_theme}
 </style>
 
 <div class="app-shell">
@@ -358,6 +403,7 @@ footer {{ margin-top: 18px; font-size: 0.75rem; color: var(--muted); }}
         <button id="print-plan" title="Print the 2D plan and alignment details">Print</button>
         <button id="reset-view">Reset Camera</button>
         <button id="top-view">Top View</button>
+        <button id="walk-tour" aria-pressed="false" disabled>Walk inside</button>
         <button id="fullscreen-btn" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
       </div>
     </div>
@@ -411,9 +457,35 @@ footer {{ margin-top: 18px; font-size: 0.75rem; color: var(--muted); }}
       </section>
       <div class="stage-wrap" id="stage-wrap">
         <canvas id="stage-canvas"></canvas>
-        <div class="poster"><img src="data:image/png;base64,{poster_b64}" alt="Rendered 3D house model"></div>
+        <div class="poster"><p>Preparing your 3D home...</p></div>
         <div class="hud-caption" id="mv-status">Loading 3D viewer&hellip;</div>
-        <div class="measurement-note" id="measurement-note" hidden>Measurements in feet. X = east and Y = south from the northwest plot corner. Room zones include wall thickness. Use Top View and zoom for a clearer view.</div>
+        <section class="walk-panel" id="walk-panel" hidden aria-label="Home walking tour">
+          <div class="walk-stick-wrap">
+            <div class="walk-dpad" role="group" aria-label="Hold directional buttons to walk">
+              <button type="button" data-move="KeyW" aria-label="Walk forward">&#9650;</button>
+              <button type="button" data-move="KeyA" aria-label="Step left">&#9664;</button>
+              <button type="button" data-move="KeyD" aria-label="Step right">&#9654;</button>
+              <button type="button" data-move="KeyS" aria-label="Walk backward">&#9660;</button>
+            </div>
+            <span class="walk-stick-label">L &middot; MOVE</span>
+          </div>
+          <div class="walk-info">
+            <div class="walk-info-heading">
+              <button type="button" id="walk-options-toggle" aria-expanded="false" aria-controls="walk-options" title="Room and measurement options"><span class="walk-room-dot" aria-hidden="true"></span><strong id="walk-current-room"></strong><span class="walk-options-arrow" aria-hidden="true">&#9652;</span></button>
+              <button type="button" id="walk-exit" aria-label="Exit walk">Exit</button>
+            </div>
+            <div class="walk-options" id="walk-options" hidden>
+              <label for="walk-room">GO TO ROOM</label><select id="walk-room"></select>
+              <label class="walk-measurements"><input type="checkbox" id="walk-measurements"> Show measurements</label>
+              <p>Hold arrows to walk. Right stick to look. Esc to exit.</p>
+            </div>
+          </div>
+          <div class="walk-stick-wrap">
+            <div class="walk-stick" data-stick="look" tabindex="0" role="group" aria-label="Look joystick. Drag to look around, or use arrow keys."><span class="walk-stick-knob"></span></div>
+            <span class="walk-stick-label">R &middot; LOOK</span>
+          </div>
+        </section>
+        <div class="measurement-note" id="measurement-note" hidden><strong style="color: #ff5252">Length (L): red</strong> &middot; <strong style="color: #ffdf00">Width (W): yellow</strong><br>Measurements in feet. X = east and Y = south from the northwest plot corner. Room zones include wall thickness. Use Top View and zoom for a clearer view.</div>
         <div class="toggle-row">
           <span class="toggle-row-label">Show</span>
           <label class="chip"><input type="checkbox" id="toggle-labels" checked> Room labels</label>
@@ -452,6 +524,7 @@ function selectDrawingView(model) {{
   document.getElementById('view-plan').setAttribute('aria-pressed', String(!model));
   document.getElementById('reset-view').disabled = !model;
   document.getElementById('top-view').disabled = !model;
+  document.getElementById('walk-tour').disabled = !model || !document.getElementById('stage-wrap').classList.contains('is-ready');
 }}
 document.getElementById('view-model').onclick = () => selectDrawingView(true);
 document.getElementById('view-plan').onclick = () => selectDrawingView(false);
@@ -621,7 +694,7 @@ window.setTimeout(() => {{
 }})();
 </script>
 
-<script id="glb-data" type="text/plain">{glb_b64}</script>
+<script id="scene-data" type="application/json">{scene_json}</script>
 <script id="rooms-data" type="application/json">{furnish_rooms}</script>
 <script type="importmap">
 {{
@@ -632,9 +705,13 @@ window.setTimeout(() => {{
 }}
 </script>
 <script type="module">
-import * as THREE from 'three';
-import {{ GLTFLoader }} from 'three/addons/loaders/GLTFLoader.js';
-import {{ OrbitControls }} from 'three/addons/controls/OrbitControls.js';
+try {{
+const [THREE, {{ OrbitControls }}] = await Promise.all([
+  import('three'), import('three/addons/controls/OrbitControls.js')
+]);
+
+{house_builder}
+{walk_tour}
 
 const status = document.getElementById('mv-status');
 const wrap = document.getElementById('stage-wrap');
@@ -645,23 +722,17 @@ function setStatus(text, isError) {{
   status.classList.toggle('is-error', !!isError);
 }}
 
-function base64ToArrayBuffer(b64) {{
-  const binary = atob(b64);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return bytes.buffer;
-}}
 
 const renderer = new THREE.WebGLRenderer({{ canvas, antialias: true }});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x05070a);
-scene.fog = new THREE.Fog(0x05070a, 60, 320);
+scene.background = new THREE.Color(0x0e111b);
+scene.fog = new THREE.Fog(0x0e111b, 60, 320);
 const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 2000);
 
-const grid = new THREE.GridHelper(300, 60, 0x1d2b21, 0x121a15);
+const grid = new THREE.GridHelper(300, 60, 0x3b3852, 0x15253b);
 grid.position.y = -0.25;
 scene.add(grid);
 
@@ -679,6 +750,8 @@ controls.maxDistance = 400;
 
 let sceneCenter = new THREE.Vector3();
 let sceneRadius = 40;
+let tour = null;
+let lastFrame = performance.now();
 
 function resize() {{
   const w = wrap.clientWidth, h = wrap.clientHeight;
@@ -692,7 +765,10 @@ resize();
 
 function animate() {{
   requestAnimationFrame(animate);
-  controls.update();
+  const now = performance.now();
+  tour?.update((now - lastFrame) / 1000);
+  lastFrame = now;
+  if (controls.enabled) controls.update();
   renderer.render(scene, camera);
 }}
 animate();
@@ -711,7 +787,7 @@ function addFurnitureBox(group, cx, cz, sizeX, sizeZ, height, color, yBase) {{
   group.add(mesh);
 }}
 
-function makeLabelSprite(text, dotColor, worldHeight = 3.4) {{
+function makeLabelSprite(text, dotColor, worldHeight = 3.4, textColor = '#edf2ee') {{
   const c = document.createElement('canvas');
   const ctx = c.getContext('2d');
   const fontSize = 44;
@@ -730,7 +806,7 @@ function makeLabelSprite(text, dotColor, worldHeight = 3.4) {{
   ctx.beginPath();
   ctx.arc(padX + dotR, c.height / 2, dotR, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = '#edf2ee';
+  ctx.fillStyle = textColor;
   ctx.textBaseline = 'middle';
   ctx.fillText(text, padX + dotR * 2 + gap, c.height / 2 + 2);
   const texture = new THREE.CanvasTexture(c);
@@ -750,13 +826,13 @@ function measurementData(roomsData, plotWidth, plotLength) {{
   const add = (a, b, floor, label, color) => dimensions.push({{ a, b, floor, label, color }});
   const floors = [...new Set(roomsData.map(room => room.floor))];
   floors.forEach(floor => {{
-    add([0, -3], [plotWidth, -3], floor, `Plot E–W: ${{feet(plotWidth)}}`, '#d4d4d4');
-    add([-3, 0], [-3, plotLength], floor, `Plot N–S: ${{feet(plotLength)}}`, '#d4d4d4');
+    add([0, -3], [plotWidth, -3], floor, `Plot W (E–W): ${{feet(plotWidth)}}`, '#ffdf00');
+    add([-3, 0], [-3, plotLength], floor, `Plot L (N–S): ${{feet(plotLength)}}`, '#ff5252');
   }});
   roomsData.forEach(room => {{
     const x = room.x, y = room.y, w = room.width, l = room.length;
-    add([x, y + l * .22], [x + w, y + l * .22], room.floor, `W ${{feet(w)}}`, '#d4d4d4');
-    add([x + w * .22, y], [x + w * .22, y + l], room.floor, `L ${{feet(l)}}`, '#d4d4d4');
+    add([x, y + l * .22], [x + w, y + l * .22], room.floor, `W ${{feet(w)}}`, '#ffdf00');
+    add([x + w * .22, y], [x + w * .22, y + l], room.floor, `L ${{feet(l)}}`, '#ff5252');
     positions.push({{ x: x + w / 2, y: y + l * .75, floor: room.floor,
       text: `X ${{Number(x.toFixed(2))}}, Y ${{Number(y.toFixed(2))}} ft` }});
     const openings = [...(room.doors || []).map(item => ({{ ...item, type: item.kind === 'opening' ? 'Passage' : 'Door' }})),
@@ -791,7 +867,7 @@ function buildMeasurements(roomsData) {{
     const line = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(points), materials.get(item.color));
     line.renderOrder = 1000;
     group.add(line);
-    const label = makeLabelSprite(item.label, item.color, 1.05);
+    const label = makeLabelSprite(item.label, item.color, 1.05, item.color);
     label.position.copy(a).lerp(b, .5);
     label.position.y += .5;
     label.renderOrder = 1001;
@@ -867,14 +943,9 @@ function buildFurniture(roomsData, furnitureGroup, labelGroup) {{
 }}
 
 try {{
-  const b64 = document.getElementById('glb-data').textContent;
-  const buffer = base64ToArrayBuffer(b64);
-  new GLTFLoader().parse(
-    buffer,
-    '',
-    (gltf) => {{
-      scene.add(gltf.scene);
-      const box = new THREE.Box3().setFromObject(gltf.scene);
+  const house = buildHouse(JSON.parse(document.getElementById('scene-data').textContent));
+  scene.add(house);
+  const box = new THREE.Box3().setFromObject(house);
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
       const radius = Math.max(size.x, size.y, size.z);
@@ -893,7 +964,7 @@ try {{
 
       const roofParts = [];
       const solidMaterials = [];
-      gltf.scene.traverse((obj) => {{
+      house.traverse((obj) => {{
         if (obj.name && obj.name.toLowerCase().startsWith('roof')) roofParts.push(obj);
         if (obj.isMesh && obj.material && !solidMaterials.includes(obj.material)) solidMaterials.push(obj.material);
       }});
@@ -915,6 +986,7 @@ try {{
       const measurementToggle = document.getElementById('toggle-measurements');
       const updateMeasurements = () => {{
         measurementGroup.visible = measurementToggle.checked;
+        measurementGroup.position.y = wrap.classList.contains('is-walking') ? -6 : 0;
         document.getElementById('measurement-note').hidden = !measurementToggle.checked;
       }};
       updateMeasurements();
@@ -926,15 +998,17 @@ try {{
       labelGroup.visible = labelsToggle.checked;
       furnitureToggle.addEventListener('change', () => {{ furnitureGroup.visible = furnitureToggle.checked; }});
       labelsToggle.addEventListener('change', () => {{ labelGroup.visible = labelsToggle.checked; }});
-    }},
-    (err) => {{
-      console.error('GLTF parse error', err);
-      setStatus('Load error: ' + (err && err.message ? err.message : 'could not parse model'), true);
-    }}
-  );
+      tour = createWalkTour({{ camera, controls, canvas, wrap,
+        data: JSON.parse(document.getElementById('scene-data').textContent),
+        rooms: roomsData, setStatus }});
 }} catch (err) {{
-  console.error('failed to parse model buffer', err);
+  console.error('failed to build Three.js house', err);
   setStatus('Load error: ' + err.message, true);
+}}
+}} catch (err) {{
+  document.getElementById('mv-status').textContent = 'Could not start 3D: ' + err.message + '. Check your internet connection and WebGL support, then reload.';
+  document.getElementById('mv-status').classList.add('is-error');
+  document.querySelector('.poster p').textContent = 'The 2D Plan is still available above.';
 }}
 </script>
 """

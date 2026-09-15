@@ -66,7 +66,7 @@ def run_generation(session, edit_request=None, open_browser=True) -> bool:
     viewer_path = out_path.with_name(out_path.stem + "_3d.html")
     if not issues and viewer_path.exists():
         print(f"OPEN THIS for interactive 3D: {viewer_path}")
-        print(f"Rendered 3D image: {out_path.with_name(out_path.stem + '_3d.png')}\n")
+        print(f"Interactive Three.js model: {out_path.with_name(out_path.stem + '_3d.html')}\n")
     return not issues
 
 
