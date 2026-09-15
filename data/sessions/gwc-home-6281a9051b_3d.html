@@ -1,0 +1,1615 @@
+<!doctype html>
+<html lang="en" data-theme="dark" class="viewer-theme">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GWC-home | ConstructIQ</title>
+<script>
+
+if (new URLSearchParams(location.search).get('embed') === '1') document.documentElement.classList.add('embedded');
+try { document.documentElement.dataset.theme = localStorage.getItem('constructiq-theme-v3') === 'light' ? 'light' : 'dark'; } catch (_) {}
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  color-scheme: dark;
+  --bg: #0c120e;
+  --panel: #111a14;
+  --panel-2: #0e1511;
+  --line: #1d2b21;
+  --ink: #edf2ee;
+  --muted: #82968a;
+  --accent: #2e8b57;
+  --accent-hover: #38a169;
+  --accent-light: #16281c;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  min-height: 100dvh;
+}
+.app-shell { max-width: 1920px; margin: 0 auto; padding: 18px clamp(14px, 3vw, 32px) 24px; }
+
+/* ---------------------------------------------------------------------
+   Top bar: back, title block, view/camera toolbar, compass
+   --------------------------------------------------------------------- */
+.viewer-topbar {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 12px 16px; margin-bottom: 16px;
+}
+.icon-btn {
+  display: grid; place-items: center; width: 38px; height: 38px; flex: none;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px;
+  color: var(--ink); cursor: pointer; transition: border-color .15s, background .15s;
+}
+.icon-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+.icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.title-block { min-width: 0; }
+.title-block h1 {
+  font-size: clamp(1.1rem, 2.4vw, 1.4rem); font-weight: 700; margin: 0; letter-spacing: -0.01em;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.title-block .subtitle { margin: 2px 0 0; font-size: 0.8rem; color: var(--muted); }
+.view-toolbar {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-left: auto;
+}
+.segmented { display: flex; gap: 3px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
+.segmented button {
+  font: inherit; font-size: 0.82rem; font-weight: 500; padding: 7px 14px; border: none; border-radius: 8px;
+  background: transparent; color: var(--muted); cursor: pointer; transition: background .15s, color .15s;
+}
+.segmented button[aria-pressed="true"] { background: var(--accent); color: #ffffff; }
+.segmented button:hover:not([aria-pressed="true"]) { color: var(--ink); }
+.toolbar-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.toolbar-actions button {
+  font: inherit; font-size: 0.82rem; font-weight: 500; padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--panel-2); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+}
+.toolbar-actions button:hover { border-color: var(--accent); }
+.toolbar-actions svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.compass {
+  display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 50%;
+  background: var(--panel-2); border: 1px solid var(--line); font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem; font-weight: 600; color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------
+   Body: editing sidebar + 3D model
+   --------------------------------------------------------------------- */
+.viewer-workspace { display: grid; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); gap: 16px; height: calc(100dvh - 170px); min-height: 520px; }
+.viewer-body { min-width: 0; min-height: 0; }
+
+.stage-card { display: flex; flex-direction: column; height: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.stage-wrap { flex: 1; min-height: 0; position: relative; width: 100%; background: #05070a; overflow: hidden; }
+.stage-wrap canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.stage-wrap canvas:active { cursor: grabbing; }
+.walk-panel { position: absolute; bottom: 20px; left: 24px; right: 24px; display: grid; grid-template-columns: 130px minmax(0, 360px) 130px; justify-content: space-between; align-items: end; gap: 16px; color: #edf2ee; pointer-events: none; }
+.walk-panel[hidden] { display: none; }
+.walk-info { position: relative; padding: 5px; border: 1px solid #ffffff20; border-radius: 999px; background: #111a14e8; backdrop-filter: blur(12px); pointer-events: auto; width: 100%; max-width: 300px; justify-self: center; }
+.walk-panel p { margin: 6px 0 10px; font-size: 11px; color: #b8c8be; }
+.walk-panel select, .walk-panel button { background: #203829; color: #edf2ee; border: 1px solid #53745d; border-radius: 6px; padding: 9px 12px; font: inherit; }
+.walk-panel select { width: 100%; margin: 6px 0 10px; }
+.walk-panel label { font-size: 11px; color: #b8c8be; }
+.walk-info-heading { display: flex; align-items: center; justify-content: space-between; gap: 5px; }
+.walk-info-heading button { font-size: 12px; border-radius: 999px; white-space: nowrap; }
+.walk-info-heading #walk-options-toggle { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; border: 0; background: transparent; padding: 8px 10px; text-align: left; min-height: 36px; }
+#walk-current-room { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.walk-room-dot { width: 6px; height: 6px; border-radius: 50%; flex: none; background: #94e1e4; }
+.walk-options-arrow { margin-left: auto; font-size: 10px; }
+.walk-options { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; padding: 14px; border-radius: 16px; border: 1px solid #666083; background: #1a1e2ef5; box-shadow: 0 10px 30px #0005; max-height: min(260px, 45dvh); overflow-y: auto; }
+.walk-options[hidden] { display: none; }
+.walk-options #walk-room { font-size: 12px; padding: 8px; }
+.walk-info .walk-measurements { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12px; color: #edf2ee; cursor: pointer; }
+.walk-measurements input { width: 18px; height: 18px; accent-color: #67b983; }
+.walk-stick-wrap { display: grid; justify-items: center; gap: 10px; }
+.walk-dpad { display: grid; grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(3, 44px); pointer-events: auto; }
+.walk-dpad button { padding: 0; font-size: 23px; border-radius: 10px; touch-action: none; user-select: none; background: linear-gradient(#3b4e41, #1b2b21); box-shadow: 0 3px 7px #0006; }
+.walk-dpad button.is-active { background: #467b57; border-color: #a8dfb8; transform: translateY(2px); }
+.walk-dpad [data-move="KeyW"] { grid-column: 2; grid-row: 1; }
+.walk-dpad [data-move="KeyA"] { grid-column: 1; grid-row: 2; }
+.walk-dpad [data-move="KeyD"] { grid-column: 3; grid-row: 2; }
+.walk-dpad [data-move="KeyS"] { grid-column: 2; grid-row: 3; }
+.walk-stick-label { font-size: 10px; letter-spacing: 2px; font-weight: 700; text-shadow: 0 2px 4px #000; }
+.walk-stick { width: 130px; height: 130px; position: relative; border-radius: 50%; border: 1px solid #ffffff40; background: radial-gradient(circle, #26352dd9 0 35%, #111a14c9 36% 67%, #ffffff12 68%); box-shadow: inset 0 0 24px #0008, 0 8px 26px #0005; pointer-events: auto; touch-action: none; user-select: none; cursor: grab; }
+.walk-stick::before, .walk-stick::after { content: ''; position: absolute; background: #ffffff20; left: 50%; top: 14%; width: 1px; height: 72%; }
+.walk-stick::after { transform: rotate(90deg); }
+.walk-stick-knob { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px; border-radius: 50%; background: radial-gradient(circle at 35% 25%, #66766c, #26372e 70%); border: 2px solid #a8dfb880; box-shadow: 0 5px 12px #0009, inset 0 1px 3px #ffffff50; z-index: 1; pointer-events: none; }
+.walk-stick.is-active { border-color: #a8dfb8; cursor: grabbing; }
+.walk-stick.is-active .walk-stick-knob { border-color: #a8dfb8; }
+.walk-stick:focus-visible { outline: 2px solid #a8dfb8; outline-offset: 4px; }
+@media (max-width: 850px) {
+  .walk-panel { grid-template-columns: 132px 1fr 110px; left: 12px; right: 12px; gap: 10px; }
+  .walk-stick { width: 110px; height: 110px; }
+  .walk-info { padding: 5px; }
+}
+@media (max-width: 560px) {
+  .walk-panel { grid-template-columns: 132px 110px; }
+  .walk-info { grid-column: 1 / -1; grid-row: 1; }
+  .walk-info p { display: none; }
+  .walk-info select { margin-bottom: 0; padding: 6px; }
+}
+.walk-panel button:focus-visible, .walk-panel select:focus-visible, #stage-canvas:focus-visible { outline: 2px solid #a8dfb8; outline-offset: -2px; }
+.is-walking .toggle-row { display: none; }
+.is-walking canvas { touch-action: none; }
+.stage-wrap .poster {
+  position: absolute; inset: 0; background: #05070a;
+  display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease;
+}
+.stage-wrap .poster img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.stage-wrap.is-ready .poster { opacity: 0; pointer-events: none; }
+.hud-caption { position: absolute; top: 14px; left: 16px; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: rgba(237,242,238,0.6); }
+.hud-caption.is-error { color: #f0a58e; }
+.measurement-note { position: absolute; top: 42px; left: 16px; right: 16px; max-width: 420px; padding: 8px 10px; border-radius: 8px; background: #111a14e8; color: #f5df96; font-size: 11px; pointer-events: none; }
+
+.toggle-row {
+  position: absolute; left: 14px; bottom: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  max-width: calc(100% - 28px);
+}
+.toggle-row-label {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(237,242,238,0.55); margin-right: 2px;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; padding: 6px 12px;
+  background: rgba(17,26,20,0.82); backdrop-filter: blur(6px); border: 1px solid rgba(237,242,238,0.14);
+  border-radius: 999px; color: #edf2ee; cursor: pointer; user-select: none;
+}
+.chip input { accent-color: var(--accent); }
+.chip:has(input:checked) { border-color: var(--accent); background: rgba(46,139,87,0.28); }
+
+.plan-view { flex: 1; min-height: 0; overflow: auto; background: #fbfdfb; color: #18251d; padding: 20px; }
+.plan-view svg { display: block; width: 100%; height: auto; }
+.plan-heading h2 { margin: 0 0 6px; }
+.plan-heading p, .alignment-details p { font-size: 12px; line-height: 1.5; }
+.alignment-details { margin-top: 24px; }
+.alignment-table-wrap { overflow-x: auto; }
+.alignment-details table { min-width: 650px; font-size: 12px; }
+.alignment-details th, .alignment-details td { color: #18251d; border-color: #ccd6ce; padding: 8px; vertical-align: top; }
+.toolbar-actions button[aria-pressed="true"] { background: var(--accent); color: white; }
+.drawing-note { padding: 10px 16px; margin: 0; font: 11px 'IBM Plex Mono', monospace; color: var(--muted); border-top: 1px solid var(--line); }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 18px 8px; }
+.panel h2 { font-size: 1.15rem; font-weight: 700; margin: 0 0 2px; }
+.panel .sub { font-size: 0.78rem; color: var(--muted); margin: 0 0 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+th {
+  text-align: left; font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 0.66rem;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+  border-bottom: 1px solid var(--line); padding: 0 6px 8px 0;
+}
+td { padding: 8px 6px 8px 0; border-bottom: 1px solid var(--line); }
+td.num, th.num { font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; text-align: right; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+.room-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+.table-wrap { max-height: 460px; overflow-y: auto; }
+.total-row {
+  display: flex; justify-content: space-between; align-items: baseline; font-size: 0.82rem;
+  color: var(--muted); padding: 12px 0 16px; border-top: 1px solid var(--line); margin-top: 4px;
+}
+.total-row b { font-family: 'IBM Plex Mono', monospace; font-size: 1.05rem; color: var(--ink); font-weight: 600; }
+
+/* ---------------------------------------------------------------------
+   AI Designer: describe a change, the app updates the spec and rebuilds
+   --------------------------------------------------------------------- */
+.ai-designer { display: flex; flex-direction: column; min-height: 0; min-width: 0; padding-bottom: 18px; }
+.ai-designer-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.ai-bot-reaction { width: 64px; height: 88px; flex: none; object-fit: contain; }
+.ai-designer-header h2 { margin: 0; }
+.ai-designer-header .sub { margin: 2px 0 0; }
+.ai-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); margin-top: 8px; flex: none; box-shadow: 0 0 0 3px var(--accent-light); }
+.ai-dot.is-busy { background: #e0a030; box-shadow: 0 0 0 3px rgba(224,160,48,0.18); animation: aiPulse 1s ease-in-out infinite; }
+.ai-dot.is-error { background: #e05a4a; box-shadow: 0 0 0 3px rgba(224,90,74,0.18); animation: none; }
+@keyframes aiPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.ai-log { display: flex; flex: 1; min-height: 0; flex-direction: column; gap: 8px; overflow-y: auto; margin-bottom: 12px; }
+.ai-msg {
+  align-self: flex-start; max-width: 80%; padding: 9px 14px; border-radius: 12px; font-size: 0.85rem; line-height: 1.55;
+  background: var(--panel-2); border: 1px solid var(--line); color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.ai-msg.user { align-self: flex-end; background: var(--accent-light); border-color: var(--accent); }
+.ai-msg.error { border-color: #a85142; color: #f0a58e; }
+.ai-suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.ai-suggestions button {
+  font: inherit; font-size: 0.78rem; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--panel-2); color: var(--muted); cursor: pointer;
+}
+.ai-suggestions button:hover { border-color: var(--accent); color: var(--ink); }
+.ai-composer { display: flex; gap: 8px; }
+.ai-composer input {
+  flex: 1; min-width: 0; font: inherit; font-size: 0.88rem; padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--panel-2); color: var(--ink);
+}
+.ai-composer input:focus { outline: none; border-color: var(--accent); }
+.ai-composer input:disabled { opacity: 0.6; }
+.ai-composer button {
+  display: grid; place-items: center; width: 42px; height: 42px; flex: none; border: none; border-radius: 10px;
+  background: var(--accent); color: #ffffff; cursor: pointer;
+}
+.ai-composer button:hover { background: var(--accent-hover); }
+.ai-composer button:disabled { opacity: 0.6; cursor: default; }
+.ai-composer svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+footer { margin-top: 18px; font-size: 0.75rem; color: var(--muted); }
+[hidden], .hidden { display: none !important; }
+
+/* ---------------------------------------------------------------------
+   Generation overlay: shown while the AI Designer applies a change and
+   rebuilds the model - same treatment as the main chat app's Generate flow.
+   --------------------------------------------------------------------- */
+.generation-overlay {
+  position: fixed; inset: 0; z-index: 40; display: flex; align-items: center; justify-content: center;
+  padding: 24px; background: rgba(5,8,6,0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.generation-overlay-card {
+  display: flex; flex-direction: column; align-items: center; text-align: center; width: min(420px, 100%);
+  padding: 36px 32px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+}
+.generation-overlay-card img { width: 128px; height: 128px; object-fit: contain; margin: 14px 0 6px; }
+.generation-overlay-card h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); margin: 4px 0 8px; }
+.generation-overlay-card p { color: var(--muted); font-size: 0.85rem; line-height: 1.6; margin: 0; white-space: pre-wrap; }
+.generation-overlay.is-error .generation-overlay-card { border-color: #a85142; }
+.generation-overlay-close {
+  margin-top: 20px; font: inherit; font-size: 0.85rem; padding: 9px 18px; border: 1px solid var(--line);
+  border-radius: 10px; background: var(--panel-2); color: var(--ink); cursor: pointer;
+}
+.generation-overlay-close:hover { border-color: var(--accent); }
+
+.embedded body { background: #0c120e; }
+.embedded .app-shell { max-width: none; padding: 0; height: 100dvh; display: flex; flex-direction: column; }
+.embedded .viewer-topbar { border-radius: 0; margin-bottom: 0; }
+.embedded .viewer-body { flex: 1; min-height: 0; margin-top: 0; }
+.embedded .viewer-workspace { flex: 1; min-height: 0; height: auto; }
+.embedded .stage-card { height: 100%; border-radius: 0; border: 0; }
+.embedded .stage-wrap { height: 100%; }
+
+@media (max-width: 760px) {
+  .viewer-workspace { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .ai-designer { height: 420px; }
+  .viewer-body { height: 65dvh; min-height: 360px; }
+}
+
+@page { size: A4 portrait; margin: 12mm; }
+@media print {
+  html, body { background: white !important; color: black; color-scheme: light; }
+  .viewer-topbar, .stage-wrap, footer, .ai-designer, .drawing-note, .generation-overlay { display: none !important; }
+  .app-shell, .viewer-workspace, .viewer-body, .stage-card { display: block !important; height: auto !important; min-height: 0 !important; max-width: none !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: white !important; }
+  .plan-view, .plan-view[hidden] { display: block !important; height: auto; overflow: visible; padding: 0; }
+  .plan-diagram svg { width: 100%; height: 230mm; max-height: 230mm; }
+  .plan-heading { break-after: avoid; }
+  .plan-diagram { break-inside: avoid; }
+  .alignment-details { break-before: page; margin-top: 0; }
+  .alignment-table-wrap { overflow: visible; }
+  .alignment-details table { width: 100%; min-width: 0; table-layout: fixed; font-size: 9px; }
+  .alignment-details th, .alignment-details td { padding: 5px; overflow-wrap: anywhere; }
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+}
+/* Midnight violet studio theme, with an optional light palette. */
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --bg: #f2f5fa; --panel: #ffffff; --panel-2: #edf2fa;
+  --sidebar-bg: #102542; --topbar-bg: #ffffff;
+  --line: #dce4ef; --text: #152744; --muted: #5e7089;
+  --accent: #235fe5; --accent-hover: #174cc4; --accent-light: #eaf0ff;
+  --ink: #ffffff; --on-accent: #ffffff; --bubble-ai: #ffffff; --bubble-ai-border: #dce4ef;
+  --bubble-ai-text: #152744; --bubble-user: #235fe5; --bubble-user-border: #235fe5;
+  --bubble-user-text: #ffffff; --composer-bg: #ffffff; --composer-border: #b9c9e2;
+  --studio-shadow: 0 16px 45px #1536680b;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0c0d14; --panel: #161822; --panel-2: #202330;
+  --sidebar-bg: #131722; --topbar-bg: #10121b;
+  --line: #303343; --text: #f3f4fc; --muted: #a7adc3;
+  --accent: #b7a5ff; --accent-hover: #d0c4ff; --accent-light: #29243e;
+  --ink: #19122c; --on-accent: #19122c; --bubble-ai: #1b1e2a; --bubble-ai-border: #303343;
+  --bubble-ai-text: #f3f4fc; --bubble-user: #4c3887; --bubble-user-border: #6b52ac;
+  --bubble-user-text: #ffffff; --composer-bg: #1c1f2c; --composer-border: #454a62;
+  --studio-shadow: 0 20px 55px #0003;
+}
+body { font-family: 'Segoe UI', system-ui, sans-serif; }
+.topbar { min-height: 68px; gap: 20px; padding: 12px 28px; }
+.brand { font-size: 22px; letter-spacing: -1px; }
+.brand-mark { border-radius: 11px; width: 38px; height: 38px; }
+.topbar-actions { gap: 8px; }
+.secondary-button { border-radius: 9px; padding: 9px 12px; }
+#new-project, .sidebar-new-btn, .primary-button { background: var(--accent); color: var(--ink); border-color: var(--accent); box-shadow: none; }
+.studio { margin: 20px 24px 24px; gap: 20px; background: transparent; }
+.architect-sidebar { width: 300px; border: 1px solid var(--line); border-radius: 16px; padding: 24px 20px; overflow: hidden; background: var(--sidebar-bg); }
+.studio-intro { width: 100%; }
+.architect-sidebar .studio-intro h1, .architect-sidebar .bot-status-title { color: #f4f7fc; }
+.architect-sidebar .studio-intro p, .architect-sidebar .bot-status-detail { color: #b5c7e0; }
+.architect-sidebar .eyebrow { color: #8eb5ff; }
+.architect-sidebar .sidebar-new-btn { background: #2a68ed; color: #ffffff; border: 1px solid #5990ff; }
+.studio-intro h1 { font: 650 36px/1.1 'Segoe UI', system-ui, sans-serif; letter-spacing: -1.3px; margin: 14px 0 10px; color: var(--text); }
+.studio-intro p { font-size: 12px; line-height: 1.7; color: var(--muted); margin: 0 0 14px; }
+.bot-card-frame { border-radius: 18px; overflow: hidden; background: radial-gradient(ellipse at 50% 70%, #5d9df14a, transparent 65%), linear-gradient(#ffffff07 1px, transparent 1px), linear-gradient(90deg, #ffffff07 1px, transparent 1px); background-size: auto, 32px 32px, 32px 32px; }
+.bot-avatar-wrapper { animation: none; }
+.bot-card-glow { display: none; }
+.bot-status-block { margin-top: 16px; }
+.sidebar-footer { padding-top: 18px; }
+.studio .chat-panel { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: var(--studio-shadow); }
+.chat-header-bar { background: var(--panel); padding: 22px 28px; }
+.chat-header-title { font: 650 25px 'Segoe UI', system-ui, sans-serif; letter-spacing: -0.5px; }
+.chat-header-status { font-size: 11px; }
+.messages { padding: 28px 32px; gap: 22px; }
+.message:not(.user) .bubble { border-radius: 4px 18px 18px; }
+.message.user .bubble { border-radius: 18px 4px 18px 18px; }
+.message:not(.user) .message-avatar { border-color: var(--line); background: var(--accent-light); box-shadow: none; }
+.bubble { font-size: 14px; line-height: 1.8; }
+.welcome h2 { font: 650 clamp(32px, 4vw, 54px)/1.08 'Segoe UI', system-ui, sans-serif; letter-spacing: -1.8px; }
+.welcome p { max-width: 380px; }
+.eyebrow { font-size: 10px; letter-spacing: 2px; }
+.chat-footer { background: var(--panel); padding: 20px 24px; gap: 14px; }
+.quick-prompts button { padding: 8px 13px; font-size: 11px; }
+.composer { border-radius: 16px; padding: 14px; box-shadow: 0 4px 18px #15366808; }
+.composer:focus-within { box-shadow: 0 0 0 3px var(--accent-light); }
+.composer button { border-radius: 10px; width: 40px; height: 40px; }
+.message.generate-card .bubble { background: var(--accent-light); border-color: var(--line); color: var(--text); box-shadow: none; }
+.message.generate-card h3 { color: var(--text); }
+.message.generate-card p { color: var(--muted); }
+.message.generate-card .eyebrow { color: var(--accent); }
+.generate-card-button, .generate-card-button:hover:not(:disabled) { background: var(--accent); color: var(--ink); }
+dialog { border-radius: 18px; padding: 36px; box-shadow: 0 32px 120px #09204440; }
+dialog::backdrop { background: #0d224460; backdrop-filter: blur(12px); }
+.project-modal-step h1 { font: 650 32px/1.2 'Segoe UI', system-ui, sans-serif; letter-spacing: -1px; }
+.choice-grid { gap: 14px; margin: 14px 0 22px; }
+.choice-card { border-radius: 16px; padding: 22px; background: var(--bg); }
+.choice-card:hover { box-shadow: 0 8px 24px #15366810; }
+.choice-card h2 { margin: 14px 0 8px; font-size: 17px; }
+.choice-number { color: var(--accent); font: 650 25px 'Segoe UI', system-ui, sans-serif; }
+.choice-action { letter-spacing: .4px; }
+.project-dropdown { background: var(--panel); box-shadow: var(--studio-shadow); }
+.project-form input { border-radius: 12px; }
+.generation-overlay { background: #0d224470; }
+.generation-overlay-card { border-radius: 18px; }
+/* Viewer uses --ink for body text, unlike the chat's button foreground. */
+html.viewer-theme { --ink: var(--text); }
+.viewer-theme .app-shell { padding-top: 20px; }
+.viewer-theme .viewer-topbar { border-radius: 18px; padding: 18px; box-shadow: var(--studio-shadow); }
+.viewer-theme .title-block h1 { font-family: 'Segoe UI', system-ui, sans-serif; font-weight: 650; font-size: 23px; }
+.viewer-theme .stage-card, .viewer-theme .ai-designer { border-radius: 18px; box-shadow: var(--studio-shadow); }
+.viewer-theme .toolbar-actions button[aria-pressed="true"], .viewer-theme .ai-composer button { color: var(--on-accent); background: var(--accent); }
+.viewer-theme .ai-msg.bot { background: var(--panel-2); color: var(--text); border-color: var(--line); }
+.viewer-theme .ai-msg.user { background: var(--accent-light); color: var(--text); }
+.viewer-theme .walk-info { background: #102542ee; border-color: #8eb5ff40; }
+.viewer-theme .walk-panel select, .viewer-theme .walk-panel button { background: #1d3554; border-color: #54739b; color: #f4f7fc; }
+.viewer-theme .walk-measurements input { accent-color: #8eb5ff; }
+.viewer-theme .stage-wrap { background: #0b1423; }
+.viewer-theme .walk-stick { background: radial-gradient(circle, #284569d9 0 35%, #102542c9 36% 67%, #ffffff12 68%); }
+.viewer-theme .walk-stick.is-active, .viewer-theme .walk-stick.is-active .walk-stick-knob { border-color: #8eb5ff; }
+.viewer-theme .walk-dpad button { background: linear-gradient(#2c4c75, #172e4a); }
+.viewer-theme .walk-dpad button.is-active { background: #235fe5; border-color: #8eb5ff; }
+.viewer-theme .walk-stick-knob { background: radial-gradient(circle at 35% 25%, #789bd0, #27466e 70%); border-color: #8eb5ff; }
+/* Dark studio: violet actions, cyan details and quiet depth. */
+[data-theme="dark"] body { background: radial-gradient(ellipse at 5% 100%, #16313b55, transparent 45%), radial-gradient(ellipse at 95% 0%, #41275f44, transparent 45%), var(--bg); }
+[data-theme="dark"] .topbar { background: #10121bed; border-color: #ffffff0d; }
+[data-theme="dark"] .brand-mark { background: linear-gradient(135deg, #b3a1ff, #7edbe8); color: #141322; box-shadow: 0 4px 18px #9c83ff20; }
+[data-theme="dark"] .brand > span:last-child { color: #a1dfe8; }
+[data-theme="dark"] .architect-sidebar { background: radial-gradient(ellipse at 80% 20%, #3a28544d, transparent 70%), linear-gradient(160deg, #191a2b, #10252b); border-color: #42405c; }
+[data-theme="dark"] .architect-sidebar .eyebrow { color: #8bdce5; }
+[data-theme="dark"] .studio-intro h1 { font-size: clamp(28px, 2.5vw, 36px); line-height: 1.13; letter-spacing: -1.5px; }
+[data-theme="dark"] .bot-card-frame { background: radial-gradient(ellipse at 50% 80%, #74c6d927, transparent 68%), linear-gradient(#ffffff05 1px, transparent 1px), linear-gradient(90deg, #ffffff05 1px, transparent 1px); background-size: auto, 32px 32px, 32px 32px; border: 1px solid #ffffff0a; }
+[data-theme="dark"] .architect-sidebar .sidebar-new-btn,
+[data-theme="dark"] #new-project,
+[data-theme="dark"] .primary-button { background: linear-gradient(115deg, #b7a5ff, #97c9f3); color: #141727; border-color: #b9b9f3; box-shadow: 0 5px 20px #9171ed1a; }
+[data-theme="dark"] .studio .chat-panel { background: linear-gradient(145deg, #191b28, #141720); border-color: #353749; border-radius: 22px; }
+[data-theme="dark"] .chat-header-bar { background: #191b28; }
+[data-theme="dark"] .chat-header-status { background: #163139; border: 1px solid #295059; padding: 6px 10px; border-radius: 99px; color: #a6e8e7; }
+[data-theme="dark"] .chat-status-pulse { background: #8de0dc; box-shadow: none; }
+[data-theme="dark"] .chat-footer { background: #151821; }
+[data-theme="dark"] .quick-prompts button { border-color: #393e52; background: #202432; color: #c8cce0; }
+[data-theme="dark"] .quick-prompts button:hover { border-color: #b7a5ff; background: #29243e; }
+[data-theme="dark"] .composer { background: #1c1f2c; border-color: #4a4866; box-shadow: 0 6px 22px #0002; }
+[data-theme="dark"] .composer button { background: linear-gradient(135deg, #b7a5ff, #9ccce9); color: #19122c; }
+[data-theme="dark"] .message.user .bubble { background: linear-gradient(120deg, #4c3887, #39446e); }
+[data-theme="dark"] dialog { background: radial-gradient(ellipse at 100% 0%, #47346844, transparent 70%), #181a25; border-color: #49435f; box-shadow: 0 35px 120px #0009; }
+[data-theme="dark"] dialog::backdrop { background: #090b166e; }
+[data-theme="dark"] .choice-card { background: #212332; border-color: #3c3f54; position: relative; }
+[data-theme="dark"] #choose-new-project { background: linear-gradient(140deg, #302744, #22283d); border-color: #786895; }
+[data-theme="dark"] .choice-card:hover { border-color: #b7a5ff; box-shadow: 0 8px 25px #9777ff18; }
+[data-theme="dark"] .choice-number { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 13px; background: #b7a5ff18; color: #cabbff; }
+.choice-number svg { width: 24px; height: 24px; }
+[data-theme="dark"] #choose-existing-project .choice-number { color: #94e1e4; background: #76d2dc16; }
+[data-theme="dark"] .project-modal-step h1 { font-size: clamp(28px, 3vw, 36px); letter-spacing: -1.3px; }
+[data-theme="dark"].viewer-theme .viewer-topbar { background: linear-gradient(120deg, #1b1d2c, #171b24); border-color: #39394e; }
+[data-theme="dark"].viewer-theme .ai-designer { background: linear-gradient(165deg, #1e1d30, #141d26); }
+[data-theme="dark"].viewer-theme .ai-msg.user { background: #352c51; }
+[data-theme="dark"].viewer-theme .walk-info { background: #171b2bee; border-color: #9e87d95a; }
+[data-theme="dark"].viewer-theme .walk-panel button, [data-theme="dark"].viewer-theme .walk-panel select { background: #272b40; border-color: #666083; }
+[data-theme="dark"].viewer-theme .walk-measurements input { accent-color: #b7a5ff; }
+[data-theme="dark"].viewer-theme .walk-dpad button.is-active { background: #634597; border-color: #cab3ff; }
+[data-theme="dark"].viewer-theme .walk-stick-knob { background: radial-gradient(circle at 35% 25%, #8b80b7, #363e60 70%); border-color: #c4b2ff; }
+[data-theme="dark"].viewer-theme .walk-stick.is-active { border-color: #b7a5ff; }
+@media (max-width: 1100px) {
+  .topbar { flex-wrap: wrap; height: auto; padding: 14px 20px; gap: 12px; }
+  .topbar-actions { flex-wrap: wrap; }
+  .connection { display: none; }
+  .architect-sidebar { width: 250px; }
+  .studio-intro h1 { font-size: 30px; }
+}
+@media (max-width: 720px) {
+  body { overflow: auto; }
+  .studio { margin: 12px; gap: 12px; overflow: visible; }
+  .architect-sidebar { width: 100%; padding: 14px; gap: 12px; border-radius: 16px; }
+  .studio-intro { display: none; }
+  .bot-stage { flex-direction: row; min-width: 0; }
+  .bot-card-frame { flex: 0 0 72px; height: 84px; }
+  .bot-status-block { margin: 0; }
+  .sidebar-footer { margin-left: auto; padding: 0; }
+  .messages { padding: 20px; }
+  .topbar-actions { width: 100%; margin: 0; }
+  .studio-label { max-width: 45vw; }
+  .chat-header-bar { padding: 18px 20px; }
+  .chat-footer { padding: 16px; }
+  dialog { padding: 26px; }
+  .project-modal-step h1 { font-size: 32px; }
+}
+
+</style>
+
+<div class="app-shell">
+  <header class="viewer-topbar">
+    <button class="icon-btn" id="back-btn" title="Requirements chat" aria-label="Requirements chat">
+      <svg viewBox="0 0 24 24"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
+    </button>
+    <div class="title-block">
+      <h1>GWC-home</h1>
+      <p class="subtitle">11 rooms &middot; 2 BHK &middot; East entrance &middot; Residential</p>
+    </div>
+    <div class="view-toolbar">
+
+      <div class="toolbar-actions">
+        <button id="view-model" aria-pressed="true" aria-controls="stage-wrap">3D Model</button>
+        <button id="view-plan" aria-pressed="false" aria-controls="plan-view">2D Plan</button>
+        <button id="print-plan" title="Print the 2D plan and alignment details">Print</button>
+        <button id="reset-view">Reset Camera</button>
+        <button id="top-view">Top View</button>
+        <button id="walk-tour" aria-pressed="false" disabled>Walk inside</button>
+        <button id="fullscreen-btn" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+      </div>
+    </div>
+    <div class="compass" title="North">N&uarr;</div>
+  </header>
+
+  <div class="viewer-workspace">
+  <aside class="panel ai-designer" aria-label="AI Designer editing chat">
+    <div class="ai-designer-header">
+      <img class="ai-bot-reaction" id="ai-bot-reaction" src="/bot_reaction/Speaking.png?v=4" alt="AI Designer ready to help">
+      <span class="ai-dot" id="ai-dot"></span>
+      <div>
+        <h2>AI Designer</h2>
+        <p class="sub" id="ai-status">Ready to modify your home</p>
+      </div>
+    </div>
+    <div class="ai-log" id="ai-log">
+      <div class="ai-msg bot">Hi! I'm your AI home design assistant. Tell me what you'd like to change, and I'll rebuild the 3D model.</div>
+    </div>
+    <div class="ai-suggestions" id="ai-suggestions">
+      <button type="button" data-prompt="Make the living room larger">Make the living room larger</button>
+      <button type="button" data-prompt="Add a pooja room">Add a pooja room</button>
+      <button type="button" data-prompt="Add a home office">Add a home office</button>
+      <button type="button" data-prompt="Switch the entrance to east">Switch entrance to east</button>
+    </div>
+    <form class="ai-composer" id="ai-composer">
+      <input id="ai-input" autocomplete="off" placeholder="Ask me to modify your home (e.g. &quot;make the kitchen bigger&quot;)">
+      <button type="submit" id="ai-send" title="Send" aria-label="Send">
+        <svg viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>
+      </button>
+    </form>
+  </aside>
+  <div class="viewer-body">
+    <div class="stage-card">
+      <section class="plan-view" id="plan-view" hidden aria-label="2D floor plan and alignment details">
+        <header class="plan-heading">
+          <h2>GWC-home — Floor plan</h2>
+          <p>50 × 50 ft plot · East entrance · Revision 5</p>
+        </header>
+        <div class="plan-diagram"><svg xmlns="http://www.w3.org/2000/svg" width="1388" height="1478" viewBox="0 0 1388 1478" font-family="Arial, sans-serif">
+<title>ConstructIQ floor plan</title>
+<defs><marker id="dim" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 9 1 L 1 5 L 9 9" fill="none" stroke="#68716b"/></marker></defs>
+<rect width="100%" height="100%" fill="white"/>
+<g class="floor" data-floor="0">
+<text x="694" y="27" font-size="12" text-anchor="middle" fill="#28302e" letter-spacing="2">GROUND FLOOR  /  50 x 50 ft</text>
+<rect x="82" y="102" width="1224" height="1224" fill="none" stroke="#afb6b1" stroke-dasharray="10 5"/>
+<g class="walls">
+<line x1="94" y1="114" x2="346" y2="114" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="114" x2="346" y2="114" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="442" y1="114" x2="946" y2="114" stroke="#303534" stroke-width="6" />
+<line x1="442" y1="114" x2="946" y2="114" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1042" y1="114" x2="1294" y2="114" stroke="#303534" stroke-width="6" />
+<line x1="1042" y1="114" x2="1294" y2="114" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="386.727" x2="103.6" y2="386.727" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="386.727" x2="103.6" y2="386.727" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="170.8" y1="386.727" x2="295.6" y2="386.727" stroke="#303534" stroke-width="6" />
+<line x1="170.8" y1="386.727" x2="295.6" y2="386.727" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="362.8" y1="386.727" x2="703.6" y2="386.727" stroke="#303534" stroke-width="6" />
+<line x1="362.8" y1="386.727" x2="703.6" y2="386.727" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="770.8" y1="386.727" x2="895.6" y2="386.727" stroke="#303534" stroke-width="6" />
+<line x1="770.8" y1="386.727" x2="895.6" y2="386.727" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="962.8" y1="386.727" x2="1294" y2="386.727" stroke="#303534" stroke-width="6" />
+<line x1="962.8" y1="386.727" x2="1294" y2="386.727" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="546" x2="295.6" y2="546" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="546" x2="295.6" y2="546" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="684.4" y1="546" x2="895.6" y2="546" stroke="#303534" stroke-width="6" />
+<line x1="684.4" y1="546" x2="895.6" y2="546" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1284.4" y1="546" x2="1294" y2="546" stroke="#303534" stroke-width="6" />
+<line x1="1284.4" y1="546" x2="1294" y2="546" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="666" x2="103.6" y2="666" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="666" x2="103.6" y2="666" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="664.544" y1="666" x2="683.744" y2="666" stroke="#303534" stroke-width="6" />
+<line x1="664.544" y1="666" x2="683.744" y2="666" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1044.4" y1="666" x2="1294" y2="666" stroke="#303534" stroke-width="6" />
+<line x1="1044.4" y1="666" x2="1294" y2="666" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1054" y1="1182" x2="1294" y2="1182" stroke="#303534" stroke-width="6" />
+<line x1="1054" y1="1182" x2="1294" y2="1182" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="1314" x2="816.072" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="1314" x2="816.072" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="912.072" y1="1314" x2="1126" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="912.072" y1="1314" x2="1126" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1222" y1="1314" x2="1294" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="1222" y1="1314" x2="1294" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="114" x2="94" y2="418.364" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="114" x2="94" y2="418.364" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="514.364" x2="94" y2="558" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="514.364" x2="94" y2="558" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="654" x2="94" y2="942" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="654" x2="94" y2="942" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="1038" x2="94" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="1038" x2="94" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="286" y1="386.727" x2="286" y2="546" stroke="#303534" stroke-width="6" />
+<line x1="286" y1="386.727" x2="286" y2="546" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="674.144" y1="666" x2="674.144" y2="675.6" stroke="#303534" stroke-width="6" />
+<line x1="674.144" y1="666" x2="674.144" y2="675.6" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="674.144" y1="1304.4" x2="674.144" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="674.144" y1="1304.4" x2="674.144" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="694" y1="114" x2="694" y2="546" stroke="#303534" stroke-width="6" />
+<line x1="694" y1="114" x2="694" y2="546" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="886" y1="386.727" x2="886" y2="546" stroke="#303534" stroke-width="6" />
+<line x1="886" y1="386.727" x2="886" y2="546" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1054" y1="666" x2="1054" y2="675.6" stroke="#303534" stroke-width="6" />
+<line x1="1054" y1="666" x2="1054" y2="675.6" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1054" y1="742.8" x2="1054" y2="1191.6" stroke="#303534" stroke-width="6" />
+<line x1="1054" y1="742.8" x2="1054" y2="1191.6" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1054" y1="1258.8" x2="1054" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="1054" y1="1258.8" x2="1054" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1294" y1="114" x2="1294" y2="418.364" stroke="#303534" stroke-width="6" />
+<line x1="1294" y1="114" x2="1294" y2="418.364" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1294" y1="514.364" x2="1294" y2="570" stroke="#303534" stroke-width="6" />
+<line x1="1294" y1="514.364" x2="1294" y2="570" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1294" y1="642" x2="1294" y2="876" stroke="#303534" stroke-width="6" />
+<line x1="1294" y1="642" x2="1294" y2="876" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1294" y1="972" x2="1294" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="1294" y1="972" x2="1294" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+</g>
+<g class="door"><path d="M 103.6 453.927 A 67.2 67.2 0 0 0 170.8 386.727" fill="none" stroke="#7d8581" stroke-width="0.9"/><line x1="103.6" y1="386.727" x2="103.6" y2="453.927" stroke="#303534" stroke-width="1.5" /><circle cx="103.6" cy="386.727" r="1.5" fill="#303534"/></g>
+<g class="window">
+<line x1="91.2" y1="418.364" x2="91.2" y2="514.364" stroke="#65776d" stroke-width="0.8" />
+<line x1="94" y1="418.364" x2="94" y2="514.364" stroke="#65776d" stroke-width="0.8" />
+<line x1="96.8" y1="418.364" x2="96.8" y2="514.364" stroke="#65776d" stroke-width="0.8" />
+</g>
+<g class="door"><path d="M 703.6 453.927 A 67.2 67.2 0 0 0 770.8 386.727" fill="none" stroke="#7d8581" stroke-width="0.9"/><line x1="703.6" y1="386.727" x2="703.6" y2="453.927" stroke="#303534" stroke-width="1.5" /><circle cx="703.6" cy="386.727" r="1.5" fill="#303534"/></g>
+<g class="door"><path d="M 1121.2 1191.6 A 67.2 67.2 0 0 1 1054 1258.8" fill="none" stroke="#7d8581" stroke-width="0.9"/><line x1="1054" y1="1191.6" x2="1121.2" y2="1191.6" stroke="#303534" stroke-width="1.5" /><circle cx="1054" cy="1191.6" r="1.5" fill="#303534"/></g>
+<g class="window">
+<line x1="1126" y1="1311.2" x2="1222" y2="1311.2" stroke="#65776d" stroke-width="0.8" />
+<line x1="1126" y1="1314" x2="1222" y2="1314" stroke="#65776d" stroke-width="0.8" />
+<line x1="1126" y1="1316.8" x2="1222" y2="1316.8" stroke="#65776d" stroke-width="0.8" />
+</g>
+<g class="door"><path d="M 295.6 319.527 A 67.2 67.2 0 0 1 362.8 386.727" fill="none" stroke="#7d8581" stroke-width="0.9"/><line x1="295.6" y1="386.727" x2="295.6" y2="319.527" stroke="#303534" stroke-width="1.5" /><circle cx="295.6" cy="386.727" r="1.5" fill="#303534"/></g>
+<g class="window">
+<line x1="346" y1="111.2" x2="442" y2="111.2" stroke="#65776d" stroke-width="0.8" />
+<line x1="346" y1="114" x2="442" y2="114" stroke="#65776d" stroke-width="0.8" />
+<line x1="346" y1="116.8" x2="442" y2="116.8" stroke="#65776d" stroke-width="0.8" />
+</g>
+<g class="door"><path d="M 895.6 319.527 A 67.2 67.2 0 0 1 962.8 386.727" fill="none" stroke="#7d8581" stroke-width="0.9"/><line x1="895.6" y1="386.727" x2="895.6" y2="319.527" stroke="#303534" stroke-width="1.5" /><circle cx="895.6" cy="386.727" r="1.5" fill="#303534"/></g>
+<g class="window">
+<line x1="946" y1="111.2" x2="1042" y2="111.2" stroke="#65776d" stroke-width="0.8" />
+<line x1="946" y1="114" x2="1042" y2="114" stroke="#65776d" stroke-width="0.8" />
+<line x1="946" y1="116.8" x2="1042" y2="116.8" stroke="#65776d" stroke-width="0.8" />
+</g>
+<g class="door"><path d="M 1121.2 675.6 A 67.2 67.2 0 0 1 1054 742.8" fill="none" stroke="#7d8581" stroke-width="0.9"/><line x1="1054" y1="675.6" x2="1121.2" y2="675.6" stroke="#303534" stroke-width="1.5" /><circle cx="1054" cy="675.6" r="1.5" fill="#303534"/></g>
+<g class="window">
+<line x1="1291.2" y1="876" x2="1291.2" y2="972" stroke="#65776d" stroke-width="0.8" />
+<line x1="1294" y1="876" x2="1294" y2="972" stroke="#65776d" stroke-width="0.8" />
+<line x1="1296.8" y1="876" x2="1296.8" y2="972" stroke="#65776d" stroke-width="0.8" />
+</g>
+<g class="window">
+<line x1="816.072" y1="1311.2" x2="912.072" y2="1311.2" stroke="#65776d" stroke-width="0.8" />
+<line x1="816.072" y1="1314" x2="912.072" y2="1314" stroke="#65776d" stroke-width="0.8" />
+<line x1="816.072" y1="1316.8" x2="912.072" y2="1316.8" stroke="#65776d" stroke-width="0.8" />
+</g>
+<g class="door"><path d="M 1222 570 A 72 72 0 0 0 1294 642" fill="none" stroke="#7d8581" stroke-width="0.9"/><line x1="1294" y1="570" x2="1222" y2="570" stroke="#303534" stroke-width="1.5" /><circle cx="1294" cy="570" r="1.5" fill="#303534"/></g>
+<g class="window">
+<line x1="91.2" y1="558" x2="91.2" y2="654" stroke="#65776d" stroke-width="0.8" />
+<line x1="94" y1="558" x2="94" y2="654" stroke="#65776d" stroke-width="0.8" />
+<line x1="96.8" y1="558" x2="96.8" y2="654" stroke="#65776d" stroke-width="0.8" />
+</g>
+<g class="window">
+<line x1="91.2" y1="942" x2="91.2" y2="1038" stroke="#65776d" stroke-width="0.8" />
+<line x1="94" y1="942" x2="94" y2="1038" stroke="#65776d" stroke-width="0.8" />
+<line x1="96.8" y1="942" x2="96.8" y2="1038" stroke="#65776d" stroke-width="0.8" />
+</g>
+<g class="window">
+<line x1="1291.2" y1="418.364" x2="1291.2" y2="514.364" stroke="#65776d" stroke-width="0.8" />
+<line x1="1294" y1="418.364" x2="1294" y2="514.364" stroke="#65776d" stroke-width="0.8" />
+<line x1="1296.8" y1="418.364" x2="1296.8" y2="514.364" stroke="#65776d" stroke-width="0.8" />
+</g>
+<g class="room-label" data-room="attbath_0">
+<text x="190" y="494.218" font-size="14" text-anchor="middle" fill="#28302e" >Att. Bath 1</text>
+<text x="190" y="512.218" font-size="12" text-anchor="middle" fill="#28302e" >8 x 6.63636 ft</text>
+</g>
+<g class="room-label" data-room="suite_hall_1">
+<text x="490" y="462.364" font-size="14" text-anchor="middle" fill="#28302e" >Hallway Alcove 1</text>
+<text x="490" y="480.364" font-size="12" text-anchor="middle" fill="#28302e" >17 x 6.63636 ft</text>
+</g>
+<g class="room-label" data-room="bedroom_0">
+<text x="394" y="246.364" font-size="14" text-anchor="middle" fill="#28302e" >Bedroom 1</text>
+<text x="394" y="264.364" font-size="12" text-anchor="middle" fill="#28302e" >25 x 11.3636 ft</text>
+</g>
+<g class="room-label" data-room="attbath_1">
+<text x="790" y="494.218" font-size="14" text-anchor="middle" fill="#28302e" >Att. Bath 2</text>
+<text x="790" y="512.218" font-size="12" text-anchor="middle" fill="#28302e" >8 x 6.63636 ft</text>
+</g>
+<g class="room-label" data-room="suite_hall_2">
+<text x="1090" y="462.364" font-size="14" text-anchor="middle" fill="#28302e" >Hallway Alcove 2</text>
+<text x="1090" y="480.364" font-size="12" text-anchor="middle" fill="#28302e" >17 x 6.63636 ft</text>
+</g>
+<g class="room-label" data-room="bedroom_1">
+<text x="994" y="246.364" font-size="14" text-anchor="middle" fill="#28302e" >Bedroom 2</text>
+<text x="994" y="264.364" font-size="12" text-anchor="middle" fill="#28302e" >25 x 11.3636 ft</text>
+</g>
+<g class="room-label" data-room="hall">
+<text x="694" y="602" font-size="14" text-anchor="middle" fill="#28302e" >Hallway</text>
+<text x="694" y="620" font-size="12" text-anchor="middle" fill="#28302e" >50 x 5 ft</text>
+</g>
+<g class="room-label" data-room="living_0">
+<text x="384.072" y="986" font-size="14" text-anchor="middle" fill="#28302e" >Living Room</text>
+<text x="384.072" y="1004" font-size="12" text-anchor="middle" fill="#28302e" >24.1727 x 27 ft</text>
+</g>
+<g class="room-label" data-room="dining_1">
+<text x="864.072" y="986" font-size="14" text-anchor="middle" fill="#28302e" >Dining Room</text>
+<text x="864.072" y="1004" font-size="12" text-anchor="middle" fill="#28302e" >15.8273 x 27 ft</text>
+</g>
+<g class="room-label" data-room="kitchen">
+<text x="1174" y="920" font-size="14" text-anchor="middle" fill="#28302e" >Kitchen</text>
+<text x="1174" y="938" font-size="12" text-anchor="middle" fill="#28302e" >10 x 21.5 ft</text>
+</g>
+<g class="room-label" data-room="bath_0">
+<text x="1174" y="1244" font-size="14" text-anchor="middle" fill="#28302e" >Bathroom</text>
+<text x="1174" y="1262" font-size="12" text-anchor="middle" fill="#28302e" >10 x 5.5 ft</text>
+</g>
+<line x1="94" y1="114" x2="94" y2="72" stroke="#9ba39f" stroke-width="1" /><line x1="1294" y1="114" x2="1294" y2="72" stroke="#9ba39f" stroke-width="1" /><line x1="94" y1="79" x2="1294" y2="79" stroke="#303534" stroke-width="1" marker-start="url(#dim)" marker-end="url(#dim)"/><rect x="659" y="70" width="70" height="18" fill="white"/><text x="694" y="83" font-size="12" text-anchor="middle" fill="#28302e" >50 ft</text><line x1="94" y1="1314" x2="94" y2="1342" stroke="#9ba39f" stroke-width="1" /><line x1="1294" y1="1314" x2="1294" y2="1342" stroke="#9ba39f" stroke-width="1" /><line x1="94" y1="1349" x2="1294" y2="1349" stroke="#303534" stroke-width="1" marker-start="url(#dim)" marker-end="url(#dim)"/><rect x="659" y="1340" width="70" height="18" fill="white"/><text x="694" y="1353" font-size="12" text-anchor="middle" fill="#28302e" >50 ft</text><line x1="94" y1="114" x2="52" y2="114" stroke="#9ba39f" stroke-width="1" /><line x1="94" y1="1314" x2="52" y2="1314" stroke="#9ba39f" stroke-width="1" /><line x1="59" y1="114" x2="59" y2="1314" stroke="#303534" stroke-width="1" marker-start="url(#dim)" marker-end="url(#dim)"/><rect x="50" y="679" width="18" height="70" fill="white"/><text x="59" y="718" font-size="12" text-anchor="middle" fill="#28302e" transform="rotate(-90 59 714)">50 ft</text><line x1="1294" y1="114" x2="1322" y2="114" stroke="#9ba39f" stroke-width="1" /><line x1="1294" y1="1314" x2="1322" y2="1314" stroke="#9ba39f" stroke-width="1" /><line x1="1329" y1="114" x2="1329" y2="1314" stroke="#303534" stroke-width="1" marker-start="url(#dim)" marker-end="url(#dim)"/><rect x="1320" y="679" width="18" height="70" fill="white"/><text x="1329" y="718" font-size="12" text-anchor="middle" fill="#28302e" transform="rotate(-90 1329 714)">50 ft</text>
+<text x="1364" y="36" font-size="12" text-anchor="middle" fill="#28302e" >N</text>
+<line x1="1364" y1="59" x2="1364" y2="42" stroke="#303534" stroke-width="1" marker-end="url(#dim)"/>
+<line x1="24" y1="1414" x2="1364" y2="1414" stroke="#303534" stroke-width="1.5" />
+<text x="34" y="1436" font-size="12" text-anchor="middle" fill="#28302e" style="text-anchor:start;font-weight:bold;letter-spacing:1px">CONSTRUCTIQ / RESIDENTIAL</text>
+<text x="34" y="1456" font-size="10" text-anchor="middle" fill="#28302e" style="text-anchor:start">CONCEPT PLAN / Dimensions in feet / Do not scale printed drawing</text>
+<text x="1354" y="1436" font-size="12" text-anchor="middle" fill="#28302e" style="text-anchor:end;font-weight:bold">A-01 / REV 05</text>
+<text x="1354" y="1456" font-size="10" text-anchor="middle" fill="#28302e" style="text-anchor:end">Plot area 2,500 sq ft</text>
+</g>
+</svg></div>
+        <section class="alignment-details">
+          <h2>Room dimensions and alignment</h2>
+          <p>GWC-home · Revision 5 · East entrance · Total room-zone area: 2,500.0 sq ft.</p>
+          <p>North is up. Positions (X, Y) are measured in feet from the plot's northwest corner: X increases east and Y increases south. Floor 0 is the ground floor. Dimensions are east–west width × north–south length.</p>
+          <div class="alignment-table-wrap"><table>
+            <thead><tr><th>Room</th><th>Floor</th><th>Dimensions (ft)</th><th>Area (sq ft)</th><th>Position X, Y (ft)</th><th>Door / passage alignment</th><th>Windows</th></tr></thead>
+            <tbody><tr><td>Bedroom 1</td><td>0</td><td>25.00 × 11.36</td><td>284.1</td><td>0.00, 0.00</td><td>South to Att. Bath 1 (2.8 ft door); South to Hallway Alcove 1 (2.8 ft door)</td><td>North (4.0 ft)</td></tr><tr><td>Bedroom 2</td><td>0</td><td>25.00 × 11.36</td><td>284.1</td><td>25.00, 0.00</td><td>South to Att. Bath 2 (2.8 ft door); South to Hallway Alcove 2 (2.8 ft door)</td><td>North (4.0 ft)</td></tr><tr><td>Att. Bath 1</td><td>0</td><td>8.00 × 6.64</td><td>53.1</td><td>0.00, 11.36</td><td>North to Bedroom 1 (2.8 ft door)</td><td>West (4.0 ft)</td></tr><tr><td>Hallway Alcove 1</td><td>0</td><td>17.00 × 6.64</td><td>112.8</td><td>8.00, 11.36</td><td>South to Hallway (16.2 ft opening); North to Bedroom 1 (2.8 ft door)</td><td>None</td></tr><tr><td>Att. Bath 2</td><td>0</td><td>8.00 × 6.64</td><td>53.1</td><td>25.00, 11.36</td><td>North to Bedroom 2 (2.8 ft door)</td><td>None</td></tr><tr><td>Hallway Alcove 2</td><td>0</td><td>17.00 × 6.64</td><td>112.8</td><td>33.00, 11.36</td><td>South to Hallway (16.2 ft opening); North to Bedroom 2 (2.8 ft door)</td><td>East (4.0 ft)</td></tr><tr><td>Hallway</td><td>0</td><td>50.00 × 5.00</td><td>250.0</td><td>0.00, 18.00</td><td>North to Hallway Alcove 1 (16.2 ft opening); North to Hallway Alcove 2 (16.2 ft opening); South to Living Room (23.4 ft opening); South to Dining Room (15.0 ft opening); East to Outside (3.0 ft door)</td><td>West (4.0 ft)</td></tr><tr><td>Living Room</td><td>0</td><td>24.17 × 27.00</td><td>652.7</td><td>0.00, 23.00</td><td>North to Hallway (23.4 ft opening); East to Dining Room (26.2 ft opening)</td><td>West (4.0 ft)</td></tr><tr><td>Dining Room</td><td>0</td><td>15.83 × 27.00</td><td>427.3</td><td>24.17, 23.00</td><td>North to Hallway (15.0 ft opening); West to Living Room (26.2 ft opening); East to Kitchen (2.8 ft door); East to Bathroom (2.8 ft door)</td><td>South (4.0 ft)</td></tr><tr><td>Kitchen</td><td>0</td><td>10.00 × 21.50</td><td>215.0</td><td>40.00, 23.00</td><td>West to Dining Room (2.8 ft door)</td><td>East (4.0 ft)</td></tr><tr><td>Bathroom</td><td>0</td><td>10.00 × 5.50</td><td>55.0</td><td>40.00, 44.50</td><td>West to Dining Room (2.8 ft door)</td><td>South (4.0 ft)</td></tr></tbody>
+          </table></div>
+          <p>Concept design. Dimensions describe room zones; do not scale the printout. Structural design, setbacks and construction clearances require separate review.</p>
+        </section>
+      </section>
+      <div class="stage-wrap" id="stage-wrap">
+        <canvas id="stage-canvas"></canvas>
+        <div class="poster"><p>Preparing your 3D home...</p></div>
+        <div class="hud-caption" id="mv-status">Loading 3D viewer&hellip;</div>
+        <section class="walk-panel" id="walk-panel" hidden aria-label="Home walking tour">
+          <div class="walk-stick-wrap">
+            <div class="walk-dpad" role="group" aria-label="Hold directional buttons to walk">
+              <button type="button" data-move="KeyW" aria-label="Walk forward">&#9650;</button>
+              <button type="button" data-move="KeyA" aria-label="Step left">&#9664;</button>
+              <button type="button" data-move="KeyD" aria-label="Step right">&#9654;</button>
+              <button type="button" data-move="KeyS" aria-label="Walk backward">&#9660;</button>
+            </div>
+            <span class="walk-stick-label">L &middot; MOVE</span>
+          </div>
+          <div class="walk-info">
+            <div class="walk-info-heading">
+              <button type="button" id="walk-options-toggle" aria-expanded="false" aria-controls="walk-options" title="Room and measurement options"><span class="walk-room-dot" aria-hidden="true"></span><strong id="walk-current-room"></strong><span class="walk-options-arrow" aria-hidden="true">&#9652;</span></button>
+              <button type="button" id="walk-exit" aria-label="Exit walk">Exit</button>
+            </div>
+            <div class="walk-options" id="walk-options" hidden>
+              <label for="walk-room">GO TO ROOM</label><select id="walk-room"></select>
+              <label class="walk-measurements"><input type="checkbox" id="walk-measurements"> Show measurements</label>
+              <p>Hold arrows to walk. Right stick to look. Esc to exit.</p>
+            </div>
+          </div>
+          <div class="walk-stick-wrap">
+            <div class="walk-stick" data-stick="look" tabindex="0" role="group" aria-label="Look joystick. Drag to look around, or use arrow keys."><span class="walk-stick-knob"></span></div>
+            <span class="walk-stick-label">R &middot; LOOK</span>
+          </div>
+        </section>
+        <div class="measurement-note" id="measurement-note" hidden><strong style="color: #ff5252">Length (L): red</strong> &middot; <strong style="color: #ffdf00">Width (W): yellow</strong><br>Measurements in feet. X = east and Y = south from the northwest plot corner. Room zones include wall thickness. Use Top View and zoom for a clearer view.</div>
+        <div class="toggle-row">
+          <span class="toggle-row-label">Show</span>
+          <label class="chip"><input type="checkbox" id="toggle-labels" checked> Room labels</label>
+          <label class="chip"><input type="checkbox" id="toggle-furniture" checked> Furniture</label>
+          <label class="chip"><input type="checkbox" id="toggle-roof"> Roof</label>
+          <label class="chip"><input type="checkbox" id="toggle-wireframe"> Wireframe</label>
+          <label class="chip"><input type="checkbox" id="toggle-measurements"> Measurements</label>
+        </div>
+      </div>
+      <p class="drawing-note">CONCEPT PLAN &nbsp;&middot;&nbsp; 50&prime; &times; 50&prime; plot &nbsp;&middot;&nbsp; Dimensions in feet &nbsp;&middot;&nbsp; Rev 05</p>
+    </div>
+
+
+  </div>
+  </div>
+
+  <footer>Concept design &middot; Revision 5. Room areas are rectangular zone areas. Structural design, setbacks and construction clearances require separate review.</footer>
+
+  <div class="generation-overlay hidden" id="generation-overlay" role="status" aria-live="polite">
+    <div class="generation-overlay-card">
+      <span class="eyebrow">CONSTRUCTIQ</span>
+      <img id="generation-overlay-img" src="/bot_reaction/working.png?v=4" alt="">
+      <h1 id="generation-overlay-title">Applying your changes&hellip;</h1>
+      <p id="generation-overlay-message">Updating your requirements&hellip;</p>
+      <button class="generation-overlay-close hidden" id="generation-overlay-close" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+function selectDrawingView(model) {
+  document.getElementById('stage-wrap').hidden = !model;
+  document.getElementById('plan-view').hidden = model;
+  document.getElementById('view-model').setAttribute('aria-pressed', String(model));
+  document.getElementById('view-plan').setAttribute('aria-pressed', String(!model));
+  document.getElementById('reset-view').disabled = !model;
+  document.getElementById('top-view').disabled = !model;
+  document.getElementById('walk-tour').disabled = !model || !document.getElementById('stage-wrap').classList.contains('is-ready');
+}
+document.getElementById('view-model').onclick = () => selectDrawingView(true);
+document.getElementById('view-plan').onclick = () => selectDrawingView(false);
+document.getElementById('print-plan').onclick = () => window.print();
+document.getElementById('back-btn').onclick = () => {
+  window.location.href = '/';
+};
+document.getElementById('fullscreen-btn').onclick = () => {
+  const el = document.getElementById('plan-view').hidden ? document.getElementById('stage-wrap') : document.getElementById('plan-view');
+  if (!document.fullscreenElement) el.requestFullscreen?.();
+  else document.exitFullscreen?.();
+};
+window.setTimeout(() => {
+  if (!document.getElementById('stage-wrap').classList.contains('is-ready'))
+    document.getElementById('mv-status').textContent = '3D unavailable or still loading. 3D requires internet and WebGL. Your rendered preview is shown while it loads.';
+}, 15000);
+
+/* -----------------------------------------------------------------------
+   AI Designer: describes a change -> agent.spec_agent updates the
+   specification -> agent.layout_agent/layout_solver rebuild the layout ->
+   this page navigates to the newly built (versioned) viewer. Same two
+   endpoints the main chat app itself uses, called from this page because
+   it's served by that same backend (same origin).
+   ----------------------------------------------------------------------- */
+(function() {
+  const sessionId = (location.pathname.match(/\/sessions\/([^/]+)\/assets\//) || [])[1];
+  const log = document.getElementById('ai-log');
+  const form = document.getElementById('ai-composer');
+  const input = document.getElementById('ai-input');
+  const sendBtn = document.getElementById('ai-send');
+  const statusEl = document.getElementById('ai-status');
+  const dot = document.getElementById('ai-dot');
+  const botImage = document.getElementById('ai-bot-reaction');
+  const reactions = {
+    ready: ['Speaking.png', 'AI Designer ready to help'],
+    listening: ['listning.png', 'AI Designer listening'],
+    working: ['working.png', 'AI Designer working on your home'],
+    speaking: ['Speaking.png', 'AI Designer responding'],
+    error: ['error.png', 'AI Designer needs your attention'],
+  };
+  Object.values(reactions).forEach(([file]) => {
+    const image = new Image();
+    image.src = `/bot_reaction/${file}?v=4`;
+  });
+  let listeningTimer;
+  function setReaction(name) {
+    const [file, label] = reactions[name];
+    botImage.src = `/bot_reaction/${file}?v=4`;
+    botImage.alt = label;
+  }
+  function showListening() {
+    if (busy) return;
+    window.clearTimeout(listeningTimer);
+    setReaction('listening');
+    listeningTimer = window.setTimeout(() => { if (!busy) setReaction('ready'); }, 1600);
+  }
+  const overlay = document.getElementById('generation-overlay');
+  const overlayImg = document.getElementById('generation-overlay-img');
+  const overlayTitle = document.getElementById('generation-overlay-title');
+  const overlayMessage = document.getElementById('generation-overlay-message');
+  const overlayClose = document.getElementById('generation-overlay-close');
+  let busy = false;
+
+  function addAiMessage(role, text) {
+    const el = document.createElement('div');
+    el.className = 'ai-msg' + (role === 'user' ? ' user' : role === 'error' ? ' error' : ' bot');
+    el.textContent = text;
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function setBusy(isBusy, statusText, isError) {
+    window.clearTimeout(listeningTimer);
+    busy = isBusy;
+    input.disabled = isBusy;
+    sendBtn.disabled = isBusy;
+    dot.classList.toggle('is-busy', isBusy);
+    dot.classList.toggle('is-error', !!isError);
+    if (statusText) statusEl.textContent = statusText;
+    setReaction(isError ? 'error' : isBusy ? 'working' : 'ready');
+  }
+
+  function showOverlay(title, message) {
+    overlay.classList.remove('hidden', 'is-error');
+    overlayImg.src = '/bot_reaction/working.png?v=4';
+    overlayClose.classList.add('hidden');
+    overlayTitle.textContent = title;
+    overlayMessage.textContent = message;
+  }
+  function updateOverlay(title, message) {
+    overlayTitle.textContent = title;
+    overlayMessage.textContent = message;
+  }
+  function showOverlayError(message) {
+    overlay.classList.remove('hidden');
+    overlay.classList.add('is-error');
+    overlayImg.src = '/bot_reaction/error.png?v=4';
+    overlayTitle.textContent = 'Something needs attention';
+    overlayMessage.textContent = message;
+    overlayClose.classList.remove('hidden');
+  }
+  function hideOverlay() {
+    overlay.classList.add('hidden');
+    overlay.classList.remove('is-error');
+  }
+  overlayClose.addEventListener('click', hideOverlay);
+
+  async function requestJson(path, body) {
+    const res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const detail = typeof data.detail === 'string' ? data.detail : data.detail?.issues?.join('\n');
+      throw new Error(detail || 'The design service could not complete that request.');
+    }
+    return data;
+  }
+
+  async function submitChange(text) {
+    addAiMessage('user', text);
+    setBusy(true, 'Updating your requirements\u2026');
+    showOverlay('Applying your changes\u2026', 'Updating your requirements\u2026');
+    try {
+      const chatResult = await requestJson(`/sessions/${sessionId}/messages`, { message: text, auto_generate: true });
+      addAiMessage('bot', chatResult.reply);
+      setBusy(true, 'Rebuilding your 3D home\u2026 this can take a few minutes.');
+      updateOverlay('Rebuilding your 3D home\u2026', 'This can take a few minutes while we redesign and re-render your model.');
+      const genResult = await requestJson(`/sessions/${sessionId}/generate`, { edit_request: text, build_3d: true });
+      const buildFailure = (genResult.warnings || []).find(message => message.startsWith('3D model build failed:'));
+      if (buildFailure) throw new Error(buildFailure);
+      const viewer = genResult.viewer_url;
+      if (!viewer) throw new Error('The plan was updated but the 3D viewer was not returned.');
+      const versioned = new URL(viewer, window.location.href);
+      versioned.searchParams.set('v', String(genResult.session.layout.version));
+      addAiMessage('bot', 'Updated! Loading the new model\u2026');
+      setBusy(true, 'Loading the updated model\u2026');
+      updateOverlay('Your home is ready\u2026', 'Loading the updated model\u2026');
+      setReaction('speaking');
+      window.setTimeout(() => { window.location.href = versioned.href; }, 500);
+    } catch (err) {
+      addAiMessage('error', err.message);
+      setBusy(false, 'Design needs an adjustment', true);
+      showOverlayError(err.message);
+      window.setTimeout(() => { if (!busy) setBusy(false, 'Ready to modify your home'); }, 4000);
+    }
+  }
+
+  if (!sessionId) {
+    setBusy(true, 'Open this model through the ConstructIQ app to make changes here.', true);
+  } else {
+    input.addEventListener('input', showListening);
+    input.addEventListener('focus', showListening);
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text || busy) return;
+      input.value = '';
+      submitChange(text);
+    });
+    document.getElementById('ai-suggestions').addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-prompt]');
+      if (!btn || busy) return;
+      input.value = btn.dataset.prompt;
+      input.focus();
+      showListening();
+    });
+  }
+})();
+</script>
+
+<script id="scene-data" type="application/json">{"plot_width_ft": 50.0, "plot_length_ft": 50.0, "wall_height_ft": 9.0, "wall_thickness_ft": 0.5, "floor_to_floor_ft": 9.3, "num_floors": 1, "walls": [{"axis": "h", "fixed": 0.0, "lo": 0.0, "hi": 10.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 14.5, "hi": 35.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 39.5, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 0.0, "hi": 0.3999999999999999, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 3.1999999999999997, "hi": 8.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 11.200000000000001, "hi": 25.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 28.199999999999996, "hi": 33.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 36.199999999999996, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 0.0, "hi": 8.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 24.6, "hi": 33.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 49.6, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 0.0, "hi": 0.40000000000000036, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 23.772661870503597, "hi": 24.572661870503595, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 39.599999999999994, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 44.5, "lo": 40.0, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 0.0, "hi": 30.086330935251794, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 34.086330935251794, "hi": 43.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 47.0, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 0.0, "hi": 12.681818681818182, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 16.681818681818182, "hi": 18.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 22.5, "hi": 34.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 38.5, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 8.0, "lo": 11.363637363636364, "hi": 18.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 24.172661870503596, "lo": 23.0, "hi": 23.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 24.172661870503596, "lo": 49.6, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 25.0, "lo": 0.0, "hi": 18.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 33.0, "lo": 11.363637363636364, "hi": 18.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 23.0, "hi": 23.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 26.199999999999996, "hi": 44.9, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 47.699999999999996, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 0.0, "hi": 12.681818681818182, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 16.681818681818182, "hi": 19.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 22.0, "hi": 31.75, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 35.75, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 0.3999999999999999, "hi": 3.1999999999999997, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 18.0, "lo": 8.4, "hi": 24.6, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 8.4, "hi": 11.200000000000001, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 10.5, "hi": 14.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 10.5, "hi": 14.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 25.4, "hi": 28.199999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 33.4, "hi": 49.6, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 33.4, "hi": 36.199999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 0.0, "lo": 35.5, "hi": 39.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 35.5, "hi": 39.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 23.0, "lo": 0.40000000000000036, "hi": 23.772661870503597, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 24.572661870503595, "hi": 39.599999999999994, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 19.0, "hi": 22.0, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 18.5, "hi": 22.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 18.5, "hi": 22.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "v", "fixed": 24.172661870503596, "lo": 23.4, "hi": 49.6, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 34.5, "hi": 38.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 34.5, "hi": 38.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "v", "fixed": 40.0, "lo": 23.4, "hi": 26.199999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 44.9, "hi": 47.699999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 30.086330935251794, "hi": 34.086330935251794, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 30.086330935251794, "hi": 34.086330935251794, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "v", "fixed": 50.0, "lo": 31.75, "hi": 35.75, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 31.75, "hi": 35.75, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 50.0, "lo": 43.0, "hi": 47.0, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 43.0, "hi": 47.0, "floor": 0, "bottom": 0.0, "top": 3.0}], "windows": [{"axis": "v", "fixed": 0.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 0.0, "lo": 10.5, "hi": 14.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 50.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 0.0, "lo": 35.5, "hi": 39.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 0.0, "lo": 18.5, "hi": 22.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 0.0, "lo": 34.5, "hi": 38.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 50.0, "lo": 30.086330935251794, "hi": 34.086330935251794, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 50.0, "lo": 31.75, "hi": 35.75, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 50.0, "lo": 43.0, "hi": 47.0, "floor": 0, "bottom": 3.0, "top": 7.0}], "floor_slabs": [{"x": 0.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "name": "Att. Bath 1"}, {"x": 8.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "name": "Hallway Alcove 1"}, {"x": 0.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "name": "Bedroom 1"}, {"x": 25.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "name": "Att. Bath 2"}, {"x": 33.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "name": "Hallway Alcove 2"}, {"x": 25.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "name": "Bedroom 2"}, {"x": 0.0, "y": 18.0, "width": 50.0, "length": 5.0, "floor": 0, "name": "Hallway"}, {"x": 0.0, "y": 23.0, "width": 24.172661870503596, "length": 27.0, "floor": 0, "name": "Living Room"}, {"x": 24.172661870503596, "y": 23.0, "width": 15.827338129496402, "length": 27.0, "floor": 0, "name": "Dining Room"}, {"x": 40.0, "y": 23.0, "width": 10.0, "length": 21.5, "floor": 0, "name": "Kitchen"}, {"x": 40.0, "y": 44.5, "width": 10.0, "length": 5.5, "floor": 0, "name": "Bathroom"}]}</script>
+<script id="rooms-data" type="application/json">[{"id": "attbath_0", "name": "Att. Bath 1", "category": "bathroom", "x": 0.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "north", "position": 0.22499999999999998, "connects_to": "bedroom_0", "width": 2.8, "kind": "door"}], "windows": [{"wall": "west", "position": 0.5, "width": 4.0}]}, {"id": "suite_hall_1", "name": "Hallway Alcove 1", "category": null, "x": 8.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "south", "position": 0.5, "connects_to": "hall", "width": 16.2, "kind": "opening"}, {"wall": "north", "position": 0.10588235294117651, "connects_to": "bedroom_0", "width": 2.8, "kind": "door"}], "windows": []}, {"id": "bedroom_0", "name": "Bedroom 1", "category": "bedroom", "x": 0.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "doors": [{"wall": "south", "position": 0.072, "connects_to": "attbath_0", "width": 2.8, "kind": "door"}, {"wall": "south", "position": 0.392, "connects_to": "suite_hall_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "north", "position": 0.5, "width": 4.0}]}, {"id": "attbath_1", "name": "Att. Bath 2", "category": "bathroom", "x": 25.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "north", "position": 0.22499999999999964, "connects_to": "bedroom_1", "width": 2.8, "kind": "door"}], "windows": []}, {"id": "suite_hall_2", "name": "Hallway Alcove 2", "category": null, "x": 33.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "south", "position": 0.5, "connects_to": "hall", "width": 16.2, "kind": "opening"}, {"wall": "north", "position": 0.1058823529411763, "connects_to": "bedroom_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "east", "position": 0.5, "width": 4.0}]}, {"id": "bedroom_1", "name": "Bedroom 2", "category": "bedroom", "x": 25.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "doors": [{"wall": "south", "position": 0.07199999999999988, "connects_to": "attbath_1", "width": 2.8, "kind": "door"}, {"wall": "south", "position": 0.3919999999999999, "connects_to": "suite_hall_2", "width": 2.8, "kind": "door"}], "windows": [{"wall": "north", "position": 0.5, "width": 4.0}]}, {"id": "hall", "name": "Hallway", "category": null, "x": 0.0, "y": 18.0, "width": 50.0, "length": 5.0, "floor": 0, "doors": [{"wall": "north", "position": 0.33, "connects_to": "suite_hall_1", "width": 16.2, "kind": "opening"}, {"wall": "north", "position": 0.83, "connects_to": "suite_hall_2", "width": 16.2, "kind": "opening"}, {"wall": "south", "position": 0.24172661870503595, "connects_to": "living_0", "width": 23.372661870503595, "kind": "opening"}, {"wall": "south", "position": 0.6417266187050359, "connects_to": "dining_1", "width": 15.027338129496403, "kind": "opening"}, {"wall": "east", "position": 0.5, "connects_to": "outside", "width": 3.0, "kind": "door"}], "windows": [{"wall": "west", "position": 0.5, "width": 4.0}]}, {"id": "living_0", "name": "Living Room", "category": "living", "x": 0.0, "y": 23.0, "width": 24.172661870503596, "length": 27.0, "floor": 0, "doors": [{"wall": "north", "position": 0.5, "connects_to": "hall", "width": 23.372661870503595, "kind": "opening"}, {"wall": "east", "position": 0.5, "connects_to": "dining_1", "width": 26.2, "kind": "opening"}], "windows": [{"wall": "west", "position": 0.5, "width": 4.0}]}, {"id": "dining_1", "name": "Dining Room", "category": "dining", "x": 24.172661870503596, "y": 23.0, "width": 15.827338129496402, "length": 27.0, "floor": 0, "doors": [{"wall": "north", "position": 0.4999999999999998, "connects_to": "hall", "width": 15.027338129496403, "kind": "opening"}, {"wall": "west", "position": 0.5, "connects_to": "living_0", "width": 26.2, "kind": "opening"}, {"wall": "east", "position": 0.06666666666666655, "connects_to": "kitchen", "width": 2.8, "kind": "door"}, {"wall": "east", "position": 0.8629629629629628, "connects_to": "bath_0", "width": 2.8, "kind": "door"}], "windows": [{"wall": "south", "position": 0.4999999999999998, "width": 4.0}]}, {"id": "kitchen", "name": "Kitchen", "category": "kitchen", "x": 40.0, "y": 23.0, "width": 10.0, "length": 21.5, "floor": 0, "doors": [{"wall": "west", "position": 0.08372093023255801, "connects_to": "dining_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "east", "position": 0.5, "width": 4.0}]}, {"id": "bath_0", "name": "Bathroom", "category": "bathroom", "x": 40.0, "y": 44.5, "width": 10.0, "length": 5.5, "floor": 0, "doors": [{"wall": "west", "position": 0.32727272727272677, "connects_to": "dining_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "south", "position": 0.5, "width": 4.0}]}]</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+try {
+const [THREE, { OrbitControls }] = await Promise.all([
+  import('three'), import('three/addons/controls/OrbitControls.js')
+]);
+
+// Layout coordinates are feet: X runs east, Z runs south, Y is elevation.
+function buildHouse(data) {
+  const house = new THREE.Group();
+  const wall = new THREE.MeshStandardMaterial({ color: 0xece6da, roughness: 0.85 });
+  const floor = new THREE.MeshStandardMaterial({ color: 0xa99780, roughness: 0.9 });
+  const roof = new THREE.MeshStandardMaterial({ color: 0x62716d, roughness: 0.85 });
+  const frame = new THREE.MeshStandardMaterial({ color: 0x344a49, roughness: 0.55 });
+  const glass = new THREE.MeshStandardMaterial({
+    color: 0x93cfe0, transparent: true, opacity: 0.35, roughness: 0.15, depthWrite: false,
+  });
+  function box(name, x, y, z, width, height, depth, material) {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
+    mesh.name = name;
+    mesh.position.set(x, y, z);
+    house.add(mesh);
+    return mesh;
+  }
+  function span(name, part, bottom, top, thickness, material, lo = part.lo, hi = part.hi) {
+    const horizontal = part.axis === 'h';
+    return box(name,
+      horizontal ? (lo + hi) / 2 : part.fixed,
+      part.floor * data.floor_to_floor_ft + (bottom + top) / 2,
+      horizontal ? part.fixed : (lo + hi) / 2,
+      horizontal ? hi - lo : thickness, top - bottom,
+      horizontal ? thickness : hi - lo, material);
+  }
+  for (const part of data.walls) {
+    span('Wall', part, part.bottom, part.top, data.wall_thickness_ft, wall);
+  }
+  for (const part of data.windows) {
+    const trim = Math.min(0.12, (part.hi - part.lo) / 4);
+    span('Window glass', part, part.bottom, part.top, 0.06, glass);
+    span('Window sill', part, part.bottom, part.bottom + trim, 0.22, frame);
+    span('Window header', part, part.top - trim, part.top, 0.22, frame);
+    span('Window frame', part, part.bottom, part.top, 0.22, frame, part.lo, part.lo + trim);
+    span('Window frame', part, part.bottom, part.top, 0.22, frame, part.hi - trim, part.hi);
+    const middle = (part.lo + part.hi) / 2;
+    span('Window mullion', part, part.bottom, part.top, 0.16, frame, middle - trim / 2, middle + trim / 2);
+  }
+  for (const room of data.floor_slabs) {
+    const base = room.floor * data.floor_to_floor_ft;
+    box('Floor ' + room.name, room.x + room.width / 2, base - 0.15,
+      room.y + room.length / 2, room.width, 0.3, room.length, floor);
+    box('Roof ' + room.name, room.x + room.width / 2, base + data.wall_height_ft + 0.25,
+      room.y + room.length / 2, room.width, 0.5, room.length, roof);
+  }
+  return house;
+}
+
+// First-person navigation in feet. Door gaps remain passable; walls and windows block walking.
+function createWalkSpace(data, rooms, radius = 0.3) {
+  function canStand(x, z, floor) {
+    if (!rooms.some(r => r.floor === floor && x >= r.x && x <= r.x + r.width && z >= r.y && z <= r.y + r.length)) return false;
+    return ![...data.walls, ...data.windows].some(w => {
+      if (w.floor !== floor || w.bottom >= 6 || w.top <= 0.2) return false;
+      const half = data.wall_thickness_ft / 2 + radius;
+      return w.axis === 'h'
+        ? Math.abs(z - w.fixed) < half && x > w.lo - radius && x < w.hi + radius
+        : Math.abs(x - w.fixed) < half && z > w.lo - radius && z < w.hi + radius;
+    });
+  }
+  function move(position, dx, dz, floor) {
+    // Small substeps stop a delayed frame from jumping through a wall.
+    const steps = Math.max(1, Math.ceil(Math.hypot(dx, dz) / 0.1));
+    for (let i = 0; i < steps; i++) {
+      if (canStand(position.x + dx / steps, position.z, floor)) position.x += dx / steps;
+      if (canStand(position.x, position.z + dz / steps, floor)) position.z += dz / steps;
+    }
+  }
+  function spawn(room) {
+    for (const fx of [0.5, 0.25, 0.75]) {
+      for (const fz of [0.5, 0.25, 0.75]) {
+        const point = { x: room.x + room.width * fx, z: room.y + room.length * fz };
+        if (canStand(point.x, point.z, room.floor)) return point;
+      }
+    }
+    return null;
+  }
+  return { canStand, move, spawn };
+}
+
+function joystickAxes(dx, dy, radius, deadZone = 0.12) {
+  const distance = Math.hypot(dx, dy);
+  if (!distance || radius <= 0) return { x: 0, y: 0, knobX: 0, knobY: 0 };
+  const reach = Math.min(distance, radius);
+  const strength = Math.max(0, (reach / radius - deadZone) / (1 - deadZone));
+  return { x: dx / distance * strength, y: dy / distance * strength,
+    knobX: dx / distance * reach, knobY: dy / distance * reach };
+}
+
+function createWalkTour({ camera, controls, canvas, wrap, data, rooms, setStatus }) {
+  const button = document.getElementById('walk-tour');
+  const panel = document.getElementById('walk-panel');
+  const roomSelect = document.getElementById('walk-room');
+  const roomName = document.getElementById('walk-current-room');
+  const walkMeasurements = document.getElementById('walk-measurements');
+  const measurementToggle = document.getElementById('toggle-measurements');
+  const optionsToggle = document.getElementById('walk-options-toggle');
+  const optionsPanel = document.getElementById('walk-options');
+  function setOptions(open) {
+    optionsPanel.hidden = !open;
+    optionsToggle.setAttribute('aria-expanded', String(open));
+  }
+  const space = createWalkSpace(data, rooms);
+  const keys = new Set();
+  const sticks = new Map();
+  const moveButtons = new Map();
+  let active = false, saved, floor = 0, yaw = 0, pitch = 0, drag = null;
+  const settings = ['roof', 'labels', 'measurements', 'wireframe'].map(name => document.getElementById('toggle-' + name));
+  const destinations = rooms.filter(room => space.spawn(room));
+  for (const room of destinations) {
+    const option = document.createElement('option');
+    option.value = room.id;
+    option.textContent = room.name;
+    roomSelect.append(option);
+  }
+  canvas.tabIndex = 0;
+  canvas.setAttribute('aria-label', '3D home. In walk mode, use W A S D to move and arrow keys to look.');
+  const look = () => camera.rotation.set(pitch, yaw, 0, 'YXZ');
+  function resetStick(stick) {
+    const pointer = stick.pointer;
+    stick.pointer = null;
+    stick.x = stick.y = 0;
+    stick.knob.style.transform = '';
+    stick.el.classList.remove('is-active');
+    if (pointer !== null && stick.el.hasPointerCapture(pointer)) stick.el.releasePointerCapture(pointer);
+  }
+  function clearInput() {
+    keys.clear(); sticks.forEach(resetStick); drag = null;
+    moveButtons.forEach(button => { button.pointers.clear(); button.keyboard = false; button.el.classList.remove('is-active'); });
+  }
+  function jump(room) {
+    const point = space.spawn(room);
+    if (!point) return;
+    floor = room.floor;
+    camera.position.set(point.x, floor * data.floor_to_floor_ft + 5.5, point.z);
+    // Face a doorway when entering a room.
+    const door = room.doors?.[0];
+    if (door) {
+      const horizontal = door.wall === 'north' || door.wall === 'south';
+      const x = horizontal ? room.x + door.position * room.width : room.x + (door.wall === 'east' ? room.width : 0);
+      const z = horizontal ? room.y + (door.wall === 'south' ? room.length : 0) : room.y + door.position * room.length;
+      yaw = Math.atan2(-(x - point.x), -(z - point.z));
+    } else yaw = 0;
+    pitch = 0;
+    roomSelect.value = room.id;
+    roomName.textContent = room.name;
+    roomName.title = room.name;
+    setOptions(false);
+    clearInput();
+    look();
+    canvas.focus({ preventScroll: true });
+  }
+  function enter() {
+    if (active || !destinations.length) return;
+    controls.update();
+    saved = { position: camera.position.clone(), quaternion: camera.quaternion.clone(),
+      target: controls.target.clone(), fov: camera.fov, near: camera.near,
+      settings: settings.map(el => ({ checked: el.checked, disabled: el.disabled })) };
+    active = true;
+    controls.enabled = false;
+    camera.fov = 70;
+    camera.near = 0.05;
+    camera.updateProjectionMatrix();
+    settings.forEach(el => {
+      el.checked = el.id === 'toggle-roof';
+      el.dispatchEvent(new Event('change'));
+      el.disabled = true;
+    });
+    panel.hidden = false;
+    wrap.classList.add('is-walking');
+    button.textContent = 'Exit walk';
+    button.setAttribute('aria-pressed', 'true');
+    jump(destinations.find(r => r.doors?.some(d => d.connects_to === 'outside')) || destinations[0]);
+    setStatus('Walk inside · Hold arrows: move · Right stick: look · Esc to exit', false);
+  }
+  function exit() {
+    if (!active) return;
+    active = false;
+    clearInput();
+    panel.hidden = true;
+    setOptions(false);
+    wrap.classList.remove('is-walking');
+    button.textContent = 'Walk inside';
+    button.setAttribute('aria-pressed', 'false');
+    settings.forEach((el, i) => {
+      el.checked = saved.settings[i].checked;
+      el.disabled = saved.settings[i].disabled;
+      el.dispatchEvent(new Event('change'));
+    });
+    camera.position.copy(saved.position);
+    camera.quaternion.copy(saved.quaternion);
+    camera.fov = saved.fov;
+    camera.near = saved.near;
+    camera.updateProjectionMatrix();
+    controls.target.copy(saved.target);
+    controls.enabled = true;
+    controls.update();
+    setStatus('Drag to orbit', false);
+  }
+  button.disabled = !destinations.length || wrap.hidden;
+  button.addEventListener('click', () => active ? exit() : enter());
+  document.getElementById('walk-exit').addEventListener('click', exit);
+  optionsToggle.addEventListener('click', () => setOptions(optionsPanel.hidden));
+  document.addEventListener('pointerdown', event => {
+    if (!event.target.closest('.walk-info')) setOptions(false);
+  });
+  walkMeasurements.addEventListener('change', () => {
+    if (!active) return;
+    measurementToggle.checked = walkMeasurements.checked;
+    measurementToggle.dispatchEvent(new Event('change'));
+  });
+  measurementToggle.addEventListener('change', () => {
+    walkMeasurements.checked = measurementToggle.checked;
+  });
+  roomSelect.addEventListener('change', () => jump(destinations.find(r => r.id === roomSelect.value)));
+  for (const id of ['top-view', 'reset-view', 'view-plan', 'print-plan']) {
+    document.getElementById(id).addEventListener('click', exit, true);
+  }
+  document.getElementById('ai-composer').addEventListener('submit', exit, true);
+  window.addEventListener('beforeprint', exit);
+  window.addEventListener('blur', clearInput);
+  document.addEventListener('visibilitychange', clearInput);
+  document.addEventListener('focusin', event => { if (event.target !== canvas) clearInput(); });
+  document.addEventListener('keydown', event => {
+    if (!active) return;
+    if (event.key === 'Escape') {
+      if (!optionsPanel.hidden) { setOptions(false); optionsToggle.focus(); }
+      else { exit(); button.focus(); }
+      return;
+    }
+    if (document.activeElement !== canvas && !document.activeElement?.matches('[data-stick], [data-move]')) return;
+    if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.code)) {
+      event.preventDefault();
+      keys.add(event.code);
+    }
+  });
+  document.addEventListener('keyup', event => keys.delete(event.code));
+  canvas.addEventListener('pointerdown', event => {
+    if (!active || event.button !== 0 || drag) return;
+    canvas.focus({ preventScroll: true });
+    drag = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    canvas.setPointerCapture(event.pointerId);
+  });
+  canvas.addEventListener('pointermove', event => {
+    if (!active || drag?.id !== event.pointerId) return;
+    yaw -= (event.clientX - drag.x) * 0.004;
+    pitch = Math.max(-1.3, Math.min(1.3, pitch - (event.clientY - drag.y) * 0.004));
+    drag.x = event.clientX; drag.y = event.clientY;
+    look();
+  });
+  for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+    canvas.addEventListener(name, () => { drag = null; });
+  }
+  panel.querySelectorAll('[data-move]').forEach(el => {
+    const button = { el, pointers: new Set(), keyboard: false };
+    moveButtons.set(el.dataset.move, button);
+    const sync = () => el.classList.toggle('is-active', button.keyboard || button.pointers.size > 0);
+    el.addEventListener('pointerdown', event => {
+      if (!active || event.button !== 0) return;
+      event.preventDefault();
+      button.pointers.add(event.pointerId);
+      el.setPointerCapture(event.pointerId);
+      sync();
+    });
+    for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+      el.addEventListener(name, event => { button.pointers.delete(event.pointerId); sync(); });
+    }
+    el.addEventListener('keydown', event => {
+      if (!active || ![' ', 'Enter'].includes(event.key)) return;
+      event.preventDefault(); button.keyboard = true; sync();
+    });
+    el.addEventListener('keyup', event => {
+      if (![' ', 'Enter'].includes(event.key)) return;
+      event.preventDefault(); button.keyboard = false; sync();
+    });
+    el.addEventListener('blur', () => { button.keyboard = false; sync(); });
+  });
+  panel.querySelectorAll('[data-stick]').forEach(el => {
+    const stick = { el, knob: el.querySelector('.walk-stick-knob'), pointer: null, x: 0, y: 0 };
+    sticks.set(el.dataset.stick, stick);
+    function position(event) {
+      const rect = el.getBoundingClientRect();
+      const axes = joystickAxes(event.clientX - rect.left - rect.width / 2,
+        event.clientY - rect.top - rect.height / 2, (rect.width - stick.knob.offsetWidth) / 2 - 5);
+      stick.x = axes.x; stick.y = axes.y;
+      stick.knob.style.transform = `translate(${axes.knobX}px, ${axes.knobY}px)`;
+    }
+    el.addEventListener('pointerdown', event => {
+      if (!active || event.button !== 0 || stick.pointer !== null) return;
+      event.preventDefault();
+      stick.pointer = event.pointerId;
+      el.setPointerCapture(event.pointerId);
+      el.classList.add('is-active');
+      position(event);
+    });
+    el.addEventListener('pointermove', event => {
+      if (stick.pointer !== event.pointerId) return;
+      position(event);
+    });
+    for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) {
+      el.addEventListener(name, event => { if (stick.pointer === event.pointerId) resetStick(stick); });
+    }
+  });
+  function update(dt) {
+    if (!active) return;
+    dt = Math.min(dt, 0.05);
+    const down = name => keys.has(name) || Boolean(moveButtons.get(name)?.keyboard || moveButtons.get(name)?.pointers.size);
+    const lookStick = sticks.get('look');
+    yaw += ((down('ArrowLeft') ? 1 : 0) - (down('ArrowRight') ? 1 : 0) - lookStick.x) * dt * 1.6;
+    pitch = Math.max(-1.3, Math.min(1.3, pitch + ((down('ArrowUp') ? 1 : 0) - (down('ArrowDown') ? 1 : 0) - lookStick.y) * dt));
+    look();
+    const forward = (down('KeyW') ? 1 : 0) - (down('KeyS') ? 1 : 0);
+    const side = (down('KeyD') ? 1 : 0) - (down('KeyA') ? 1 : 0);
+    const speed = 4 * dt / Math.max(1, Math.hypot(forward, side));
+    space.move(camera.position, (-Math.sin(yaw) * forward + Math.cos(yaw) * side) * speed,
+      (-Math.cos(yaw) * forward - Math.sin(yaw) * side) * speed, floor);
+    const room = rooms.find(r => r.floor === floor && camera.position.x >= r.x && camera.position.x <= r.x + r.width && camera.position.z >= r.y && camera.position.z <= r.y + r.length);
+    if (room) { roomName.textContent = room.name; roomName.title = room.name; roomSelect.value = room.id; }
+  }
+  return { update, exit };
+}
+
+
+const status = document.getElementById('mv-status');
+const wrap = document.getElementById('stage-wrap');
+const canvas = document.getElementById('stage-canvas');
+
+function setStatus(text, isError) {
+  status.textContent = text;
+  status.classList.toggle('is-error', !!isError);
+}
+
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0e111b);
+scene.fog = new THREE.Fog(0x0e111b, 60, 320);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 2000);
+
+const grid = new THREE.GridHelper(300, 60, 0x3b3852, 0x15253b);
+grid.position.y = -0.25;
+scene.add(grid);
+
+scene.add(new THREE.HemisphereLight(0xfdf6ec, 0x1a201c, 1.1));
+const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+sun.position.set(60, 90, 40);
+scene.add(sun);
+scene.add(new THREE.AmbientLight(0xffffff, 0.35));
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 5;
+controls.maxDistance = 400;
+
+let sceneCenter = new THREE.Vector3();
+let sceneRadius = 40;
+let tour = null;
+let lastFrame = performance.now();
+
+function resize() {
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+  if (!w || !h) return;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h, false);
+}
+new ResizeObserver(resize).observe(wrap);
+resize();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const now = performance.now();
+  tour?.update((now - lastFrame) / 1000);
+  lastFrame = now;
+  if (controls.enabled) controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+document.getElementById('top-view').onclick = () => {
+  camera.position.set(sceneCenter.x, sceneCenter.y + sceneRadius * 1.7, sceneCenter.z + 0.01);
+  controls.target.copy(sceneCenter);
+  controls.update();
+};
+
+function addFurnitureBox(group, cx, cz, sizeX, sizeZ, height, color, yBase) {
+  const geo = new THREE.BoxGeometry(sizeX, height, sizeZ);
+  const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.8, metalness: 0.05 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(cx, yBase + height / 2, cz);
+  group.add(mesh);
+}
+
+function makeLabelSprite(text, dotColor, worldHeight = 2.1, textColor = '#f3f6f4', icon = null) {
+  const c = document.createElement('canvas');
+  const ctx = c.getContext('2d');
+  const scale = 2; // supersample so the pill stays crisp at a smaller world size
+  const fontSize = 30 * scale;
+  const font = `600 ${fontSize}px 'IBM Plex Sans', sans-serif`;
+  const emojiFont = `${fontSize * 0.92}px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif`;
+  ctx.font = font;
+  const dotR = 6 * scale, gap = 10 * scale, padX = 17 * scale, padY = 10 * scale;
+  const textW = ctx.measureText(text).width;
+  let markerW = dotR * 2;
+  if (icon) {
+    ctx.font = emojiFont;
+    markerW = ctx.measureText(icon).width;
+  }
+  c.width = Math.ceil(padX * 2 + markerW + gap + textW);
+  c.height = fontSize + padY * 2;
+  ctx.textBaseline = 'middle';
+
+  const pillH = c.height - 2 * scale;
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.4)';
+  ctx.shadowBlur = 7 * scale;
+  ctx.shadowOffsetY = 2 * scale;
+  ctx.fillStyle = 'rgba(14,20,17,0.88)';
+  ctx.beginPath();
+  ctx.roundRect(0, 0, c.width, pillH, pillH / 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = scale;
+  ctx.beginPath();
+  ctx.roundRect(scale / 2, scale / 2, c.width - scale, pillH - scale, (pillH - scale) / 2);
+  ctx.stroke();
+
+  const cy = pillH / 2;
+  if (icon) {
+    ctx.font = emojiFont;
+    ctx.textAlign = 'left';
+    ctx.fillText(icon, padX, cy + scale);
+  } else {
+    ctx.fillStyle = dotColor || '#8b98a3';
+    ctx.beginPath();
+    ctx.arc(padX + dotR, cy, dotR, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.font = font;
+  ctx.fillStyle = textColor;
+  ctx.fillText(text, padX + markerW + gap, cy + scale * 0.5);
+
+  const texture = new THREE.CanvasTexture(c);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: false, depthWrite: false, transparent: true }));
+  sprite.scale.set(worldHeight * (c.width / c.height), worldHeight, 1);
+  sprite.renderOrder = 999;
+  return sprite;
+}
+
+// All dimension endpoints use the same feet-based room geometry as the model.
+function measurementData(roomsData, plotWidth, plotLength) {
+  const dimensions = [];
+  const positions = [];
+  const seenOpenings = new Set();
+  const feet = value => `${Number(value.toFixed(2))} ft`;
+  const add = (a, b, floor, label, color) => dimensions.push({ a, b, floor, label, color });
+  const floors = [...new Set(roomsData.map(room => room.floor))];
+  floors.forEach(floor => {
+    add([0, -3], [plotWidth, -3], floor, `Plot W (E–W): ${feet(plotWidth)}`, '#ffdf00');
+    add([-3, 0], [-3, plotLength], floor, `Plot L (N–S): ${feet(plotLength)}`, '#ff5252');
+  });
+  roomsData.forEach(room => {
+    const x = room.x, y = room.y, w = room.width, l = room.length;
+    add([x, y + l * .22], [x + w, y + l * .22], room.floor, `W ${feet(w)}`, '#ffdf00');
+    add([x + w * .22, y], [x + w * .22, y + l], room.floor, `L ${feet(l)}`, '#ff5252');
+    positions.push({ x: x + w / 2, y: y + l * .75, floor: room.floor,
+      text: `X ${Number(x.toFixed(2))}, Y ${Number(y.toFixed(2))} ft` });
+    const openings = [...(room.doors || []).map(item => ({ ...item, type: item.kind === 'opening' ? 'Passage' : 'Door' })),
+                      ...(room.windows || []).map(item => ({ ...item, type: 'Window' }))];
+    openings.forEach(opening => {
+      const horizontal = opening.wall === 'north' || opening.wall === 'south';
+      const center = (horizontal ? x : y) + opening.position * (horizontal ? w : l);
+      const fixed = horizontal ? y + (opening.wall === 'south' ? l : 0) : x + (opening.wall === 'east' ? w : 0);
+      const lo = center - opening.width / 2, hi = center + opening.width / 2;
+      const a = horizontal ? [lo, fixed] : [fixed, lo];
+      const b = horizontal ? [hi, fixed] : [fixed, hi];
+      const key = JSON.stringify([room.floor, opening.type, ...a, ...b].map(value => typeof value === 'number' ? Number(value.toFixed(5)) : value));
+      if (seenOpenings.has(key)) return;
+      seenOpenings.add(key);
+      add(a, b, room.floor, `${opening.type} ${feet(opening.width)}`, opening.type === 'Window' ? '#2e8b57' : '#b7f0c9');
+    });
+  });
+  return { dimensions, positions };
+}
+
+function buildMeasurements(roomsData) {
+  const group = new THREE.Group();
+  const data = measurementData(roomsData, 50.0, 50.0);
+  const materials = new Map();
+  data.dimensions.forEach(item => {
+    const height = item.floor * 9.3 + 10.8;
+    const a = new THREE.Vector3(item.a[0], height, item.a[1]);
+    const b = new THREE.Vector3(item.b[0], height, item.b[1]);
+    const perpendicular = new THREE.Vector3(-(b.z - a.z), 0, b.x - a.x).normalize().multiplyScalar(.35);
+    const points = [a, b, a.clone().sub(perpendicular), a.clone().add(perpendicular), b.clone().sub(perpendicular), b.clone().add(perpendicular)];
+    if (!materials.has(item.color)) materials.set(item.color, new THREE.LineBasicMaterial({ color: item.color, depthTest: false, depthWrite: false, transparent: true, opacity: .9 }));
+    const line = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(points), materials.get(item.color));
+    line.renderOrder = 1000;
+    group.add(line);
+    const label = makeLabelSprite(item.label, item.color, 1.05, item.color);
+    label.position.copy(a).lerp(b, .5);
+    label.position.y += .5;
+    label.renderOrder = 1001;
+    group.add(label);
+  });
+  data.positions.forEach(item => {
+    const label = makeLabelSprite(item.text, '#d4d4d4', 1.0);
+    label.position.set(item.x, item.floor * 9.3 + 11.3, item.y);
+    label.renderOrder = 1001;
+    group.add(label);
+  });
+  return group;
+}
+
+const FURNITURE_SPECS = {
+  bedroom: [
+    { fx: 0.28, fz: 0.32, fw: 0.42, fl: 0.55, minW: 5.5, maxW: 6.5, minL: 6, maxL: 7, h: 1.6, color: 0x8a6a55 },
+    { fx: 0.88, fz: 0.5, fw: 0.16, fl: 0.5, minW: 1.3, maxW: 1.8, minL: 3, maxL: 5, h: 6.0, color: 0x4d3c30 },
+  ],
+  bathroom: [
+    { fx: 0.22, fz: 0.22, fw: 0.28, fl: 0.34, minW: 1.1, maxW: 1.5, minL: 1.7, maxL: 2.2, h: 1.3, color: 0xeef1ee },
+    { fx: 0.22, fz: 0.78, fw: 0.3, fl: 0.24, minW: 1.3, maxW: 1.8, minL: 1.3, maxL: 1.8, h: 2.6, color: 0xd7dadb },
+  ],
+  kitchen: [
+    { fx: 0.5, fz: 0.14, fw: 0.86, fl: 0.2, minW: 4, maxW: 11, minL: 1.8, maxL: 2.4, h: 2.9, color: 0x33393e },
+    { fx: 0.86, fz: 0.82, fw: 0.22, fl: 0.22, minW: 2.2, maxW: 2.6, minL: 2.2, maxL: 2.6, h: 5.5, color: 0xd7dadb },
+  ],
+  dining: [
+    { fx: 0.5, fz: 0.5, fw: 0.42, fl: 0.42, minW: 4, maxW: 6, minL: 4, maxL: 6, h: 2.4, color: 0x6b4f3a },
+  ],
+  living: [
+    { fx: 0.5, fz: 0.16, fw: 0.55, fl: 0.18, minW: 6, maxW: 11, minL: 2.4, maxL: 3, h: 2.6, color: 0x54636b },
+    { fx: 0.5, fz: 0.5, fw: 0.22, fl: 0.28, minW: 2.5, maxW: 4, minL: 2, maxL: 3.2, h: 1.3, color: 0x7a5c3e },
+  ],
+  pooja: [
+    { fx: 0.5, fz: 0.2, fw: 0.5, fl: 0.32, minW: 2.5, maxW: 4.5, minL: 1.5, maxL: 2.5, h: 3.2, color: 0xc79a45 },
+  ],
+  office: [
+    { fx: 0.5, fz: 0.16, fw: 0.55, fl: 0.2, minW: 3.5, maxW: 5.5, minL: 1.8, maxL: 2.4, h: 2.4, color: 0x5a4632 },
+    { fx: 0.5, fz: 0.34, fw: 0.16, fl: 0.16, minW: 1.3, maxW: 1.6, minL: 1.3, maxL: 1.6, h: 2.6, color: 0x33393e },
+  ],
+  car_parking: [
+    { fx: 0.5, fz: 0.5, fw: 0.78, fl: 0.86, minW: 6, maxW: 9, minL: 13, maxL: 17, h: 4.2, color: 0x8f9aa3 },
+  ],
+  bike_parking: [
+    { fx: 0.32, fz: 0.5, fw: 0.24, fl: 0.62, minW: 1.6, maxW: 2.2, minL: 5, maxL: 8, h: 3.2, color: 0x232a30 },
+    { fx: 0.68, fz: 0.5, fw: 0.24, fl: 0.62, minW: 1.6, maxW: 2.2, minL: 5, maxL: 8, h: 3.2, color: 0x232a30 },
+  ],
+};
+
+const CATEGORY_DOT_COLORS = {"bedroom": "#60a5fa", "bathroom": "#f472b6", "kitchen": "#fb923c", "dining": "#facc15", "living": "#34d399", "pooja": "#c9a44c", "office": "#38bdf8", "car_parking": "#94a3b8", "bike_parking": "#94a3b8"};
+const DEFAULT_DOT_COLOR = "#8b98a3";
+
+function clampFt(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+function buildFurniture(roomsData, furnitureGroup, labelGroup) {
+  roomsData.forEach((r) => {
+    const specs = FURNITURE_SPECS[r.category];
+    if (specs) {
+      specs.forEach((s) => {
+        const sizeX = Math.min(r.width * .8, clampFt(r.width * s.fw, s.minW, s.maxW));
+        const sizeZ = Math.min(r.length * .8, clampFt(r.length * s.fl, s.minL, s.maxL));
+        const px = r.x + clampFt(r.width * s.fx, sizeX / 2 + r.width * .05, r.width * .95 - sizeX / 2);
+        const pz = r.y + clampFt(r.length * s.fz, sizeZ / 2 + r.length * .05, r.length * .95 - sizeZ / 2);
+        addFurnitureBox(furnitureGroup, px, pz, sizeX, sizeZ, s.h, s.color, r.floor * 9.3);
+      });
+    }
+    const dotColor = CATEGORY_DOT_COLORS[r.category] || DEFAULT_DOT_COLOR;
+    const label = makeLabelSprite(r.name, dotColor, undefined, undefined, '📍');
+    label.position.set(r.x + r.width / 2, r.floor * 9.3 + 10.2, r.y + r.length / 2);
+    labelGroup.add(label);
+  });
+}
+
+try {
+  const house = buildHouse(JSON.parse(document.getElementById('scene-data').textContent));
+  scene.add(house);
+  const box = new THREE.Box3().setFromObject(house);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const radius = Math.max(size.x, size.y, size.z);
+      sceneCenter = center;
+      sceneRadius = radius;
+      controls.target.copy(center);
+      camera.position.set(center.x + radius * 0.9, center.y + radius * 0.7, center.z + radius * 0.9);
+      camera.near = radius / 100;
+      camera.far = radius * 20;
+      camera.updateProjectionMatrix();
+      controls.update();
+      controls.saveState();
+      document.getElementById('reset-view').onclick = () => controls.reset();
+      wrap.classList.add('is-ready');
+      setStatus('Loaded â€” drag to orbit', false);
+
+      const roofParts = [];
+      const solidMaterials = [];
+      house.traverse((obj) => {
+        if (obj.name && obj.name.toLowerCase().startsWith('roof')) roofParts.push(obj);
+        if (obj.isMesh && obj.material && !solidMaterials.includes(obj.material)) solidMaterials.push(obj.material);
+      });
+      roofParts.forEach((r) => { r.visible = false; });
+
+      const roofToggle = document.getElementById('toggle-roof');
+      const wireToggle = document.getElementById('toggle-wireframe');
+      roofToggle.addEventListener('change', () => { roofParts.forEach((r) => { r.visible = roofToggle.checked; }); });
+      wireToggle.addEventListener('change', () => { solidMaterials.forEach((m) => { m.wireframe = wireToggle.checked; }); });
+
+      const roomsData = JSON.parse(document.getElementById('rooms-data').textContent);
+      const furnitureGroup = new THREE.Group();
+      const labelGroup = new THREE.Group();
+      buildFurniture(roomsData, furnitureGroup, labelGroup);
+      scene.add(furnitureGroup);
+      scene.add(labelGroup);
+      const measurementGroup = buildMeasurements(roomsData);
+      scene.add(measurementGroup);
+      const measurementToggle = document.getElementById('toggle-measurements');
+      const updateMeasurements = () => {
+        measurementGroup.visible = measurementToggle.checked;
+        measurementGroup.position.y = wrap.classList.contains('is-walking') ? -6 : 0;
+        document.getElementById('measurement-note').hidden = !measurementToggle.checked;
+      };
+      updateMeasurements();
+      measurementToggle.addEventListener('change', updateMeasurements);
+
+      const furnitureToggle = document.getElementById('toggle-furniture');
+      const labelsToggle = document.getElementById('toggle-labels');
+      furnitureGroup.visible = furnitureToggle.checked;
+      labelGroup.visible = labelsToggle.checked;
+      furnitureToggle.addEventListener('change', () => { furnitureGroup.visible = furnitureToggle.checked; });
+      labelsToggle.addEventListener('change', () => { labelGroup.visible = labelsToggle.checked; });
+      tour = createWalkTour({ camera, controls, canvas, wrap,
+        data: JSON.parse(document.getElementById('scene-data').textContent),
+        rooms: roomsData, setStatus });
+} catch (err) {
+  console.error('failed to build Three.js house', err);
+  setStatus('Load error: ' + err.message, true);
+}
+} catch (err) {
+  document.getElementById('mv-status').textContent = 'Could not start 3D: ' + err.message + '. Check your internet connection and WebGL support, then reload.';
+  document.getElementById('mv-status').classList.add('is-error');
+  document.querySelector('.poster p').textContent = 'The 2D Plan is still available above.';
+}
+</script>

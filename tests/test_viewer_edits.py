@@ -46,7 +46,7 @@ class ViewerEditTests(unittest.TestCase):
                     baths = [r for r in layout.rooms if r.ensuite_for]
                     self.assertEqual(len(baths), len(assignments))
                     for number in assignments:
-                        bath = next(r for r in baths if r.name == f'Attached Bathroom {number}')
+                        bath = next(r for r in baths if r.name == f'Att. Bath {number}')
                         bedroom = next(r for r in layout.rooms if r.name == f'Bedroom {number}')
                         self.assertEqual(bath.ensuite_for, bedroom.id)
                         self.assertEqual([d.connects_to for d in bath.doors], [bedroom.id])

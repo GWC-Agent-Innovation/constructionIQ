@@ -151,9 +151,11 @@ def generate_layout(spec: HouseSpec, previous_layout: Layout | None = None,
     layout = solve_layout(spec, hints)
     if layout is None:
         if spec.attached_bathroom_bedrooms:
-            return None, ["The layout solver could not find a valid arrangement with direct access from each attached bathroom "
-                          "to its assigned bedroom. This does not necessarily mean the plot is too small. "
-                          "The requested assignments have been kept; try adjusting the room sizes or arrangement."]
+            relaxed_spec = spec.model_copy(update={"attached_bathroom_bedrooms": None})
+            if solve_layout(relaxed_spec, hints) is not None:
+                return None, ["The layout solver could not find a valid arrangement with direct access from each attached bathroom "
+                              "to its assigned bedroom. This does not necessarily mean the plot is too small. "
+                              "The requested assignments have been kept; try adjusting the room sizes or arrangement."]
         return None, [_infeasible_message(spec)]
     print("  [layout] solved deterministically", flush=True)
     return layout, []

@@ -38,7 +38,11 @@ BIKE_PARKING_KEYWORDS = ("bike", "cycle", "scooter", "two wheeler", "two-wheeler
 
 def _parking_target_sqft(name: str) -> float:
     lowered = name.lower()
-    if any(keyword in lowered for keyword in BIKE_PARKING_KEYWORDS):
+    has_car = any(k in lowered for k in ("car", "garage", "carport", "auto", "vehicle"))
+    has_bike = any(k in lowered for k in BIKE_PARKING_KEYWORDS)
+    if has_car and has_bike:
+        return CAR_PARKING_TARGET_SQFT + BIKE_PARKING_TARGET_SQFT
+    if has_bike:
         return BIKE_PARKING_TARGET_SQFT
     return CAR_PARKING_TARGET_SQFT
 
@@ -165,20 +169,29 @@ def _fits_aspect(width: float, length: float) -> bool:
 
 
 def _private_band(spec: HouseSpec, hints: DesignHints, width: float, depth: float,
-                  y: float, attached_count: int, parking_name: str | None) -> list[Room] | None:
+                  y: float, attached_count: int,
+                  parking_names: list[str] | str | None) -> list[Room] | None:
     """Tile parking and bedroom suites; each ensuite belongs to one bedroom."""
     x = 0.0
     rooms: list[Room] = []
-    if parking_name:
-        target = _parking_target_sqft(parking_name)
+    if isinstance(parking_names, str):
+        parking_list = [parking_names]
+    elif isinstance(parking_names, list):
+        parking_list = parking_names
+    else:
+        parking_list = []
+
+    for p_idx, p_name in enumerate(parking_list):
+        target = _parking_target_sqft(p_name)
         min_w = max(MIN_ROOM_DIMENSION_FT, depth / MAX_ASPECT_RATIO)
-        max_w = width - MIN_SLOT_FT
+        max_w = width - x - MIN_SLOT_FT
         if min_w > max_w:
             return None
         park_w = min(max_w, max(min_w, target / depth))
         if not _fits_aspect(park_w, depth):
             return None
-        rooms.append(Room(id="parking", name=parking_name, x=x, y=y, width=park_w, length=depth))
+        pid = f"parking_{p_idx}" if len(parking_list) > 1 else "parking"
+        rooms.append(Room(id=pid, name=p_name, x=x, y=y, width=park_w, length=depth))
         x += park_w
     assignments = spec.attached_bathroom_bedrooms
     if assignments is None:
@@ -216,7 +229,7 @@ def _private_band(spec: HouseSpec, hints: DesignHints, width: float, depth: floa
                             or not _fits_aspect(bedroom.width, remaining_depth)):
                         return None
                     bedroom.length = remaining_depth
-                    rooms.append(Room(id=f"attbath_{number - 1}", name=f"Attached Bathroom {number}",
+                    rooms.append(Room(id=f"attbath_{number - 1}", name=f"Att. Bath {number}",
                                       x=bedroom.x, y=y + remaining_depth,
                                       width=compact_width, length=compact_depth, ensuite_for=bedroom.id))
                     rooms.append(Room(id=f"suite_hall_{number}", name=f"Hallway Alcove {number}",
@@ -227,14 +240,14 @@ def _private_band(spec: HouseSpec, hints: DesignHints, width: float, depth: floa
                 if (depth - bath_depth < MIN_ROOM_DIMENSION_FT
                         or not _fits_aspect(bedroom.width, depth - bath_depth)):
                     return None
-                rooms.append(Room(id=f"attbath_{number - 1}", name=f"Attached Bathroom {number}",
+                rooms.append(Room(id=f"attbath_{number - 1}", name=f"Att. Bath {number}",
                                   x=bedroom.x, y=y, width=bedroom.width, length=bath_depth,
                                   ensuite_for=bedroom.id))
                 bedroom.y += bath_depth
                 bedroom.length -= bath_depth
                 rooms.append(bedroom)
                 continue
-            rooms.append(Room(id=f"attbath_{number - 1}", name=f"Attached Bathroom {number}",
+            rooms.append(Room(id=f"attbath_{number - 1}", name=f"Att. Bath {number}",
                               x=bedroom.x, y=y, width=bath_width, length=depth,
                               ensuite_for=bedroom.id))
             bedroom.x += bath_width
@@ -381,7 +394,6 @@ def solve_layout(spec: HouseSpec, hints: DesignHints | None = None) -> Layout | 
     hints = hints or DesignHints()
 
     parking_names, other_extras = _split_extras(spec)
-    parking_name = parking_names[0] if parking_names else None
 
     # Retain the legacy default split for briefs without recorded assignments.
     # A soft hint can fall back; explicit saved assignments below cannot.
@@ -419,7 +431,7 @@ def solve_layout(spec: HouseSpec, hints: DesignHints | None = None) -> Layout | 
                     continue
 
                 rooms: list[Room] = []
-                private_rooms = _private_band(spec, hints, plot_w, bed_depth, 0.0, attached_count, parking_name)
+                private_rooms = _private_band(spec, hints, plot_w, bed_depth, 0.0, attached_count, parking_names)
                 if private_rooms is None:
                     continue
                 rooms.extend(private_rooms)

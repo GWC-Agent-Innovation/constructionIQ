@@ -252,6 +252,9 @@ def run_turn(session: SessionState, user_message: str, auto_generate: bool = Fal
         session.spec.num_floors = 1
 
     reply_text = last_content.strip() or "Could you tell me more about the home you'd like to design?"
+    if session.spec.is_ready_for_layout() and not auto_generate:
+        if "generate" not in reply_text.lower():
+            reply_text += " Your brief is ready. Click the Generate 3D home button to create your design, or let me know if you would like any other adjustments."
     session.history.extend([ChatTurn(role="user", content=user_message), ChatTurn(role="assistant", content=reply_text)])
     session.history[:] = session.history[-12:]
     return reply_text

@@ -241,7 +241,7 @@ class PlanningTests(unittest.TestCase):
         layout = solve_layout(spec, DesignHints(attached_bathrooms=1))
         self.assertIsNotNone(layout)
         self.assertEqual(validate_layout(layout, spec), [])
-        self.assertTrue(any("attached" in room.name.lower() for room in layout.rooms),
+        self.assertTrue(any("attached" in room.name.lower() or "att." in room.name.lower() or room.ensuite_for for room in layout.rooms),
                         "expected an attached bathroom when explicitly requested and the plot allows it")
 
     def test_attached_bathroom_hint_falls_back_gracefully_when_infeasible(self):
@@ -254,6 +254,17 @@ class PlanningTests(unittest.TestCase):
         layout = solve_layout(spec, DesignHints(attached_bathrooms=1))
         self.assertIsNotNone(layout)
         self.assertEqual(validate_layout(layout, spec), [])
+
+    def test_multiple_parking_spaces_honored_with_attached_bathrooms(self):
+        spec = HouseSpec(plot_width_ft=50, plot_length_ft=50, num_bedrooms=3, num_bathrooms=4, num_floors=1,
+                         must_have_rooms=["bike parking", "car parking"],
+                         attached_bathroom_bedrooms=[1, 2, 3])
+        layout = solve_layout(spec)
+        self.assertIsNotNone(layout, "expected solver to find a layout with multiple parking spaces and attached bathrooms")
+        self.assertEqual(validate_layout(layout, spec), [])
+        room_names = [r.name.lower() for r in layout.rooms]
+        self.assertTrue(any("bike" in n for n in room_names))
+        self.assertTrue(any("car" in n for n in room_names))
 
 
 if __name__ == "__main__":

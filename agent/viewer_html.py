@@ -787,30 +787,60 @@ function addFurnitureBox(group, cx, cz, sizeX, sizeZ, height, color, yBase) {{
   group.add(mesh);
 }}
 
-function makeLabelSprite(text, dotColor, worldHeight = 3.4, textColor = '#edf2ee') {{
+function makeLabelSprite(text, dotColor, worldHeight = 2.1, textColor = '#f3f6f4', icon = null) {{
   const c = document.createElement('canvas');
   const ctx = c.getContext('2d');
-  const fontSize = 44;
+  const scale = 2; // supersample so the pill stays crisp at a smaller world size
+  const fontSize = 30 * scale;
   const font = `600 ${{fontSize}}px 'IBM Plex Sans', sans-serif`;
+  const emojiFont = `${{fontSize * 0.92}}px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif`;
   ctx.font = font;
-  const dotR = 9, gap = 16, padX = 26, padY = 16;
+  const dotR = 6 * scale, gap = 10 * scale, padX = 17 * scale, padY = 10 * scale;
   const textW = ctx.measureText(text).width;
-  c.width = Math.ceil(padX * 2 + dotR * 2 + gap + textW);
+  let markerW = dotR * 2;
+  if (icon) {{
+    ctx.font = emojiFont;
+    markerW = ctx.measureText(icon).width;
+  }}
+  c.width = Math.ceil(padX * 2 + markerW + gap + textW);
   c.height = fontSize + padY * 2;
-  ctx.font = font;
-  ctx.fillStyle = 'rgba(17,26,20,0.86)';
-  ctx.beginPath();
-  ctx.roundRect(0, 0, c.width, c.height, c.height / 2);
-  ctx.fill();
-  ctx.fillStyle = dotColor || '#8b98a3';
-  ctx.beginPath();
-  ctx.arc(padX + dotR, c.height / 2, dotR, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = textColor;
   ctx.textBaseline = 'middle';
-  ctx.fillText(text, padX + dotR * 2 + gap, c.height / 2 + 2);
+
+  const pillH = c.height - 2 * scale;
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.4)';
+  ctx.shadowBlur = 7 * scale;
+  ctx.shadowOffsetY = 2 * scale;
+  ctx.fillStyle = 'rgba(14,20,17,0.88)';
+  ctx.beginPath();
+  ctx.roundRect(0, 0, c.width, pillH, pillH / 2);
+  ctx.fill();
+  ctx.restore();
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = scale;
+  ctx.beginPath();
+  ctx.roundRect(scale / 2, scale / 2, c.width - scale, pillH - scale, (pillH - scale) / 2);
+  ctx.stroke();
+
+  const cy = pillH / 2;
+  if (icon) {{
+    ctx.font = emojiFont;
+    ctx.textAlign = 'left';
+    ctx.fillText(icon, padX, cy + scale);
+  }} else {{
+    ctx.fillStyle = dotColor || '#8b98a3';
+    ctx.beginPath();
+    ctx.arc(padX + dotR, cy, dotR, 0, Math.PI * 2);
+    ctx.fill();
+  }}
+  ctx.font = font;
+  ctx.fillStyle = textColor;
+  ctx.fillText(text, padX + markerW + gap, cy + scale * 0.5);
+
   const texture = new THREE.CanvasTexture(c);
   texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({{ map: texture, depthTest: false, depthWrite: false, transparent: true }}));
   sprite.scale.set(worldHeight * (c.width / c.height), worldHeight, 1);
   sprite.renderOrder = 999;
@@ -936,7 +966,7 @@ function buildFurniture(roomsData, furnitureGroup, labelGroup) {{
       }});
     }}
     const dotColor = CATEGORY_DOT_COLORS[r.category] || DEFAULT_DOT_COLOR;
-    const label = makeLabelSprite(r.name, dotColor);
+    const label = makeLabelSprite(r.name, dotColor, undefined, undefined, '📍');
     label.position.set(r.x + r.width / 2, r.floor * 9.3 + 10.2, r.y + r.length / 2);
     labelGroup.add(label);
   }});
