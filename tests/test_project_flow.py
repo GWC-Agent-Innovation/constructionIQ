@@ -40,7 +40,10 @@ class ProjectFlowTests(unittest.TestCase):
         self.assertTrue(any("How many bathrooms" in turn["content"] for turn in chat.call_args.kwargs["messages"]))
         self.assertEqual(chat.call_count, 3)
 
-    def test_history_survives_reload_and_is_bounded(self):
+    def test_history_survives_reload_in_full(self):
+        # The full transcript is kept for display (e.g. the AI Designer panel
+        # showing the whole conversation from the start), even though the LLM
+        # is only ever given the most recent turns as context.
         with tempfile.TemporaryDirectory() as folder, patch.object(spec_store, "DATA_DIR", Path(folder)):
             session = SessionState(session_id="test", project_name="Our Home")
             with patch("agent.spec_agent.chat", return_value={"message": {"content": "Hi there!"}}):
@@ -48,7 +51,8 @@ class ProjectFlowTests(unittest.TestCase):
                     run_turn(session, f"Hello {i}")
             spec_store.save(session)
             restored = spec_store.load("test")
-            self.assertEqual(len(restored.history), 12)
+            self.assertEqual(len(restored.history), 16)
+            self.assertEqual(restored.history[0].content, "Hello 0")
             self.assertEqual(restored.project_name, "Our Home")
 
     def test_correction_updates_known_bedrooms(self):

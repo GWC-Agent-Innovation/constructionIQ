@@ -1,0 +1,88 @@
+{
+  "id": "two_bed_public_middle",
+  "source": "ConstructIQ original synthetic partition example; no external plan copied.",
+  "review_status": "synthetic_unreviewed",
+  "spec": {
+    "plot_width_ft": 26,
+    "plot_length_ft": 30,
+    "num_bedrooms": 2,
+    "num_bathrooms": 1,
+    "entrance_facing": "west",
+    "attached_bathroom_bedrooms": []
+  },
+  "proposal": {
+    "name": "two bed public middle",
+    "root": "root",
+    "nodes": [
+      {
+        "id": "root",
+        "axis": "y",
+        "fraction": 0.3333333333333333,
+        "first": "north",
+        "second": "lower"
+      },
+      {
+        "id": "north",
+        "axis": "x",
+        "fraction": 0.5,
+        "first": "bed1",
+        "second": "bed2"
+      },
+      {
+        "id": "lower",
+        "axis": "y",
+        "fraction": 0.5,
+        "first": "public",
+        "second": "service"
+      },
+      {
+        "id": "public",
+        "axis": "x",
+        "fraction": 0.5,
+        "first": "living",
+        "second": "dining"
+      },
+      {
+        "id": "service",
+        "axis": "x",
+        "fraction": 0.7692307692307693,
+        "first": "kitchen",
+        "second": "bath"
+      },
+      {
+        "id": "bed1",
+        "room_key": "bedroom_0"
+      },
+      {
+        "id": "bed2",
+        "room_key": "bedroom_1"
+      },
+      {
+        "id": "living",
+        "room_key": "living_0"
+      },
+      {
+        "id": "dining",
+        "room_key": "dining_1"
+      },
+      {
+        "id": "kitchen",
+        "room_key": "kitchen"
+      },
+      {
+        "id": "bath",
+        "room_key": "bath_0"
+      }
+    ]
+  },
+  "lessons": [
+    "A central living/dining band connects bedrooms and service rooms without a dedicated hallway.",
+    "Two 130 sq ft bedrooms share public access to a compact 60 sq ft common bathroom."
+  ],
+  "limitations": [
+    "Synthetic example, not architect-reviewed.",
+    "West entrance and common bathroom; other entrance directions need regrouping.",
+    "Kitchen receives 200 sq ft in this fixture; adapt allocation to the actual brief.",
+    "Public access does not establish furniture clearance or acoustic privacy."
+  ]
+}

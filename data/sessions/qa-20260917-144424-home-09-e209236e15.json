@@ -1,0 +1,1635 @@
+{
+  "session_id": "qa-20260917-144424-home-09-e209236e15",
+  "project_name": "QA 20260917-144424 Home 09",
+  "history": [
+    {
+      "role": "user",
+      "content": "Design a single-floor home, plot 40 feet wide and 50 feet long, north-facing entrance. Exactly 2 bedrooms and 2 bathrooms total. Attach one bathroom each to bedrooms [1]; all remaining bathrooms are common. Include living room, separate dining room, kitchen, parking. Keep hallway space compact, bedrooms balanced, and kitchen next to dining. Record these requirements and prepare to generate."
+    },
+    {
+      "role": "assistant",
+      "content": "Great, I’ve logged a 40 ft × 50 ft plot with a north‑facing entrance, two bedrooms, two bathrooms (an ensuite in bedroom 1 and one common bathroom), a living room, separate dining room, kitchen, and parking. You’ve asked for a compact hallway, balanced bedroom placement, and the kitchen right next to the dining area.\n\nWhen you’re ready, just click “Generate 3D home,” and let me know if you’d like any final tweaks before we proceed."
+    },
+    {
+      "role": "user",
+      "content": "Remove parking from this design."
+    },
+    {
+      "role": "assistant",
+      "content": "Your changes have been applied to the floor plan and 3D model."
+    },
+    {
+      "role": "user",
+      "content": "undo last edit"
+    },
+    {
+      "role": "assistant",
+      "content": "Restored the previous saved design."
+    }
+  ],
+  "spec": {
+    "plot_width_ft": 40.0,
+    "plot_length_ft": 50.0,
+    "num_bedrooms": 2,
+    "num_bathrooms": 2,
+    "num_floors": 1,
+    "must_have_rooms": [
+      "Living Room",
+      "Dining Room",
+      "Kitchen",
+      "Parking"
+    ],
+    "style_notes": "Compact hallway, balanced bedrooms, kitchen adjacent to dining room",
+    "required_adjacencies": [],
+    "entrance_facing": "north",
+    "budget_notes": null,
+    "max_bathroom_area_sqft": 80.0,
+    "max_parking_area_sqft": 250.0,
+    "max_bathroom_bedroom_ratio": 0.75,
+    "attached_bathroom_bedrooms": [
+      1
+    ],
+    "include_dining_room": true
+  },
+  "layout": {
+    "version": 3,
+    "plot_width_ft": 40.0,
+    "plot_length_ft": 50.0,
+    "planning_notes": [
+      "Standard solver fallback: no AI arrangement passed validation.",
+      "Entrance opens directly into the living room at the north side.",
+      "A thin hallway (≈5 ft) provides private circulation to the bedroom wing.",
+      "Kitchen abuts the dining room for efficient service.",
+      "Each bedroom shares a wall with the hallway, satisfying the 3.6 ft public‑wall requirement.",
+      "One bedroom includes its attached bathroom; the other uses the common bathroom."
+    ],
+    "rooms": [
+      {
+        "id": "kitchen",
+        "name": "Kitchen",
+        "x": 0.0,
+        "y": 25.0,
+        "width": 11.363636363636363,
+        "length": 25.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "north",
+            "position": 0.15839999999999999,
+            "connects_to": "hall",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "west",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ],
+        "ensuite_for": null
+      },
+      {
+        "id": "attbath_0",
+        "name": "Att. Bath 1",
+        "x": 11.363636363636363,
+        "y": 25.0,
+        "width": 8.0,
+        "length": 6.875,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "south",
+            "position": 0.2250000000000001,
+            "connects_to": "bedroom_0",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [],
+        "ensuite_for": "bedroom_0"
+      },
+      {
+        "id": "suite_hall_1",
+        "name": "Hallway Alcove 1",
+        "x": 19.363636363636363,
+        "y": 25.0,
+        "width": 6.318181818181818,
+        "length": 6.875,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "north",
+            "position": 0.5000000000000003,
+            "connects_to": "hall",
+            "width": 5.518181818181817,
+            "kind": "opening"
+          },
+          {
+            "wall": "south",
+            "position": 0.2848920863309349,
+            "connects_to": "bedroom_0",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [],
+        "ensuite_for": null
+      },
+      {
+        "id": "bedroom_0",
+        "name": "Bedroom 1",
+        "x": 11.363636363636363,
+        "y": 31.875,
+        "width": 14.318181818181818,
+        "length": 18.125,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "north",
+            "position": 0.12571428571428578,
+            "connects_to": "attbath_0",
+            "width": 2.8,
+            "kind": "door"
+          },
+          {
+            "wall": "north",
+            "position": 0.6844444444444443,
+            "connects_to": "suite_hall_1",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "south",
+            "position": 0.5000000000000001,
+            "width": 4.0
+          }
+        ],
+        "ensuite_for": null
+      },
+      {
+        "id": "bedroom_1",
+        "name": "Bedroom 2",
+        "x": 25.68181818181818,
+        "y": 25.0,
+        "width": 14.318181818181818,
+        "length": 25.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "north",
+            "position": 0.1257142857142855,
+            "connects_to": "hall",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "east",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ],
+        "ensuite_for": null
+      },
+      {
+        "id": "hall",
+        "name": "Hallway",
+        "x": 0.0,
+        "y": 20.0,
+        "width": 40.0,
+        "length": 5.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "south",
+            "position": 0.5630681818181819,
+            "connects_to": "suite_hall_1",
+            "width": 5.518181818181817,
+            "kind": "opening"
+          },
+          {
+            "wall": "north",
+            "position": 0.4034836065573771,
+            "connects_to": "living_0",
+            "width": 12.478688524590165,
+            "kind": "opening"
+          },
+          {
+            "wall": "north",
+            "position": 0.684733606557377,
+            "connects_to": "dining_1",
+            "width": 8.421311475409833,
+            "kind": "opening"
+          },
+          {
+            "wall": "south",
+            "position": 0.045,
+            "connects_to": "kitchen",
+            "width": 2.8,
+            "kind": "door"
+          },
+          {
+            "wall": "south",
+            "position": 0.6870454545454544,
+            "connects_to": "bedroom_1",
+            "width": 2.8,
+            "kind": "door"
+          },
+          {
+            "wall": "north",
+            "position": 0.845,
+            "connects_to": "bath_0",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "west",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ],
+        "ensuite_for": null
+      },
+      {
+        "id": "parking",
+        "name": "Parking",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 9.5,
+        "length": 20.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "east",
+            "position": 0.09,
+            "connects_to": "living_0",
+            "width": 2.8,
+            "kind": "door"
+          },
+          {
+            "wall": "west",
+            "position": 0.5,
+            "connects_to": "outside",
+            "width": 8.0,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "north",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ],
+        "ensuite_for": null
+      },
+      {
+        "id": "living_0",
+        "name": "Living Room",
+        "x": 9.5,
+        "y": 0.0,
+        "width": 13.278688524590164,
+        "length": 20.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "south",
+            "position": 0.5,
+            "connects_to": "hall",
+            "width": 12.478688524590165,
+            "kind": "opening"
+          },
+          {
+            "wall": "east",
+            "position": 0.5,
+            "connects_to": "dining_1",
+            "width": 19.2,
+            "kind": "opening"
+          },
+          {
+            "wall": "west",
+            "position": 0.09,
+            "connects_to": "parking",
+            "width": 2.8,
+            "kind": "door"
+          },
+          {
+            "wall": "north",
+            "position": 0.5,
+            "connects_to": "outside",
+            "width": 3.0,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "north",
+            "position": 0.8064814814814815,
+            "width": 4.0
+          }
+        ],
+        "ensuite_for": null
+      },
+      {
+        "id": "dining_1",
+        "name": "Dining Room",
+        "x": 22.778688524590166,
+        "y": 0.0,
+        "width": 9.221311475409836,
+        "length": 20.0,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "south",
+            "position": 0.5,
+            "connects_to": "hall",
+            "width": 8.421311475409833,
+            "kind": "opening"
+          },
+          {
+            "wall": "west",
+            "position": 0.5,
+            "connects_to": "living_0",
+            "width": 19.2,
+            "kind": "opening"
+          },
+          {
+            "wall": "east",
+            "position": 0.328125,
+            "connects_to": "pub_bath_alcove",
+            "width": 12.325,
+            "kind": "opening"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "north",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ],
+        "ensuite_for": null
+      },
+      {
+        "id": "bath_0",
+        "name": "Bathroom",
+        "x": 32.0,
+        "y": 13.125,
+        "width": 8.0,
+        "length": 6.875,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "south",
+            "position": 0.22499999999999964,
+            "connects_to": "hall",
+            "width": 2.8,
+            "kind": "door"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "east",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ],
+        "ensuite_for": null
+      },
+      {
+        "id": "pub_bath_alcove",
+        "name": "Hallway Alcove",
+        "x": 32.0,
+        "y": 0.0,
+        "width": 8.0,
+        "length": 13.125,
+        "floor": 0,
+        "doors": [
+          {
+            "wall": "west",
+            "position": 0.5,
+            "connects_to": "dining_1",
+            "width": 12.325,
+            "kind": "opening"
+          }
+        ],
+        "windows": [
+          {
+            "wall": "east",
+            "position": 0.5,
+            "width": 4.0
+          }
+        ],
+        "ensuite_for": null
+      }
+    ],
+    "wall_colors": {
+      "kitchen:north": "#89abcd"
+    },
+    "design_name": "Standard layout",
+    "planning_source": "standard_solver"
+  },
+  "layout_history": [
+    {
+      "version": 1,
+      "plot_width_ft": 40.0,
+      "plot_length_ft": 50.0,
+      "planning_notes": [
+        "Standard solver fallback: no AI arrangement passed validation.",
+        "Entrance opens directly into the living room at the north side.",
+        "A thin hallway (≈5 ft) provides private circulation to the bedroom wing.",
+        "Kitchen abuts the dining room for efficient service.",
+        "Each bedroom shares a wall with the hallway, satisfying the 3.6 ft public‑wall requirement.",
+        "One bedroom includes its attached bathroom; the other uses the common bathroom."
+      ],
+      "rooms": [
+        {
+          "id": "kitchen",
+          "name": "Kitchen",
+          "x": 0.0,
+          "y": 25.0,
+          "width": 11.363636363636363,
+          "length": 25.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.15839999999999999,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "attbath_0",
+          "name": "Att. Bath 1",
+          "x": 11.363636363636363,
+          "y": 25.0,
+          "width": 8.0,
+          "length": 6.875,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.2250000000000001,
+              "connects_to": "bedroom_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [],
+          "ensuite_for": "bedroom_0"
+        },
+        {
+          "id": "suite_hall_1",
+          "name": "Hallway Alcove 1",
+          "x": 19.363636363636363,
+          "y": 25.0,
+          "width": 6.318181818181818,
+          "length": 6.875,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.5000000000000003,
+              "connects_to": "hall",
+              "width": 5.518181818181817,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.2848920863309349,
+              "connects_to": "bedroom_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [],
+          "ensuite_for": null
+        },
+        {
+          "id": "bedroom_0",
+          "name": "Bedroom 1",
+          "x": 11.363636363636363,
+          "y": 31.875,
+          "width": 14.318181818181818,
+          "length": 18.125,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.12571428571428578,
+              "connects_to": "attbath_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.6844444444444443,
+              "connects_to": "suite_hall_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.5000000000000001,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "bedroom_1",
+          "name": "Bedroom 2",
+          "x": 25.68181818181818,
+          "y": 25.0,
+          "width": 14.318181818181818,
+          "length": 25.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.1257142857142855,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "hall",
+          "name": "Hallway",
+          "x": 0.0,
+          "y": 20.0,
+          "width": 40.0,
+          "length": 5.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.5630681818181819,
+              "connects_to": "suite_hall_1",
+              "width": 5.518181818181817,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.4034836065573771,
+              "connects_to": "living_0",
+              "width": 12.478688524590165,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.684733606557377,
+              "connects_to": "dining_1",
+              "width": 8.421311475409833,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.045,
+              "connects_to": "kitchen",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "south",
+              "position": 0.6870454545454544,
+              "connects_to": "bedroom_1",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.845,
+              "connects_to": "bath_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "parking",
+          "name": "Parking",
+          "x": 0.0,
+          "y": 0.0,
+          "width": 9.5,
+          "length": 20.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "east",
+              "position": 0.09,
+              "connects_to": "living_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "outside",
+              "width": 8.0,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "living_0",
+          "name": "Living Room",
+          "x": 9.5,
+          "y": 0.0,
+          "width": 13.278688524590164,
+          "length": 20.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 12.478688524590165,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.5,
+              "connects_to": "dining_1",
+              "width": 19.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "west",
+              "position": 0.09,
+              "connects_to": "parking",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.5,
+              "connects_to": "outside",
+              "width": 3.0,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.8064814814814815,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "dining_1",
+          "name": "Dining Room",
+          "x": 22.778688524590166,
+          "y": 0.0,
+          "width": 9.221311475409836,
+          "length": 20.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 8.421311475409833,
+              "kind": "opening"
+            },
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "living_0",
+              "width": 19.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.328125,
+              "connects_to": "pub_bath_alcove",
+              "width": 12.325,
+              "kind": "opening"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "bath_0",
+          "name": "Bathroom",
+          "x": 32.0,
+          "y": 13.125,
+          "width": 8.0,
+          "length": 6.875,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.22499999999999964,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "pub_bath_alcove",
+          "name": "Hallway Alcove",
+          "x": 32.0,
+          "y": 0.0,
+          "width": 8.0,
+          "length": 13.125,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "dining_1",
+              "width": 12.325,
+              "kind": "opening"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        }
+      ],
+      "wall_colors": {
+        "kitchen:north": "#89abcd"
+      },
+      "design_name": "Standard layout",
+      "planning_source": "standard_solver"
+    },
+    {
+      "version": 2,
+      "plot_width_ft": 40.0,
+      "plot_length_ft": 50.0,
+      "planning_notes": [
+        "Standard solver fallback: no AI arrangement passed validation.",
+        "Living room directly off north entrance for welcoming arrival.",
+        "Kitchen abuts dining room as a compact service core.",
+        "Each bedroom has its own bathroom (one attached, one common) for privacy.",
+        "Circulation achieved via direct adjacency; a small hallway only where needed."
+      ],
+      "rooms": [
+        {
+          "id": "kitchen",
+          "name": "Kitchen",
+          "x": 0.0,
+          "y": 32.0,
+          "width": 8.181818181818182,
+          "length": 18.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.21999999999999997,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "attbath_0",
+          "name": "Att. Bath 1",
+          "x": 8.181818181818182,
+          "y": 32.0,
+          "width": 8.0,
+          "length": 6.875,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.22500000000000014,
+              "connects_to": "bedroom_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [],
+          "ensuite_for": "bedroom_0"
+        },
+        {
+          "id": "suite_hall_1",
+          "name": "Hallway Alcove 1",
+          "x": 16.18181818181818,
+          "y": 32.0,
+          "width": 7.909090909090912,
+          "length": 6.875,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 7.109090909090914,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.22758620689655124,
+              "connects_to": "bedroom_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [],
+          "ensuite_for": null
+        },
+        {
+          "id": "bedroom_0",
+          "name": "Bedroom 1",
+          "x": 8.181818181818182,
+          "y": 38.875,
+          "width": 15.909090909090912,
+          "length": 11.125,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.11314285714285717,
+              "connects_to": "attbath_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.6159999999999995,
+              "connects_to": "suite_hall_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.5000000000000002,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "bedroom_1",
+          "name": "Bedroom 2",
+          "x": 24.090909090909093,
+          "y": 32.0,
+          "width": 15.909090909090908,
+          "length": 18.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.11314285714285698,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "hall",
+          "name": "Hallway",
+          "x": 0.0,
+          "y": 27.0,
+          "width": 40.0,
+          "length": 5.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.5034090909090909,
+              "connects_to": "suite_hall_1",
+              "width": 7.109090909090914,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.22131147540983606,
+              "connects_to": "living_0",
+              "width": 16.904918032786885,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.5963114754098361,
+              "connects_to": "dining_1",
+              "width": 11.495081967213114,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.045,
+              "connects_to": "kitchen",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "south",
+              "position": 0.6472727272727272,
+              "connects_to": "bedroom_1",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.7949999999999999,
+              "connects_to": "bath_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "living_0",
+          "name": "Living Room",
+          "x": 0.0,
+          "y": 0.0,
+          "width": 17.704918032786885,
+          "length": 27.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 16.904918032786885,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.5,
+              "connects_to": "dining_1",
+              "width": 26.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.5,
+              "connects_to": "outside",
+              "width": 3.0,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "dining_1",
+          "name": "Dining Room",
+          "x": 17.704918032786885,
+          "y": 0.0,
+          "width": 12.295081967213115,
+          "length": 27.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 11.495081967213114,
+              "kind": "opening"
+            },
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "living_0",
+              "width": 26.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.39814814814814814,
+              "connects_to": "pub_bath_alcove",
+              "width": 20.7,
+              "kind": "opening"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "bath_0",
+          "name": "Bathroom",
+          "x": 30.0,
+          "y": 21.5,
+          "width": 10.0,
+          "length": 5.5,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.17999999999999972,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "pub_bath_alcove",
+          "name": "Hallway Alcove",
+          "x": 30.0,
+          "y": 0.0,
+          "width": 10.0,
+          "length": 21.5,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "dining_1",
+              "width": 20.7,
+              "kind": "opening"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        }
+      ],
+      "wall_colors": {
+        "kitchen:north": "#89abcd"
+      },
+      "design_name": "Standard layout",
+      "planning_source": "standard_solver"
+    },
+    {
+      "version": 3,
+      "plot_width_ft": 40.0,
+      "plot_length_ft": 50.0,
+      "planning_notes": [
+        "Standard solver fallback: no AI arrangement passed validation.",
+        "Entrance opens directly into the living room at the north side.",
+        "A thin hallway (≈5 ft) provides private circulation to the bedroom wing.",
+        "Kitchen abuts the dining room for efficient service.",
+        "Each bedroom shares a wall with the hallway, satisfying the 3.6 ft public‑wall requirement.",
+        "One bedroom includes its attached bathroom; the other uses the common bathroom."
+      ],
+      "rooms": [
+        {
+          "id": "kitchen",
+          "name": "Kitchen",
+          "x": 0.0,
+          "y": 25.0,
+          "width": 11.363636363636363,
+          "length": 25.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.15839999999999999,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "attbath_0",
+          "name": "Att. Bath 1",
+          "x": 11.363636363636363,
+          "y": 25.0,
+          "width": 8.0,
+          "length": 6.875,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.2250000000000001,
+              "connects_to": "bedroom_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [],
+          "ensuite_for": "bedroom_0"
+        },
+        {
+          "id": "suite_hall_1",
+          "name": "Hallway Alcove 1",
+          "x": 19.363636363636363,
+          "y": 25.0,
+          "width": 6.318181818181818,
+          "length": 6.875,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.5000000000000003,
+              "connects_to": "hall",
+              "width": 5.518181818181817,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.2848920863309349,
+              "connects_to": "bedroom_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [],
+          "ensuite_for": null
+        },
+        {
+          "id": "bedroom_0",
+          "name": "Bedroom 1",
+          "x": 11.363636363636363,
+          "y": 31.875,
+          "width": 14.318181818181818,
+          "length": 18.125,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.12571428571428578,
+              "connects_to": "attbath_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.6844444444444443,
+              "connects_to": "suite_hall_1",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "south",
+              "position": 0.5000000000000001,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "bedroom_1",
+          "name": "Bedroom 2",
+          "x": 25.68181818181818,
+          "y": 25.0,
+          "width": 14.318181818181818,
+          "length": 25.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "north",
+              "position": 0.1257142857142855,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "hall",
+          "name": "Hallway",
+          "x": 0.0,
+          "y": 20.0,
+          "width": 40.0,
+          "length": 5.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.5630681818181819,
+              "connects_to": "suite_hall_1",
+              "width": 5.518181818181817,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.4034836065573771,
+              "connects_to": "living_0",
+              "width": 12.478688524590165,
+              "kind": "opening"
+            },
+            {
+              "wall": "north",
+              "position": 0.684733606557377,
+              "connects_to": "dining_1",
+              "width": 8.421311475409833,
+              "kind": "opening"
+            },
+            {
+              "wall": "south",
+              "position": 0.045,
+              "connects_to": "kitchen",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "south",
+              "position": 0.6870454545454544,
+              "connects_to": "bedroom_1",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.845,
+              "connects_to": "bath_0",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "parking",
+          "name": "Parking",
+          "x": 0.0,
+          "y": 0.0,
+          "width": 9.5,
+          "length": 20.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "east",
+              "position": 0.09,
+              "connects_to": "living_0",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "outside",
+              "width": 8.0,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "living_0",
+          "name": "Living Room",
+          "x": 9.5,
+          "y": 0.0,
+          "width": 13.278688524590164,
+          "length": 20.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 12.478688524590165,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.5,
+              "connects_to": "dining_1",
+              "width": 19.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "west",
+              "position": 0.09,
+              "connects_to": "parking",
+              "width": 2.8,
+              "kind": "door"
+            },
+            {
+              "wall": "north",
+              "position": 0.5,
+              "connects_to": "outside",
+              "width": 3.0,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.8064814814814815,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "dining_1",
+          "name": "Dining Room",
+          "x": 22.778688524590166,
+          "y": 0.0,
+          "width": 9.221311475409836,
+          "length": 20.0,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.5,
+              "connects_to": "hall",
+              "width": 8.421311475409833,
+              "kind": "opening"
+            },
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "living_0",
+              "width": 19.2,
+              "kind": "opening"
+            },
+            {
+              "wall": "east",
+              "position": 0.328125,
+              "connects_to": "pub_bath_alcove",
+              "width": 12.325,
+              "kind": "opening"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "north",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "bath_0",
+          "name": "Bathroom",
+          "x": 32.0,
+          "y": 13.125,
+          "width": 8.0,
+          "length": 6.875,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "south",
+              "position": 0.22499999999999964,
+              "connects_to": "hall",
+              "width": 2.8,
+              "kind": "door"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        },
+        {
+          "id": "pub_bath_alcove",
+          "name": "Hallway Alcove",
+          "x": 32.0,
+          "y": 0.0,
+          "width": 8.0,
+          "length": 13.125,
+          "floor": 0,
+          "doors": [
+            {
+              "wall": "west",
+              "position": 0.5,
+              "connects_to": "dining_1",
+              "width": 12.325,
+              "kind": "opening"
+            }
+          ],
+          "windows": [
+            {
+              "wall": "east",
+              "position": 0.5,
+              "width": 4.0
+            }
+          ],
+          "ensuite_for": null
+        }
+      ],
+      "wall_colors": {
+        "kitchen:north": "#89abcd"
+      },
+      "design_name": "Standard layout",
+      "planning_source": "standard_solver"
+    }
+  ],
+  "model_3d_version": 3,
+  "layout_options": [],
+  "revision_specs": {
+    "1": {
+      "plot_width_ft": 40.0,
+      "plot_length_ft": 50.0,
+      "num_bedrooms": 2,
+      "num_bathrooms": 2,
+      "num_floors": 1,
+      "must_have_rooms": [
+        "Living Room",
+        "Dining Room",
+        "Kitchen",
+        "Parking"
+      ],
+      "style_notes": "Compact hallway, balanced bedrooms, kitchen adjacent to dining room",
+      "required_adjacencies": [],
+      "entrance_facing": "north",
+      "budget_notes": null,
+      "max_bathroom_area_sqft": 80.0,
+      "max_parking_area_sqft": 250.0,
+      "max_bathroom_bedroom_ratio": 0.75,
+      "attached_bathroom_bedrooms": [
+        1
+      ],
+      "include_dining_room": true
+    },
+    "2": {
+      "plot_width_ft": 40.0,
+      "plot_length_ft": 50.0,
+      "num_bedrooms": 2,
+      "num_bathrooms": 2,
+      "num_floors": 1,
+      "must_have_rooms": [
+        "Living Room",
+        "Dining Room",
+        "Kitchen"
+      ],
+      "style_notes": "Compact hallway, balanced bedrooms, kitchen adjacent to dining room",
+      "required_adjacencies": [],
+      "entrance_facing": "north",
+      "budget_notes": null,
+      "max_bathroom_area_sqft": 80.0,
+      "max_parking_area_sqft": 250.0,
+      "max_bathroom_bedroom_ratio": 0.75,
+      "attached_bathroom_bedrooms": [
+        1
+      ],
+      "include_dining_room": true
+    },
+    "3": {
+      "plot_width_ft": 40.0,
+      "plot_length_ft": 50.0,
+      "num_bedrooms": 2,
+      "num_bathrooms": 2,
+      "num_floors": 1,
+      "must_have_rooms": [
+        "Living Room",
+        "Dining Room",
+        "Kitchen",
+        "Parking"
+      ],
+      "style_notes": "Compact hallway, balanced bedrooms, kitchen adjacent to dining room",
+      "required_adjacencies": [],
+      "entrance_facing": "north",
+      "budget_notes": null,
+      "max_bathroom_area_sqft": 80.0,
+      "max_parking_area_sqft": 250.0,
+      "max_bathroom_bedroom_ratio": 0.75,
+      "attached_bathroom_bedrooms": [
+        1
+      ],
+      "include_dining_room": true
+    }
+  },
+  "revision_parents": {
+    "1": null,
+    "2": 1,
+    "3": null
+  }
+}

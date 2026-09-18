@@ -1,0 +1,671 @@
+{
+  "plot_width_ft": 40.0,
+  "plot_length_ft": 40.0,
+  "wall_height_ft": 9.0,
+  "wall_thickness_ft": 0.5,
+  "floor_to_floor_ft": 9.3,
+  "num_floors": 1,
+  "walls": [
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 0.0,
+      "hi": 15.3,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 18.3,
+      "hi": 19.950000000000003,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 23.950000000000003,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 15.0,
+      "lo": 0.0,
+      "hi": 0.3999999999999999,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 15.0,
+      "lo": 3.1999999999999997,
+      "hi": 8.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 17.5,
+      "lo": 25.6,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 20.0,
+      "lo": 0.0,
+      "hi": 8.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 35.0,
+      "lo": 0.0,
+      "hi": 0.3999999999999999,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 35.0,
+      "lo": 3.1999999999999997,
+      "hi": 8.4,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 35.0,
+      "lo": 25.200000000000003,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 0.0,
+      "hi": 2.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 6.0,
+      "hi": 16.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 20.5,
+      "hi": 32.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 36.5,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 0.0,
+      "hi": 5.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 9.5,
+      "hi": 15.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 19.5,
+      "hi": 25.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 29.5,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 8.0,
+      "lo": 0.0,
+      "hi": 0.3999999999999999,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 8.0,
+      "lo": 3.1999999999999997,
+      "hi": 20.4,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 8.0,
+      "lo": 23.199999999999996,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 25.6,
+      "lo": 0.0,
+      "hi": 0.40000000000000036,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 25.6,
+      "lo": 17.1,
+      "hi": 17.9,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 25.6,
+      "lo": 20.699999999999996,
+      "hi": 35.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 29.0,
+      "lo": 35.0,
+      "hi": 35.4,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 29.0,
+      "lo": 38.199999999999996,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 0.0,
+      "hi": 6.75,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 10.75,
+      "hi": 24.25,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 28.25,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 8.0,
+      "lo": 0.3999999999999999,
+      "hi": 3.1999999999999997,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 15.0,
+      "lo": 0.3999999999999999,
+      "hi": 3.1999999999999997,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 5.5,
+      "hi": 9.5,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 5.5,
+      "hi": 9.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 15.5,
+      "hi": 19.5,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 15.5,
+      "hi": 19.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "v",
+      "fixed": 8.0,
+      "lo": 20.4,
+      "hi": 23.199999999999996,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 35.0,
+      "lo": 0.3999999999999999,
+      "hi": 3.1999999999999997,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 25.5,
+      "hi": 29.5,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 25.5,
+      "hi": 29.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 2.0,
+      "hi": 6.0,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 2.0,
+      "hi": 6.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "h",
+      "fixed": 35.0,
+      "lo": 8.4,
+      "hi": 25.200000000000003,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 25.6,
+      "lo": 0.40000000000000036,
+      "hi": 17.1,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 25.6,
+      "lo": 17.9,
+      "hi": 20.699999999999996,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 15.3,
+      "hi": 18.3,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 19.950000000000003,
+      "hi": 23.950000000000003,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 19.950000000000003,
+      "hi": 23.950000000000003,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 6.75,
+      "hi": 10.75,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 6.75,
+      "hi": 10.75,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 24.25,
+      "hi": 28.25,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 24.25,
+      "hi": 28.25,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "v",
+      "fixed": 29.0,
+      "lo": 35.4,
+      "hi": 38.199999999999996,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 16.5,
+      "hi": 20.5,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 16.5,
+      "hi": 20.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 32.5,
+      "hi": 36.5,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 32.5,
+      "hi": 36.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    }
+  ],
+  "windows": [
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 5.5,
+      "hi": 9.5,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 15.5,
+      "hi": 19.5,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 25.5,
+      "hi": 29.5,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 2.0,
+      "hi": 6.0,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 19.950000000000003,
+      "hi": 23.950000000000003,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 6.75,
+      "hi": 10.75,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 24.25,
+      "hi": 28.25,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 16.5,
+      "hi": 20.5,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 32.5,
+      "hi": 36.5,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    }
+  ],
+  "floor_slabs": [
+    {
+      "x": 0.0,
+      "y": 0.0,
+      "width": 8.0,
+      "length": 15.0,
+      "floor": 0,
+      "name": "Bedroom 1"
+    },
+    {
+      "x": 0.0,
+      "y": 15.0,
+      "width": 8.0,
+      "length": 5.0,
+      "floor": 0,
+      "name": "Att. Bath 1"
+    },
+    {
+      "x": 0.0,
+      "y": 20.0,
+      "width": 8.0,
+      "length": 15.0,
+      "floor": 0,
+      "name": "Bedroom 2"
+    },
+    {
+      "x": 0.0,
+      "y": 35.0,
+      "width": 8.0,
+      "length": 5.0,
+      "floor": 0,
+      "name": "Att. Bath 2"
+    },
+    {
+      "x": 8.0,
+      "y": 0.0,
+      "width": 17.6,
+      "length": 35.0,
+      "floor": 0,
+      "name": "Living Room"
+    },
+    {
+      "x": 25.6,
+      "y": 0.0,
+      "width": 14.399999999999999,
+      "length": 17.5,
+      "floor": 0,
+      "name": "Dining Room"
+    },
+    {
+      "x": 25.6,
+      "y": 17.5,
+      "width": 14.399999999999999,
+      "length": 17.5,
+      "floor": 0,
+      "name": "Kitchen"
+    },
+    {
+      "x": 8.0,
+      "y": 35.0,
+      "width": 21.0,
+      "length": 5.0,
+      "floor": 0,
+      "name": "Hallway 1"
+    },
+    {
+      "x": 29.0,
+      "y": 35.0,
+      "width": 11.0,
+      "length": 5.0,
+      "floor": 0,
+      "name": "Bathroom"
+    }
+  ]
+}

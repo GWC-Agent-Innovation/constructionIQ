@@ -353,6 +353,11 @@ def validate_requirements(layout: Layout, spec: HouseSpec) -> list[ValidationIss
         issues.append(ValidationIssue(message=message))
     if layout.plot_width_ft != spec.plot_width_ft or layout.plot_length_ft != spec.plot_length_ft:
         report("Layout plot dimensions must match the house specification.")
+    for parking in (r for r in layout.rooms if room_category(r.name) == "parking"):
+        area = parking.width * parking.length
+        if area > spec.max_parking_area_sqft + EPS:
+            report(f"{parking.name} occupies {area:g} sq ft; the parking limit is {spec.max_parking_area_sqft:g} sq ft. "
+                   "Reduce parking and give the remaining area to the home.")
     for bathroom in (r for r in layout.rooms if room_category(r.name) == "bathroom"):
         bedrooms = [r.width*r.length for r in layout.rooms
                     if r.floor == bathroom.floor and room_category(r.name) == "bedroom"]
@@ -390,7 +395,8 @@ def validate_requirements(layout: Layout, spec: HouseSpec) -> list[ValidationIss
     # num_bedrooms/num_bathrooms count check above, not a distinct named
     # room to require - the actual rooms may just be "Bathroom 1", etc.
     named_extras = [r for r in spec.must_have_rooms if room_category(r) not in ("bedroom", "bathroom")]
-    for required in ["living", "dining", "kitchen", *named_extras]:
+    required_base = ["living", "dining", "kitchen"] if spec.include_dining_room else ["living", "kitchen"]
+    for required in [*required_base, *named_extras]:
         tokens = set(normalized_room_name(required).split()) - {"room", "rooms", "area", "a", "the"}
         if tokens and not any(tokens <= set(name.split()) for name in names):
             report(f"Missing required space: {required}.")
@@ -401,6 +407,21 @@ def validate_layout(layout: Layout, spec: HouseSpec | None = None) -> list[Valid
     issues = validate_geometry(layout) + validate_doors(layout)
     if spec is not None:
         issues += validate_requirements(layout, spec)
+        for relation in spec.required_adjacencies:
+            def matching(name):
+                # Retain numbers so Bedroom 1 does not match Bedroom 2.
+                tokens = set(re.findall(r'[a-z]+|\d+', name.lower())) - {'room', 'the'}
+                return [room for room in layout.rooms
+                        if tokens <= set(re.findall(r'[a-z]+|\d+', room.name.lower()))]
+            first, second = matching(relation.a), matching(relation.b)
+            connected = any(
+                a.id != b.id and a.floor == b.floor and any(
+                    (span := shared_span(a, wall, b)) is not None and span[1] - span[0] >= MIN_SHARED_WALL_FT - EPS
+                    for wall in WALLS)
+                for a in first for b in second
+            )
+            if not connected:
+                issues.append(ValidationIssue(message=f"{relation.a} must be next to {relation.b}, sharing at least {MIN_SHARED_WALL_FT} ft of wall."))
         facing = (spec.entrance_facing or "").lower().strip()
         if facing in OPPOSITE and not any(r.floor == 0 and d.connects_to == "outside" and d.wall == facing
                                         for r in layout.rooms for d in r.doors):

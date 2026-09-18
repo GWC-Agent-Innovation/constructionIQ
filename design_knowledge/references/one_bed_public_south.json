@@ -1,0 +1,76 @@
+{
+  "id": "one_bed_public_south",
+  "source": "ConstructIQ original synthetic partition example; no external plan copied.",
+  "review_status": "synthetic_unreviewed",
+  "spec": {
+    "plot_width_ft": 30,
+    "plot_length_ft": 30,
+    "num_bedrooms": 1,
+    "num_bathrooms": 1,
+    "entrance_facing": "south",
+    "attached_bathroom_bedrooms": []
+  },
+  "proposal": {
+    "name": "one bed public south",
+    "root": "root",
+    "nodes": [
+      {
+        "id": "root",
+        "axis": "y",
+        "fraction": 0.3333333333333333,
+        "first": "north",
+        "second": "south"
+      },
+      {
+        "id": "north",
+        "axis": "x",
+        "fraction": 0.5,
+        "first": "bed",
+        "second": "service"
+      },
+      {
+        "id": "service",
+        "axis": "x",
+        "fraction": 0.3333333333333333,
+        "first": "bath",
+        "second": "kitchen"
+      },
+      {
+        "id": "south",
+        "axis": "x",
+        "fraction": 0.5,
+        "first": "living",
+        "second": "dining"
+      },
+      {
+        "id": "bed",
+        "room_key": "bedroom_0"
+      },
+      {
+        "id": "bath",
+        "room_key": "bath_0"
+      },
+      {
+        "id": "kitchen",
+        "room_key": "kitchen"
+      },
+      {
+        "id": "living",
+        "room_key": "living_0"
+      },
+      {
+        "id": "dining",
+        "room_key": "dining_1"
+      }
+    ]
+  },
+  "lessons": [
+    "Living and dining provide public access without a dedicated hallway.",
+    "A compact 50 sq ft common bathroom leaves more space for useful rooms."
+  ],
+  "limitations": [
+    "Synthetic example, not architect-reviewed.",
+    "Only one bedroom and a common bathroom; do not copy for ensuite requests.",
+    "Large public rooms are specific to this brief; furniture clearance is not checked."
+  ]
+}

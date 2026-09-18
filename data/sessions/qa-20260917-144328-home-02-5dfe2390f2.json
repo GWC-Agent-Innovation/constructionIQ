@@ -1,0 +1,42 @@
+{
+  "session_id": "qa-20260917-144328-home-02-5dfe2390f2",
+  "project_name": "QA 20260917-144328 Home 02",
+  "history": [
+    {
+      "role": "user",
+      "content": "Design a single-floor home, plot 26 feet wide and 30 feet long, west-facing entrance. Exactly 2 bedrooms and 1 bathrooms total. All bathrooms are common, no attached bathrooms. Include living room, separate dining room, kitchen. No parking. Keep hallway space compact, bedrooms balanced, and kitchen next to dining. Record these requirements and prepare to generate."
+    },
+    {
+      "role": "assistant",
+      "content": "Great, I’ve recorded a 26 ft × 30 ft plot with a west‑facing entrance, a single floor, 2 bedrooms, 1 common bathroom, and the standard living room, kitchen, separate dining room and kitchen‑adjacent layout. You also asked for a compact hallway and balanced bedroom placement, with no parking.\n\nWhen you’re ready, just click “Generate 3D home,” and let me know if you’d like any final tweaks."
+    }
+  ],
+  "spec": {
+    "plot_width_ft": 26.0,
+    "plot_length_ft": 30.0,
+    "num_bedrooms": 2,
+    "num_bathrooms": 1,
+    "num_floors": 1,
+    "must_have_rooms": [],
+    "style_notes": "compact hallway, bedrooms balanced, kitchen adjacent to dining",
+    "required_adjacencies": [
+      {
+        "a": "Kitchen",
+        "b": "Dining Room"
+      }
+    ],
+    "entrance_facing": "west",
+    "budget_notes": null,
+    "max_bathroom_area_sqft": 80.0,
+    "max_parking_area_sqft": 250.0,
+    "max_bathroom_bedroom_ratio": 0.75,
+    "attached_bathroom_bedrooms": [],
+    "include_dining_room": true
+  },
+  "layout": null,
+  "layout_history": [],
+  "model_3d_version": null,
+  "layout_options": [],
+  "revision_specs": {},
+  "revision_parents": {}
+}

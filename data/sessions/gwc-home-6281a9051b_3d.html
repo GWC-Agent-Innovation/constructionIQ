@@ -73,6 +73,9 @@ body {
 }
 .toolbar-actions button:hover { border-color: var(--accent); }
 .toolbar-actions svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.design-choice { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.design-choice[hidden] { display: none; }
+.design-choice select { max-width: 210px; padding: 8px; border-radius: 8px; background: var(--panel-2); color: var(--ink); border: 1px solid var(--muted); }
 .compass {
   display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 50%;
   background: var(--panel-2); border: 1px solid var(--line); font-family: 'IBM Plex Mono', monospace;
@@ -89,6 +92,25 @@ body {
 .stage-wrap { flex: 1; min-height: 0; position: relative; width: 100%; background: #05070a; overflow: hidden; }
 .stage-wrap canvas { display: block; width: 100%; height: 100%; cursor: grab; }
 .stage-wrap canvas:active { cursor: grabbing; }
+.paint-panel { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: min(510px, calc(100% - 32px)); box-sizing: border-box; padding: 14px 16px; border: 1px solid #68617b; border-radius: 18px; background: #191d2ef5; color: #eef1fa; box-shadow: 0 12px 40px #0007; backdrop-filter: blur(16px); z-index: 5; }
+.paint-panel[hidden] { display: none; }
+.is-walking .paint-panel { bottom: 180px; }
+.paint-heading, .paint-controls { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.paint-heading strong { flex: 1; font-size: 13px; }
+.paint-heading button, .paint-controls button { color: #eef1fa; border: 1px solid #797389; background: #303247; border-radius: 8px; padding: 7px 10px; cursor: pointer; }
+.paint-controls { margin-top: 10px; }
+.paint-controls button[data-paint-color] { width: 28px; height: 28px; border-radius: 50%; padding: 0; background: var(--swatch); border: 2px solid #ffffff66; }
+.paint-controls button[aria-pressed="true"] { outline: 2px solid #9de7ee; outline-offset: 2px; }
+.paint-controls input[type="color"] { width: 34px; height: 30px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.paint-controls input[type="text"] { width: 76px; height: 30px; box-sizing: border-box; padding: 0 8px; border: 1px solid #797389; border-radius: 8px; background: #191d2e; color: #eef1fa; font: 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .02em; }
+.paint-controls input[type="text"]:invalid { border-color: #d97575; }
+.paint-controls label { font-size: 11px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.paint-panel button:disabled, .paint-panel input:disabled { opacity: .4; cursor: default; }
+.paint-panel button:focus-visible, .paint-panel input:focus-visible { outline: 2px solid #9de7ee; outline-offset: 3px; }
+#paint-status { margin: 9px 0 0; font-size: 11px; color: #b9c9dd; }
+.is-painting canvas { cursor: crosshair; }
+@media (max-width: 560px) { .is-walking .paint-panel { bottom: 220px; } .paint-panel { padding: 10px; } }
 .walk-panel { position: absolute; bottom: 20px; left: 24px; right: 24px; display: grid; grid-template-columns: 130px minmax(0, 360px) 130px; justify-content: space-between; align-items: end; gap: 16px; color: #edf2ee; pointer-events: none; }
 .walk-panel[hidden] { display: none; }
 .walk-info { position: relative; padding: 5px; border: 1px solid #ffffff20; border-radius: 999px; background: #111a14e8; backdrop-filter: blur(12px); pointer-events: auto; width: 100%; max-width: 300px; justify-self: center; }
@@ -462,7 +484,7 @@ html.viewer-theme { --ink: var(--text); }
     </button>
     <div class="title-block">
       <h1>GWC-home</h1>
-      <p class="subtitle">11 rooms &middot; 2 BHK &middot; East entrance &middot; Residential</p>
+      <p class="subtitle">11 rooms &middot; 2 BHK &middot; West entrance &middot; Residential</p>
     </div>
     <div class="view-toolbar">
 
@@ -473,6 +495,8 @@ html.viewer-theme { --ink: var(--text); }
         <button id="reset-view">Reset Camera</button>
         <button id="top-view">Top View</button>
         <button id="walk-tour" aria-pressed="false" disabled>Walk inside</button>
+        <button id="paint-toggle" aria-pressed="false" aria-controls="paint-panel" disabled>Paint walls</button>
+        <label id="design-choice-label" class="design-choice" hidden>Design <select id="design-choice" aria-label="Choose a validated design"></select></label>
         <button id="fullscreen-btn" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
       </div>
     </div>
@@ -510,7 +534,7 @@ html.viewer-theme { --ink: var(--text); }
       <section class="plan-view" id="plan-view" hidden aria-label="2D floor plan and alignment details">
         <header class="plan-heading">
           <h2>GWC-home — Floor plan</h2>
-          <p>50 × 50 ft plot · East entrance · Revision 5</p>
+          <p>50 × 50 ft plot · West entrance · Revision 16</p>
         </header>
         <div class="plan-diagram"><svg xmlns="http://www.w3.org/2000/svg" width="1388" height="1478" viewBox="0 0 1388 1478" font-family="Arial, sans-serif">
 <title>ConstructIQ floor plan</title>
@@ -544,32 +568,34 @@ html.viewer-theme { --ink: var(--text); }
 <line x1="1284.4" y1="546" x2="1294" y2="546" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="94" y1="666" x2="103.6" y2="666" stroke="#303534" stroke-width="6" />
 <line x1="94" y1="666" x2="103.6" y2="666" stroke="#fbfbf7" stroke-width="3.6" />
-<line x1="664.544" y1="666" x2="683.744" y2="666" stroke="#303534" stroke-width="6" />
-<line x1="664.544" y1="666" x2="683.744" y2="666" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="630.607" y1="666" x2="649.807" y2="666" stroke="#303534" stroke-width="6" />
+<line x1="630.607" y1="666" x2="649.807" y2="666" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="1044.4" y1="666" x2="1294" y2="666" stroke="#303534" stroke-width="6" />
 <line x1="1044.4" y1="666" x2="1294" y2="666" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="1054" y1="1182" x2="1294" y2="1182" stroke="#303534" stroke-width="6" />
 <line x1="1054" y1="1182" x2="1294" y2="1182" stroke="#fbfbf7" stroke-width="3.6" />
-<line x1="94" y1="1314" x2="816.072" y2="1314" stroke="#303534" stroke-width="6" />
-<line x1="94" y1="1314" x2="816.072" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
-<line x1="912.072" y1="1314" x2="1126" y2="1314" stroke="#303534" stroke-width="6" />
-<line x1="912.072" y1="1314" x2="1126" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="1314" x2="319.103" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="1314" x2="319.103" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="415.103" y1="1314" x2="799.103" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="415.103" y1="1314" x2="799.103" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="895.103" y1="1314" x2="1126" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="895.103" y1="1314" x2="1126" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="1222" y1="1314" x2="1294" y2="1314" stroke="#303534" stroke-width="6" />
 <line x1="1222" y1="1314" x2="1294" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="94" y1="114" x2="94" y2="418.364" stroke="#303534" stroke-width="6" />
 <line x1="94" y1="114" x2="94" y2="418.364" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="94" y1="514.364" x2="94" y2="558" stroke="#303534" stroke-width="6" />
 <line x1="94" y1="514.364" x2="94" y2="558" stroke="#fbfbf7" stroke-width="3.6" />
-<line x1="94" y1="654" x2="94" y2="942" stroke="#303534" stroke-width="6" />
-<line x1="94" y1="654" x2="94" y2="942" stroke="#fbfbf7" stroke-width="3.6" />
-<line x1="94" y1="1038" x2="94" y2="1314" stroke="#303534" stroke-width="6" />
-<line x1="94" y1="1038" x2="94" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="654" x2="94" y2="954" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="654" x2="94" y2="954" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="94" y1="1026" x2="94" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="94" y1="1026" x2="94" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="286" y1="386.727" x2="286" y2="546" stroke="#303534" stroke-width="6" />
 <line x1="286" y1="386.727" x2="286" y2="546" stroke="#fbfbf7" stroke-width="3.6" />
-<line x1="674.144" y1="666" x2="674.144" y2="675.6" stroke="#303534" stroke-width="6" />
-<line x1="674.144" y1="666" x2="674.144" y2="675.6" stroke="#fbfbf7" stroke-width="3.6" />
-<line x1="674.144" y1="1304.4" x2="674.144" y2="1314" stroke="#303534" stroke-width="6" />
-<line x1="674.144" y1="1304.4" x2="674.144" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="640.207" y1="666" x2="640.207" y2="675.6" stroke="#303534" stroke-width="6" />
+<line x1="640.207" y1="666" x2="640.207" y2="675.6" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="640.207" y1="1304.4" x2="640.207" y2="1314" stroke="#303534" stroke-width="6" />
+<line x1="640.207" y1="1304.4" x2="640.207" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="694" y1="114" x2="694" y2="546" stroke="#303534" stroke-width="6" />
 <line x1="694" y1="114" x2="694" y2="546" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="886" y1="386.727" x2="886" y2="546" stroke="#303534" stroke-width="6" />
@@ -582,10 +608,8 @@ html.viewer-theme { --ink: var(--text); }
 <line x1="1054" y1="1258.8" x2="1054" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="1294" y1="114" x2="1294" y2="418.364" stroke="#303534" stroke-width="6" />
 <line x1="1294" y1="114" x2="1294" y2="418.364" stroke="#fbfbf7" stroke-width="3.6" />
-<line x1="1294" y1="514.364" x2="1294" y2="570" stroke="#303534" stroke-width="6" />
-<line x1="1294" y1="514.364" x2="1294" y2="570" stroke="#fbfbf7" stroke-width="3.6" />
-<line x1="1294" y1="642" x2="1294" y2="876" stroke="#303534" stroke-width="6" />
-<line x1="1294" y1="642" x2="1294" y2="876" stroke="#fbfbf7" stroke-width="3.6" />
+<line x1="1294" y1="514.364" x2="1294" y2="876" stroke="#303534" stroke-width="6" />
+<line x1="1294" y1="514.364" x2="1294" y2="876" stroke="#fbfbf7" stroke-width="3.6" />
 <line x1="1294" y1="972" x2="1294" y2="1314" stroke="#303534" stroke-width="6" />
 <line x1="1294" y1="972" x2="1294" y2="1314" stroke="#fbfbf7" stroke-width="3.6" />
 </g>
@@ -621,20 +645,20 @@ html.viewer-theme { --ink: var(--text); }
 <line x1="1296.8" y1="876" x2="1296.8" y2="972" stroke="#65776d" stroke-width="0.8" />
 </g>
 <g class="window">
-<line x1="816.072" y1="1311.2" x2="912.072" y2="1311.2" stroke="#65776d" stroke-width="0.8" />
-<line x1="816.072" y1="1314" x2="912.072" y2="1314" stroke="#65776d" stroke-width="0.8" />
-<line x1="816.072" y1="1316.8" x2="912.072" y2="1316.8" stroke="#65776d" stroke-width="0.8" />
+<line x1="799.103" y1="1311.2" x2="895.103" y2="1311.2" stroke="#65776d" stroke-width="0.8" />
+<line x1="799.103" y1="1314" x2="895.103" y2="1314" stroke="#65776d" stroke-width="0.8" />
+<line x1="799.103" y1="1316.8" x2="895.103" y2="1316.8" stroke="#65776d" stroke-width="0.8" />
 </g>
-<g class="door"><path d="M 1222 570 A 72 72 0 0 0 1294 642" fill="none" stroke="#7d8581" stroke-width="0.9"/><line x1="1294" y1="570" x2="1222" y2="570" stroke="#303534" stroke-width="1.5" /><circle cx="1294" cy="570" r="1.5" fill="#303534"/></g>
 <g class="window">
 <line x1="91.2" y1="558" x2="91.2" y2="654" stroke="#65776d" stroke-width="0.8" />
 <line x1="94" y1="558" x2="94" y2="654" stroke="#65776d" stroke-width="0.8" />
 <line x1="96.8" y1="558" x2="96.8" y2="654" stroke="#65776d" stroke-width="0.8" />
 </g>
+<g class="door"><path d="M 166 954 A 72 72 0 0 1 94 1026" fill="none" stroke="#7d8581" stroke-width="0.9"/><line x1="94" y1="954" x2="166" y2="954" stroke="#303534" stroke-width="1.5" /><circle cx="94" cy="954" r="1.5" fill="#303534"/></g>
 <g class="window">
-<line x1="91.2" y1="942" x2="91.2" y2="1038" stroke="#65776d" stroke-width="0.8" />
-<line x1="94" y1="942" x2="94" y2="1038" stroke="#65776d" stroke-width="0.8" />
-<line x1="96.8" y1="942" x2="96.8" y2="1038" stroke="#65776d" stroke-width="0.8" />
+<line x1="319.103" y1="1311.2" x2="415.103" y2="1311.2" stroke="#65776d" stroke-width="0.8" />
+<line x1="319.103" y1="1314" x2="415.103" y2="1314" stroke="#65776d" stroke-width="0.8" />
+<line x1="319.103" y1="1316.8" x2="415.103" y2="1316.8" stroke="#65776d" stroke-width="0.8" />
 </g>
 <g class="window">
 <line x1="1291.2" y1="418.364" x2="1291.2" y2="514.364" stroke="#65776d" stroke-width="0.8" />
@@ -670,12 +694,12 @@ html.viewer-theme { --ink: var(--text); }
 <text x="694" y="620" font-size="12" text-anchor="middle" fill="#28302e" >50 x 5 ft</text>
 </g>
 <g class="room-label" data-room="living_0">
-<text x="384.072" y="986" font-size="14" text-anchor="middle" fill="#28302e" >Living Room</text>
-<text x="384.072" y="1004" font-size="12" text-anchor="middle" fill="#28302e" >24.1727 x 27 ft</text>
+<text x="367.103" y="986" font-size="14" text-anchor="middle" fill="#28302e" >Living Room</text>
+<text x="367.103" y="1004" font-size="12" text-anchor="middle" fill="#28302e" >22.7586 x 27 ft</text>
 </g>
 <g class="room-label" data-room="dining_1">
-<text x="864.072" y="986" font-size="14" text-anchor="middle" fill="#28302e" >Dining Room</text>
-<text x="864.072" y="1004" font-size="12" text-anchor="middle" fill="#28302e" >15.8273 x 27 ft</text>
+<text x="847.103" y="986" font-size="14" text-anchor="middle" fill="#28302e" >Dining Room</text>
+<text x="847.103" y="1004" font-size="12" text-anchor="middle" fill="#28302e" >17.2414 x 27 ft</text>
 </g>
 <g class="room-label" data-room="kitchen">
 <text x="1174" y="920" font-size="14" text-anchor="middle" fill="#28302e" >Kitchen</text>
@@ -691,17 +715,17 @@ html.viewer-theme { --ink: var(--text); }
 <line x1="24" y1="1414" x2="1364" y2="1414" stroke="#303534" stroke-width="1.5" />
 <text x="34" y="1436" font-size="12" text-anchor="middle" fill="#28302e" style="text-anchor:start;font-weight:bold;letter-spacing:1px">CONSTRUCTIQ / RESIDENTIAL</text>
 <text x="34" y="1456" font-size="10" text-anchor="middle" fill="#28302e" style="text-anchor:start">CONCEPT PLAN / Dimensions in feet / Do not scale printed drawing</text>
-<text x="1354" y="1436" font-size="12" text-anchor="middle" fill="#28302e" style="text-anchor:end;font-weight:bold">A-01 / REV 05</text>
+<text x="1354" y="1436" font-size="12" text-anchor="middle" fill="#28302e" style="text-anchor:end;font-weight:bold">A-01 / REV 16</text>
 <text x="1354" y="1456" font-size="10" text-anchor="middle" fill="#28302e" style="text-anchor:end">Plot area 2,500 sq ft</text>
 </g>
 </svg></div>
         <section class="alignment-details">
           <h2>Room dimensions and alignment</h2>
-          <p>GWC-home · Revision 5 · East entrance · Total room-zone area: 2,500.0 sq ft.</p>
+          <p>GWC-home · Revision 16 · West entrance · Total room-zone area: 2,500.0 sq ft.</p>
           <p>North is up. Positions (X, Y) are measured in feet from the plot's northwest corner: X increases east and Y increases south. Floor 0 is the ground floor. Dimensions are east–west width × north–south length.</p>
           <div class="alignment-table-wrap"><table>
             <thead><tr><th>Room</th><th>Floor</th><th>Dimensions (ft)</th><th>Area (sq ft)</th><th>Position X, Y (ft)</th><th>Door / passage alignment</th><th>Windows</th></tr></thead>
-            <tbody><tr><td>Bedroom 1</td><td>0</td><td>25.00 × 11.36</td><td>284.1</td><td>0.00, 0.00</td><td>South to Att. Bath 1 (2.8 ft door); South to Hallway Alcove 1 (2.8 ft door)</td><td>North (4.0 ft)</td></tr><tr><td>Bedroom 2</td><td>0</td><td>25.00 × 11.36</td><td>284.1</td><td>25.00, 0.00</td><td>South to Att. Bath 2 (2.8 ft door); South to Hallway Alcove 2 (2.8 ft door)</td><td>North (4.0 ft)</td></tr><tr><td>Att. Bath 1</td><td>0</td><td>8.00 × 6.64</td><td>53.1</td><td>0.00, 11.36</td><td>North to Bedroom 1 (2.8 ft door)</td><td>West (4.0 ft)</td></tr><tr><td>Hallway Alcove 1</td><td>0</td><td>17.00 × 6.64</td><td>112.8</td><td>8.00, 11.36</td><td>South to Hallway (16.2 ft opening); North to Bedroom 1 (2.8 ft door)</td><td>None</td></tr><tr><td>Att. Bath 2</td><td>0</td><td>8.00 × 6.64</td><td>53.1</td><td>25.00, 11.36</td><td>North to Bedroom 2 (2.8 ft door)</td><td>None</td></tr><tr><td>Hallway Alcove 2</td><td>0</td><td>17.00 × 6.64</td><td>112.8</td><td>33.00, 11.36</td><td>South to Hallway (16.2 ft opening); North to Bedroom 2 (2.8 ft door)</td><td>East (4.0 ft)</td></tr><tr><td>Hallway</td><td>0</td><td>50.00 × 5.00</td><td>250.0</td><td>0.00, 18.00</td><td>North to Hallway Alcove 1 (16.2 ft opening); North to Hallway Alcove 2 (16.2 ft opening); South to Living Room (23.4 ft opening); South to Dining Room (15.0 ft opening); East to Outside (3.0 ft door)</td><td>West (4.0 ft)</td></tr><tr><td>Living Room</td><td>0</td><td>24.17 × 27.00</td><td>652.7</td><td>0.00, 23.00</td><td>North to Hallway (23.4 ft opening); East to Dining Room (26.2 ft opening)</td><td>West (4.0 ft)</td></tr><tr><td>Dining Room</td><td>0</td><td>15.83 × 27.00</td><td>427.3</td><td>24.17, 23.00</td><td>North to Hallway (15.0 ft opening); West to Living Room (26.2 ft opening); East to Kitchen (2.8 ft door); East to Bathroom (2.8 ft door)</td><td>South (4.0 ft)</td></tr><tr><td>Kitchen</td><td>0</td><td>10.00 × 21.50</td><td>215.0</td><td>40.00, 23.00</td><td>West to Dining Room (2.8 ft door)</td><td>East (4.0 ft)</td></tr><tr><td>Bathroom</td><td>0</td><td>10.00 × 5.50</td><td>55.0</td><td>40.00, 44.50</td><td>West to Dining Room (2.8 ft door)</td><td>South (4.0 ft)</td></tr></tbody>
+            <tbody><tr><td>Bedroom 1</td><td>0</td><td>25.00 × 11.36</td><td>284.1</td><td>0.00, 0.00</td><td>South to Att. Bath 1 (2.8 ft door); South to Hallway Alcove 1 (2.8 ft door)</td><td>North (4.0 ft)</td></tr><tr><td>Bedroom 2</td><td>0</td><td>25.00 × 11.36</td><td>284.1</td><td>25.00, 0.00</td><td>South to Att. Bath 2 (2.8 ft door); South to Hallway Alcove 2 (2.8 ft door)</td><td>North (4.0 ft)</td></tr><tr><td>Att. Bath 1</td><td>0</td><td>8.00 × 6.64</td><td>53.1</td><td>0.00, 11.36</td><td>North to Bedroom 1 (2.8 ft door)</td><td>West (4.0 ft)</td></tr><tr><td>Hallway Alcove 1</td><td>0</td><td>17.00 × 6.64</td><td>112.8</td><td>8.00, 11.36</td><td>South to Hallway (16.2 ft opening); North to Bedroom 1 (2.8 ft door)</td><td>None</td></tr><tr><td>Att. Bath 2</td><td>0</td><td>8.00 × 6.64</td><td>53.1</td><td>25.00, 11.36</td><td>North to Bedroom 2 (2.8 ft door)</td><td>None</td></tr><tr><td>Hallway Alcove 2</td><td>0</td><td>17.00 × 6.64</td><td>112.8</td><td>33.00, 11.36</td><td>South to Hallway (16.2 ft opening); North to Bedroom 2 (2.8 ft door)</td><td>East (4.0 ft)</td></tr><tr><td>Hallway</td><td>0</td><td>50.00 × 5.00</td><td>250.0</td><td>0.00, 18.00</td><td>North to Hallway Alcove 1 (16.2 ft opening); North to Hallway Alcove 2 (16.2 ft opening); South to Living Room (22.0 ft opening); South to Dining Room (16.4 ft opening)</td><td>West (4.0 ft)</td></tr><tr><td>Living Room</td><td>0</td><td>22.76 × 27.00</td><td>614.5</td><td>0.00, 23.00</td><td>North to Hallway (22.0 ft opening); East to Dining Room (26.2 ft opening); West to Outside (3.0 ft door)</td><td>South (4.0 ft)</td></tr><tr><td>Dining Room</td><td>0</td><td>17.24 × 27.00</td><td>465.5</td><td>22.76, 23.00</td><td>North to Hallway (16.4 ft opening); West to Living Room (26.2 ft opening); East to Kitchen (2.8 ft door); East to Bathroom (2.8 ft door)</td><td>South (4.0 ft)</td></tr><tr><td>Kitchen</td><td>0</td><td>10.00 × 21.50</td><td>215.0</td><td>40.00, 23.00</td><td>West to Dining Room (2.8 ft door)</td><td>East (4.0 ft)</td></tr><tr><td>Bathroom</td><td>0</td><td>10.00 × 5.50</td><td>55.0</td><td>40.00, 44.50</td><td>West to Dining Room (2.8 ft door)</td><td>South (4.0 ft)</td></tr></tbody>
           </table></div>
           <p>Concept design. Dimensions describe room zones; do not scale the printout. Structural design, setbacks and construction clearances require separate review.</p>
         </section>
@@ -710,6 +734,22 @@ html.viewer-theme { --ink: var(--text); }
         <canvas id="stage-canvas"></canvas>
         <div class="poster"><p>Preparing your 3D home...</p></div>
         <div class="hud-caption" id="mv-status">Loading 3D viewer&hellip;</div>
+        <section id="paint-panel" class="paint-panel" hidden aria-label="Wall paint tools">
+          <div class="paint-heading"><strong id="paint-wall-label">Select a wall</strong><button id="paint-close" type="button" aria-label="Close paint tools">Done</button></div>
+          <div class="paint-controls">
+            <button type="button" data-paint-color="#ece6da" style="--swatch:#ece6da" aria-label="Warm white" title="Warm white &middot; #ECE6DA"></button>
+            <button type="button" data-paint-color="#d4c3a5" style="--swatch:#d4c3a5" aria-label="Sand" title="Sand &middot; #D4C3A5"></button>
+            <button type="button" data-paint-color="#a9b8a3" style="--swatch:#a9b8a3" aria-label="Sage" title="Sage &middot; #A9B8A3"></button>
+            <button type="button" data-paint-color="#8daabe" style="--swatch:#8daabe" aria-label="Sky blue" title="Sky blue &middot; #8DAABE"></button>
+            <button type="button" data-paint-color="#c68e78" style="--swatch:#c68e78" aria-label="Terracotta" title="Terracotta &middot; #C68E78"></button>
+            <button type="button" data-paint-color="#b7a4bf" style="--swatch:#b7a4bf" aria-label="Lavender" title="Lavender &middot; #B7A4BF"></button>
+            <label for="paint-color">Custom</label><input id="paint-color" type="color" value="#ece6da" aria-label="Custom wall color">
+            <label for="paint-color-hex" class="sr-only">Hex code</label>
+            <input id="paint-color-hex" type="text" inputmode="text" maxlength="7" pattern="#[0-9A-Fa-f]{6}" placeholder="#ECE6DA" value="#ECE6DA" aria-label="Wall color hex code" spellcheck="false" autocomplete="off">
+            <button type="button" id="paint-reset">Reset wall</button><button type="button" id="paint-undo">Undo</button>
+          </div>
+          <p id="paint-status" role="status" aria-live="polite">Click an interior wall. Drag to look around.</p>
+        </section>
         <section class="walk-panel" id="walk-panel" hidden aria-label="Home walking tour">
           <div class="walk-stick-wrap">
             <div class="walk-dpad" role="group" aria-label="Hold directional buttons to walk">
@@ -746,14 +786,14 @@ html.viewer-theme { --ink: var(--text); }
           <label class="chip"><input type="checkbox" id="toggle-measurements"> Measurements</label>
         </div>
       </div>
-      <p class="drawing-note">CONCEPT PLAN &nbsp;&middot;&nbsp; 50&prime; &times; 50&prime; plot &nbsp;&middot;&nbsp; Dimensions in feet &nbsp;&middot;&nbsp; Rev 05</p>
+      <p class="drawing-note">CONCEPT PLAN &nbsp;&middot;&nbsp; 50&prime; &times; 50&prime; plot &nbsp;&middot;&nbsp; Dimensions in feet &nbsp;&middot;&nbsp; Rev 16</p>
     </div>
 
 
   </div>
   </div>
 
-  <footer>Concept design &middot; Revision 5. Room areas are rectangular zone areas. Structural design, setbacks and construction clearances require separate review.</footer>
+  <footer>Concept design &middot; Revision 16. Room areas are rectangular zone areas. Structural design, setbacks and construction clearances require separate review.</footer>
 
   <div class="generation-overlay hidden" id="generation-overlay" role="status" aria-live="polite">
     <div class="generation-overlay-card">
@@ -776,6 +816,7 @@ function selectDrawingView(model) {
   document.getElementById('reset-view').disabled = !model;
   document.getElementById('top-view').disabled = !model;
   document.getElementById('walk-tour').disabled = !model || !document.getElementById('stage-wrap').classList.contains('is-ready');
+  document.getElementById('paint-toggle').disabled = !model || !document.getElementById('stage-wrap').classList.contains('is-ready');
 }
 document.getElementById('view-model').onclick = () => selectDrawingView(true);
 document.getElementById('view-plan').onclick = () => selectDrawingView(false);
@@ -900,9 +941,14 @@ window.setTimeout(() => {
     try {
       const chatResult = await requestJson(`/sessions/${sessionId}/messages`, { message: text, auto_generate: true });
       addAiMessage('bot', chatResult.reply);
+      if (!chatResult.edit_applied) {
+        setBusy(false, 'Ready to modify your home');
+        hideOverlay();
+        return;
+      }
       setBusy(true, 'Rebuilding your 3D home\u2026 this can take a few minutes.');
       updateOverlay('Rebuilding your 3D home\u2026', 'This can take a few minutes while we redesign and re-render your model.');
-      const genResult = await requestJson(`/sessions/${sessionId}/generate`, { edit_request: text, build_3d: true });
+      const genResult = chatResult;
       const buildFailure = (genResult.warnings || []).find(message => message.startsWith('3D model build failed:'));
       if (buildFailure) throw new Error(buildFailure);
       const viewer = genResult.viewer_url;
@@ -922,9 +968,24 @@ window.setTimeout(() => {
     }
   }
 
+  async function loadHistory() {
+    try {
+      const res = await fetch(`/sessions/${sessionId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const history = data.session?.history || [];
+      if (!history.length) return;
+      log.replaceChildren();
+      for (const turn of history) addAiMessage(turn.role === 'user' ? 'user' : 'bot', turn.content);
+    } catch (err) {
+      // The static greeting already shown is a fine fallback; this is best-effort.
+    }
+  }
+
   if (!sessionId) {
     setBusy(true, 'Open this model through the ConstructIQ app to make changes here.', true);
   } else {
+    loadHistory();
     input.addEventListener('input', showListening);
     input.addEventListener('focus', showListening);
     form.addEventListener('submit', (e) => {
@@ -945,8 +1006,9 @@ window.setTimeout(() => {
 })();
 </script>
 
-<script id="scene-data" type="application/json">{"plot_width_ft": 50.0, "plot_length_ft": 50.0, "wall_height_ft": 9.0, "wall_thickness_ft": 0.5, "floor_to_floor_ft": 9.3, "num_floors": 1, "walls": [{"axis": "h", "fixed": 0.0, "lo": 0.0, "hi": 10.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 14.5, "hi": 35.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 39.5, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 0.0, "hi": 0.3999999999999999, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 3.1999999999999997, "hi": 8.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 11.200000000000001, "hi": 25.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 28.199999999999996, "hi": 33.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 36.199999999999996, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 0.0, "hi": 8.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 24.6, "hi": 33.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 49.6, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 0.0, "hi": 0.40000000000000036, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 23.772661870503597, "hi": 24.572661870503595, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 39.599999999999994, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 44.5, "lo": 40.0, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 0.0, "hi": 30.086330935251794, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 34.086330935251794, "hi": 43.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 47.0, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 0.0, "hi": 12.681818681818182, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 16.681818681818182, "hi": 18.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 22.5, "hi": 34.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 38.5, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 8.0, "lo": 11.363637363636364, "hi": 18.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 24.172661870503596, "lo": 23.0, "hi": 23.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 24.172661870503596, "lo": 49.6, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 25.0, "lo": 0.0, "hi": 18.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 33.0, "lo": 11.363637363636364, "hi": 18.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 23.0, "hi": 23.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 26.199999999999996, "hi": 44.9, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 47.699999999999996, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 0.0, "hi": 12.681818681818182, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 16.681818681818182, "hi": 19.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 22.0, "hi": 31.75, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 35.75, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 0.3999999999999999, "hi": 3.1999999999999997, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 18.0, "lo": 8.4, "hi": 24.6, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 8.4, "hi": 11.200000000000001, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 10.5, "hi": 14.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 10.5, "hi": 14.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 25.4, "hi": 28.199999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 33.4, "hi": 49.6, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 33.4, "hi": 36.199999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 0.0, "lo": 35.5, "hi": 39.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 35.5, "hi": 39.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 23.0, "lo": 0.40000000000000036, "hi": 23.772661870503597, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 24.572661870503595, "hi": 39.599999999999994, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 19.0, "hi": 22.0, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 18.5, "hi": 22.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 18.5, "hi": 22.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "v", "fixed": 24.172661870503596, "lo": 23.4, "hi": 49.6, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 34.5, "hi": 38.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 34.5, "hi": 38.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "v", "fixed": 40.0, "lo": 23.4, "hi": 26.199999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 44.9, "hi": 47.699999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 30.086330935251794, "hi": 34.086330935251794, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 30.086330935251794, "hi": 34.086330935251794, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "v", "fixed": 50.0, "lo": 31.75, "hi": 35.75, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 31.75, "hi": 35.75, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 50.0, "lo": 43.0, "hi": 47.0, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 43.0, "hi": 47.0, "floor": 0, "bottom": 0.0, "top": 3.0}], "windows": [{"axis": "v", "fixed": 0.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 0.0, "lo": 10.5, "hi": 14.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 50.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 0.0, "lo": 35.5, "hi": 39.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 0.0, "lo": 18.5, "hi": 22.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 0.0, "lo": 34.5, "hi": 38.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 50.0, "lo": 30.086330935251794, "hi": 34.086330935251794, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 50.0, "lo": 31.75, "hi": 35.75, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 50.0, "lo": 43.0, "hi": 47.0, "floor": 0, "bottom": 3.0, "top": 7.0}], "floor_slabs": [{"x": 0.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "name": "Att. Bath 1"}, {"x": 8.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "name": "Hallway Alcove 1"}, {"x": 0.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "name": "Bedroom 1"}, {"x": 25.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "name": "Att. Bath 2"}, {"x": 33.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "name": "Hallway Alcove 2"}, {"x": 25.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "name": "Bedroom 2"}, {"x": 0.0, "y": 18.0, "width": 50.0, "length": 5.0, "floor": 0, "name": "Hallway"}, {"x": 0.0, "y": 23.0, "width": 24.172661870503596, "length": 27.0, "floor": 0, "name": "Living Room"}, {"x": 24.172661870503596, "y": 23.0, "width": 15.827338129496402, "length": 27.0, "floor": 0, "name": "Dining Room"}, {"x": 40.0, "y": 23.0, "width": 10.0, "length": 21.5, "floor": 0, "name": "Kitchen"}, {"x": 40.0, "y": 44.5, "width": 10.0, "length": 5.5, "floor": 0, "name": "Bathroom"}]}</script>
-<script id="rooms-data" type="application/json">[{"id": "attbath_0", "name": "Att. Bath 1", "category": "bathroom", "x": 0.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "north", "position": 0.22499999999999998, "connects_to": "bedroom_0", "width": 2.8, "kind": "door"}], "windows": [{"wall": "west", "position": 0.5, "width": 4.0}]}, {"id": "suite_hall_1", "name": "Hallway Alcove 1", "category": null, "x": 8.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "south", "position": 0.5, "connects_to": "hall", "width": 16.2, "kind": "opening"}, {"wall": "north", "position": 0.10588235294117651, "connects_to": "bedroom_0", "width": 2.8, "kind": "door"}], "windows": []}, {"id": "bedroom_0", "name": "Bedroom 1", "category": "bedroom", "x": 0.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "doors": [{"wall": "south", "position": 0.072, "connects_to": "attbath_0", "width": 2.8, "kind": "door"}, {"wall": "south", "position": 0.392, "connects_to": "suite_hall_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "north", "position": 0.5, "width": 4.0}]}, {"id": "attbath_1", "name": "Att. Bath 2", "category": "bathroom", "x": 25.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "north", "position": 0.22499999999999964, "connects_to": "bedroom_1", "width": 2.8, "kind": "door"}], "windows": []}, {"id": "suite_hall_2", "name": "Hallway Alcove 2", "category": null, "x": 33.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "south", "position": 0.5, "connects_to": "hall", "width": 16.2, "kind": "opening"}, {"wall": "north", "position": 0.1058823529411763, "connects_to": "bedroom_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "east", "position": 0.5, "width": 4.0}]}, {"id": "bedroom_1", "name": "Bedroom 2", "category": "bedroom", "x": 25.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "doors": [{"wall": "south", "position": 0.07199999999999988, "connects_to": "attbath_1", "width": 2.8, "kind": "door"}, {"wall": "south", "position": 0.3919999999999999, "connects_to": "suite_hall_2", "width": 2.8, "kind": "door"}], "windows": [{"wall": "north", "position": 0.5, "width": 4.0}]}, {"id": "hall", "name": "Hallway", "category": null, "x": 0.0, "y": 18.0, "width": 50.0, "length": 5.0, "floor": 0, "doors": [{"wall": "north", "position": 0.33, "connects_to": "suite_hall_1", "width": 16.2, "kind": "opening"}, {"wall": "north", "position": 0.83, "connects_to": "suite_hall_2", "width": 16.2, "kind": "opening"}, {"wall": "south", "position": 0.24172661870503595, "connects_to": "living_0", "width": 23.372661870503595, "kind": "opening"}, {"wall": "south", "position": 0.6417266187050359, "connects_to": "dining_1", "width": 15.027338129496403, "kind": "opening"}, {"wall": "east", "position": 0.5, "connects_to": "outside", "width": 3.0, "kind": "door"}], "windows": [{"wall": "west", "position": 0.5, "width": 4.0}]}, {"id": "living_0", "name": "Living Room", "category": "living", "x": 0.0, "y": 23.0, "width": 24.172661870503596, "length": 27.0, "floor": 0, "doors": [{"wall": "north", "position": 0.5, "connects_to": "hall", "width": 23.372661870503595, "kind": "opening"}, {"wall": "east", "position": 0.5, "connects_to": "dining_1", "width": 26.2, "kind": "opening"}], "windows": [{"wall": "west", "position": 0.5, "width": 4.0}]}, {"id": "dining_1", "name": "Dining Room", "category": "dining", "x": 24.172661870503596, "y": 23.0, "width": 15.827338129496402, "length": 27.0, "floor": 0, "doors": [{"wall": "north", "position": 0.4999999999999998, "connects_to": "hall", "width": 15.027338129496403, "kind": "opening"}, {"wall": "west", "position": 0.5, "connects_to": "living_0", "width": 26.2, "kind": "opening"}, {"wall": "east", "position": 0.06666666666666655, "connects_to": "kitchen", "width": 2.8, "kind": "door"}, {"wall": "east", "position": 0.8629629629629628, "connects_to": "bath_0", "width": 2.8, "kind": "door"}], "windows": [{"wall": "south", "position": 0.4999999999999998, "width": 4.0}]}, {"id": "kitchen", "name": "Kitchen", "category": "kitchen", "x": 40.0, "y": 23.0, "width": 10.0, "length": 21.5, "floor": 0, "doors": [{"wall": "west", "position": 0.08372093023255801, "connects_to": "dining_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "east", "position": 0.5, "width": 4.0}]}, {"id": "bath_0", "name": "Bathroom", "category": "bathroom", "x": 40.0, "y": 44.5, "width": 10.0, "length": 5.5, "floor": 0, "doors": [{"wall": "west", "position": 0.32727272727272677, "connects_to": "dining_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "south", "position": 0.5, "width": 4.0}]}]</script>
+<script id="scene-data" type="application/json">{"plot_width_ft": 50.0, "plot_length_ft": 50.0, "wall_height_ft": 9.0, "wall_thickness_ft": 0.5, "floor_to_floor_ft": 9.3, "num_floors": 1, "walls": [{"axis": "h", "fixed": 0.0, "lo": 0.0, "hi": 10.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 14.5, "hi": 35.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 39.5, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 0.0, "hi": 0.3999999999999999, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 3.1999999999999997, "hi": 8.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 11.200000000000001, "hi": 25.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 28.199999999999996, "hi": 33.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 36.199999999999996, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 0.0, "hi": 8.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 24.6, "hi": 33.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 49.6, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 0.0, "hi": 0.40000000000000036, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 22.35862068965517, "hi": 23.158620689655173, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 39.6, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 44.5, "lo": 40.0, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 0.0, "hi": 9.379310344827585, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 13.379310344827585, "hi": 29.379310344827587, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 33.37931034482759, "hi": 43.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 47.0, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 0.0, "hi": 12.681818681818182, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 16.681818681818182, "hi": 18.5, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 22.5, "hi": 35.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 38.0, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 8.0, "lo": 11.363637363636364, "hi": 18.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 22.75862068965517, "lo": 23.0, "hi": 23.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 22.75862068965517, "lo": 49.6, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 25.0, "lo": 0.0, "hi": 18.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 33.0, "lo": 11.363637363636364, "hi": 18.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 23.0, "hi": 23.4, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 26.199999999999996, "hi": 44.9, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 47.699999999999996, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 0.0, "hi": 12.681818681818182, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 16.681818681818182, "hi": 31.75, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 35.75, "hi": 50.0, "floor": 0, "bottom": 0.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 0.3999999999999999, "hi": 3.1999999999999997, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 18.0, "lo": 8.4, "hi": 24.6, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 8.4, "hi": 11.200000000000001, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 10.5, "hi": 14.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 10.5, "hi": 14.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 25.4, "hi": 28.199999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 18.0, "lo": 33.4, "hi": 49.6, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 11.363637363636364, "lo": 33.4, "hi": 36.199999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 0.0, "lo": 35.5, "hi": 39.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 0.0, "lo": 35.5, "hi": 39.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 23.0, "lo": 0.40000000000000036, "hi": 22.35862068965517, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 23.0, "lo": 23.158620689655173, "hi": 39.6, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 18.5, "hi": 22.5, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 18.5, "hi": 22.5, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "v", "fixed": 22.75862068965517, "lo": 23.4, "hi": 49.6, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 0.0, "lo": 35.0, "hi": 38.0, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 9.379310344827585, "hi": 13.379310344827585, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 9.379310344827585, "hi": 13.379310344827585, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "v", "fixed": 40.0, "lo": 23.4, "hi": 26.199999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 40.0, "lo": 44.9, "hi": 47.699999999999996, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 29.379310344827587, "hi": 33.37931034482759, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 29.379310344827587, "hi": 33.37931034482759, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "v", "fixed": 50.0, "lo": 31.75, "hi": 35.75, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "v", "fixed": 50.0, "lo": 31.75, "hi": 35.75, "floor": 0, "bottom": 0.0, "top": 3.0}, {"axis": "h", "fixed": 50.0, "lo": 43.0, "hi": 47.0, "floor": 0, "bottom": 7.0, "top": 9.0}, {"axis": "h", "fixed": 50.0, "lo": 43.0, "hi": 47.0, "floor": 0, "bottom": 0.0, "top": 3.0}], "windows": [{"axis": "v", "fixed": 0.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 0.0, "lo": 10.5, "hi": 14.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 50.0, "lo": 12.681818681818182, "hi": 16.681818681818182, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 0.0, "lo": 35.5, "hi": 39.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 0.0, "lo": 18.5, "hi": 22.5, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 50.0, "lo": 9.379310344827585, "hi": 13.379310344827585, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 50.0, "lo": 29.379310344827587, "hi": 33.37931034482759, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "v", "fixed": 50.0, "lo": 31.75, "hi": 35.75, "floor": 0, "bottom": 3.0, "top": 7.0}, {"axis": "h", "fixed": 50.0, "lo": 43.0, "hi": 47.0, "floor": 0, "bottom": 3.0, "top": 7.0}], "floor_slabs": [{"x": 0.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "name": "Att. Bath 1"}, {"x": 8.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "name": "Hallway Alcove 1"}, {"x": 0.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "name": "Bedroom 1"}, {"x": 25.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "name": "Att. Bath 2"}, {"x": 33.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "name": "Hallway Alcove 2"}, {"x": 25.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "name": "Bedroom 2"}, {"x": 0.0, "y": 18.0, "width": 50.0, "length": 5.0, "floor": 0, "name": "Hallway"}, {"x": 0.0, "y": 23.0, "width": 22.75862068965517, "length": 27.0, "floor": 0, "name": "Living Room"}, {"x": 22.75862068965517, "y": 23.0, "width": 17.241379310344826, "length": 27.0, "floor": 0, "name": "Dining Room"}, {"x": 40.0, "y": 23.0, "width": 10.0, "length": 21.5, "floor": 0, "name": "Kitchen"}, {"x": 40.0, "y": 44.5, "width": 10.0, "length": 5.5, "floor": 0, "name": "Bathroom"}]}</script>
+<script id="rooms-data" type="application/json">[{"id": "attbath_0", "name": "Att. Bath 1", "category": "bathroom", "x": 0.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "north", "position": 0.22499999999999998, "connects_to": "bedroom_0", "width": 2.8, "kind": "door"}], "windows": [{"wall": "west", "position": 0.5, "width": 4.0}]}, {"id": "suite_hall_1", "name": "Hallway Alcove 1", "category": null, "x": 8.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "south", "position": 0.5, "connects_to": "hall", "width": 16.2, "kind": "opening"}, {"wall": "north", "position": 0.10588235294117651, "connects_to": "bedroom_0", "width": 2.8, "kind": "door"}], "windows": []}, {"id": "bedroom_0", "name": "Bedroom 1", "category": "bedroom", "x": 0.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "doors": [{"wall": "south", "position": 0.072, "connects_to": "attbath_0", "width": 2.8, "kind": "door"}, {"wall": "south", "position": 0.392, "connects_to": "suite_hall_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "north", "position": 0.5, "width": 4.0}]}, {"id": "attbath_1", "name": "Att. Bath 2", "category": "bathroom", "x": 25.0, "y": 11.363637363636364, "width": 8.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "north", "position": 0.22499999999999964, "connects_to": "bedroom_1", "width": 2.8, "kind": "door"}], "windows": []}, {"id": "suite_hall_2", "name": "Hallway Alcove 2", "category": null, "x": 33.0, "y": 11.363637363636364, "width": 17.0, "length": 6.6363626363636365, "floor": 0, "doors": [{"wall": "south", "position": 0.5, "connects_to": "hall", "width": 16.2, "kind": "opening"}, {"wall": "north", "position": 0.1058823529411763, "connects_to": "bedroom_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "east", "position": 0.5, "width": 4.0}]}, {"id": "bedroom_1", "name": "Bedroom 2", "category": "bedroom", "x": 25.0, "y": 0.0, "width": 25.0, "length": 11.363637363636364, "floor": 0, "doors": [{"wall": "south", "position": 0.07199999999999988, "connects_to": "attbath_1", "width": 2.8, "kind": "door"}, {"wall": "south", "position": 0.3919999999999999, "connects_to": "suite_hall_2", "width": 2.8, "kind": "door"}], "windows": [{"wall": "north", "position": 0.5, "width": 4.0}]}, {"id": "hall", "name": "Hallway", "category": null, "x": 0.0, "y": 18.0, "width": 50.0, "length": 5.0, "floor": 0, "doors": [{"wall": "north", "position": 0.33, "connects_to": "suite_hall_1", "width": 16.2, "kind": "opening"}, {"wall": "north", "position": 0.83, "connects_to": "suite_hall_2", "width": 16.2, "kind": "opening"}, {"wall": "south", "position": 0.2275862068965517, "connects_to": "living_0", "width": 21.95862068965517, "kind": "opening"}, {"wall": "south", "position": 0.6275862068965518, "connects_to": "dining_1", "width": 16.44137931034483, "kind": "opening"}], "windows": [{"wall": "west", "position": 0.5, "width": 4.0}]}, {"id": "living_0", "name": "Living Room", "category": "living", "x": 0.0, "y": 23.0, "width": 22.75862068965517, "length": 27.0, "floor": 0, "doors": [{"wall": "north", "position": 0.5, "connects_to": "hall", "width": 21.95862068965517, "kind": "opening"}, {"wall": "east", "position": 0.5, "connects_to": "dining_1", "width": 26.2, "kind": "opening"}, {"wall": "west", "position": 0.5, "connects_to": "outside", "width": 3.0, "kind": "door"}], "windows": [{"wall": "south", "position": 0.5, "width": 4.0}]}, {"id": "dining_1", "name": "Dining Room", "category": "dining", "x": 22.75862068965517, "y": 23.0, "width": 17.241379310344826, "length": 27.0, "floor": 0, "doors": [{"wall": "north", "position": 0.5000000000000001, "connects_to": "hall", "width": 16.44137931034483, "kind": "opening"}, {"wall": "west", "position": 0.5, "connects_to": "living_0", "width": 26.2, "kind": "opening"}, {"wall": "east", "position": 0.06666666666666655, "connects_to": "kitchen", "width": 2.8, "kind": "door"}, {"wall": "east", "position": 0.8629629629629628, "connects_to": "bath_0", "width": 2.8, "kind": "door"}], "windows": [{"wall": "south", "position": 0.5000000000000001, "width": 4.0}]}, {"id": "kitchen", "name": "Kitchen", "category": "kitchen", "x": 40.0, "y": 23.0, "width": 10.0, "length": 21.5, "floor": 0, "doors": [{"wall": "west", "position": 0.08372093023255801, "connects_to": "dining_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "east", "position": 0.5, "width": 4.0}]}, {"id": "bath_0", "name": "Bathroom", "category": "bathroom", "x": 40.0, "y": 44.5, "width": 10.0, "length": 5.5, "floor": 0, "doors": [{"wall": "west", "position": 0.32727272727272677, "connects_to": "dining_1", "width": 2.8, "kind": "door"}], "windows": [{"wall": "south", "position": 0.5, "width": 4.0}]}]</script>
+<script id="paint-data" type="application/json">{"living_0:west": "#8daabe", "living_0:south": "#a9b8a3", "living_0:north": "#a9b8a3"}</script>
 <script type="importmap">
 {
   "imports": {
@@ -962,9 +1024,40 @@ const [THREE, { OrbitControls }] = await Promise.all([
 ]);
 
 // Layout coordinates are feet: X runs east, Z runs south, Y is elevation.
+function splitPaintWall(part, rooms) {
+  const horizontal = part.axis === 'h';
+  const cuts = [part.lo, part.hi];
+  for (const room of rooms.filter(r => r.floor === part.floor)) {
+    for (const value of horizontal ? [room.x, room.x + room.width] : [room.y, room.y + room.length]) {
+      if (value > part.lo + 1e-6 && value < part.hi - 1e-6) cuts.push(value);
+    }
+  }
+  const sorted = [...new Set(cuts)].sort((a, b) => a - b);
+  return sorted.slice(1).map((hi, i) => {
+    const lo = sorted[i], middle = (lo + hi) / 2, faces = {};
+    for (const room of rooms.filter(r => r.floor === part.floor)) {
+      const start = horizontal ? room.x : room.y;
+      const end = start + (horizontal ? room.width : room.length);
+      if (middle <= start || middle >= end) continue;
+      const directions = horizontal
+        ? [['north', room.y, 4], ['south', room.y + room.length, 5]]
+        : [['west', room.x, 0], ['east', room.x + room.width, 1]];
+      for (const [wall, fixed, index] of directions) {
+        if (Math.abs(part.fixed - fixed) < 1e-5) {
+          faces[index] = { key: `${room.id}:${wall}`, roomId: room.id, wall,
+            label: `${room.name} · ${wall[0].toUpperCase() + wall.slice(1)} wall` };
+        }
+      }
+    }
+    return { ...part, lo, hi, faces };
+  });
+}
+
 function buildHouse(data) {
   const house = new THREE.Group();
   const wall = new THREE.MeshStandardMaterial({ color: 0xece6da, roughness: 0.85 });
+  const paintSurfaces = new Map();
+  house.userData.paintSurfaces = paintSurfaces;
   const floor = new THREE.MeshStandardMaterial({ color: 0xa99780, roughness: 0.9 });
   const roof = new THREE.MeshStandardMaterial({ color: 0x62716d, roughness: 0.85 });
   const frame = new THREE.MeshStandardMaterial({ color: 0x344a49, roughness: 0.55 });
@@ -988,7 +1081,22 @@ function buildHouse(data) {
       horizontal ? thickness : hi - lo, material);
   }
   for (const part of data.walls) {
-    span('Wall', part, part.bottom, part.top, data.wall_thickness_ft, wall);
+    for (const segment of splitPaintWall(part, data.paintRooms || [])) {
+      const materials = Array(6).fill(wall);
+      const faceKeys = {};
+      for (const [index, surface] of Object.entries(segment.faces)) {
+        if (!paintSurfaces.has(surface.key)) {
+          const material = wall.clone();
+          const color = data.wallColors?.[surface.key];
+          if (/^#[0-9a-f]{6}$/i.test(color || '')) material.color.set(color);
+          paintSurfaces.set(surface.key, { ...surface, material });
+        }
+        materials[index] = paintSurfaces.get(surface.key).material;
+        faceKeys[index] = surface.key;
+      }
+      const mesh = span('Wall', segment, segment.bottom, segment.top, data.wall_thickness_ft, materials);
+      mesh.userData.paintFaces = faceKeys;
+    }
   }
   for (const part of data.windows) {
     const trim = Math.min(0.12, (part.hi - part.lo) / 4);
@@ -1284,6 +1392,131 @@ function createWalkTour({ camera, controls, canvas, wrap, data, rooms, setStatus
   return { update, exit };
 }
 
+function createWallPainter({ camera, canvas, house, furnitureGroup, wrap, version, colors }) {
+  const toggle = document.getElementById('paint-toggle');
+  const panel = document.getElementById('paint-panel');
+  const label = document.getElementById('paint-wall-label');
+  const status = document.getElementById('paint-status');
+  const picker = document.getElementById('paint-color');
+  const hexInput = document.getElementById('paint-color-hex');
+  const reset = document.getElementById('paint-reset');
+  const undo = document.getElementById('paint-undo');
+  const swatches = [...panel.querySelectorAll('[data-paint-color]')];
+  const surfaces = house.userData.paintSurfaces;
+  const raycaster = new THREE.Raycaster();
+  const sessionId = location.pathname.match(/\/sessions\/([^/]+)\/assets\//)?.[1];
+  const history = [];
+  let selected = null, down = null, saving = false;
+  const defaultColor = '#ece6da';
+  function sync() {
+    picker.disabled = hexInput.disabled = reset.disabled = !selected || saving;
+    swatches.forEach(button => {
+      button.disabled = !selected || saving;
+      button.setAttribute('aria-pressed', String(!!selected && button.dataset.paintColor === picker.value));
+    });
+    undo.disabled = !history.length || saving;
+    panel.setAttribute('aria-busy', String(saving));
+  }
+  function select(key) {
+    if (selected) {
+      selected.material.emissive.set(0x000000);
+      if (!saving) selected.material.color.set(colors[selected.key] || defaultColor);
+    }
+    selected = surfaces.get(key) || null;
+    if (selected) {
+      selected.material.emissive.set(0x17242a);
+      picker.value = hexInput.value = '#' + selected.material.color.getHexString().toUpperCase();
+      label.textContent = selected.label;
+      status.textContent = 'Choose a color for this side of the wall.';
+    } else {
+      label.textContent = 'Select a wall';
+      status.textContent = 'Click an interior wall. Drag to look around.';
+    }
+    sync();
+  }
+  function open(active) {
+    panel.hidden = !active;
+    toggle.setAttribute('aria-pressed', String(active));
+    wrap.classList.toggle('is-painting', active);
+    if (!active) select(null);
+  }
+  async function save(surface, color, isUndo = false) {
+    if (!surface || saving) return;
+    const previous = colors[surface.key] || null;
+    surface.material.color.set(color || defaultColor);
+    picker.value = hexInput.value = (color || defaultColor).toUpperCase();
+    saving = true; sync();
+    status.textContent = 'Saving paint…';
+    try {
+      if (!sessionId) throw new Error('Open this project in ConstructIQ to save wall colors.');
+      const response = await fetch(`/sessions/${encodeURIComponent(sessionId)}/wall-paint`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ layout_version: version, room_id: surface.roomId, wall: surface.wall, color }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(typeof result.detail === 'string' ? result.detail : 'Could not save paint.');
+      if (color) colors[surface.key] = color; else delete colors[surface.key];
+      if (isUndo) history.pop();
+      else { history.push({ key: surface.key, color: previous }); if (history.length > 20) history.shift(); }
+      status.textContent = 'Saved to project';
+    } catch (error) {
+      surface.material.color.set(previous || defaultColor);
+      if (selected === surface) picker.value = hexInput.value = (previous || defaultColor).toUpperCase();
+      status.textContent = error.message + ' Previous color restored.';
+    } finally { saving = false; sync(); }
+  }
+  toggle.disabled = false;
+  toggle.addEventListener('click', () => open(panel.hidden));
+  document.getElementById('paint-close').addEventListener('click', () => open(false));
+  for (const id of ['view-plan', 'print-plan']) document.getElementById(id).addEventListener('click', () => open(false));
+  picker.addEventListener('input', () => {
+    if (selected && !saving) { selected.material.color.set(picker.value); hexInput.value = picker.value.toUpperCase(); sync(); }
+  });
+  picker.addEventListener('change', () => save(selected, picker.value));
+  const hexPattern = /^#[0-9A-Fa-f]{6}$/;
+  hexInput.addEventListener('input', () => {
+    if (selected && !saving && hexPattern.test(hexInput.value)) {
+      selected.material.color.set(hexInput.value);
+      picker.value = hexInput.value;
+      sync();
+    }
+  });
+  function commitHexInput() {
+    if (!selected || saving) return;
+    if (hexPattern.test(hexInput.value)) save(selected, hexInput.value.toUpperCase());
+    else hexInput.value = picker.value.toUpperCase(); // invalid text: revert to the last applied color
+  }
+  hexInput.addEventListener('change', commitHexInput);
+  hexInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); commitHexInput(); } });
+  swatches.forEach(button => button.addEventListener('click', () => save(selected, button.dataset.paintColor)));
+  reset.addEventListener('click', () => save(selected, null));
+  undo.addEventListener('click', () => {
+    const last = history[history.length - 1];
+    if (last) { select(last.key); save(selected, last.color, true); }
+  });
+  canvas.addEventListener('pointerdown', event => {
+    if (!panel.hidden && event.button === 0) down = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
+  });
+  canvas.addEventListener('pointermove', event => {
+    if (down?.id === event.pointerId && Math.hypot(event.clientX - down.x, event.clientY - down.y) > 5) down.moved = true;
+  });
+  canvas.addEventListener('pointercancel', () => { down = null; });
+  canvas.addEventListener('pointerup', event => {
+    const start = down; down = null;
+    if (panel.hidden || saving || !start || start.id !== event.pointerId || start.moved) return;
+    const rect = canvas.getBoundingClientRect();
+    raycaster.setFromCamera(new THREE.Vector2(
+      (event.clientX - rect.left) / rect.width * 2 - 1,
+      -(event.clientY - rect.top) / rect.height * 2 + 1), camera);
+    // Include occluders: clicking furniture/glass must not paint a wall behind it.
+    const meshes = [];
+    for (const root of [house, furnitureGroup]) root.traverseVisible(obj => { if (obj.isMesh) meshes.push(obj); });
+    const hit = raycaster.intersectObjects(meshes, false)[0];
+    select(hit?.object.userData.paintFaces?.[hit.face?.materialIndex]);
+  });
+  sync();
+}
+
 
 const status = document.getElementById('mv-status');
 const wrap = document.getElementById('stage-wrap');
@@ -1545,7 +1778,9 @@ function buildFurniture(roomsData, furnitureGroup, labelGroup) {
 }
 
 try {
-  const house = buildHouse(JSON.parse(document.getElementById('scene-data').textContent));
+  const roomsData = JSON.parse(document.getElementById('rooms-data').textContent);
+  const wallColors = JSON.parse(document.getElementById('paint-data').textContent);
+  const house = buildHouse({ ...JSON.parse(document.getElementById('scene-data').textContent), paintRooms: roomsData, wallColors });
   scene.add(house);
   const box = new THREE.Box3().setFromObject(house);
       const center = box.getCenter(new THREE.Vector3());
@@ -1568,7 +1803,11 @@ try {
       const solidMaterials = [];
       house.traverse((obj) => {
         if (obj.name && obj.name.toLowerCase().startsWith('roof')) roofParts.push(obj);
-        if (obj.isMesh && obj.material && !solidMaterials.includes(obj.material)) solidMaterials.push(obj.material);
+        if (obj.isMesh && obj.material) {
+          for (const material of Array.isArray(obj.material) ? obj.material : [obj.material]) {
+            if (!solidMaterials.includes(material)) solidMaterials.push(material);
+          }
+        }
       });
       roofParts.forEach((r) => { r.visible = false; });
 
@@ -1577,7 +1816,6 @@ try {
       roofToggle.addEventListener('change', () => { roofParts.forEach((r) => { r.visible = roofToggle.checked; }); });
       wireToggle.addEventListener('change', () => { solidMaterials.forEach((m) => { m.wireframe = wireToggle.checked; }); });
 
-      const roomsData = JSON.parse(document.getElementById('rooms-data').textContent);
       const furnitureGroup = new THREE.Group();
       const labelGroup = new THREE.Group();
       buildFurniture(roomsData, furnitureGroup, labelGroup);
@@ -1603,6 +1841,42 @@ try {
       tour = createWalkTour({ camera, controls, canvas, wrap,
         data: JSON.parse(document.getElementById('scene-data').textContent),
         rooms: roomsData, setStatus });
+      createWallPainter({ camera, canvas, house, furnitureGroup, wrap, version: 16, colors: wallColors });
+      const designSession = location.pathname.match(/\/sessions\/([^/]+)\/assets\//)?.[1];
+      if (designSession) {
+        const choice = document.getElementById('design-choice');
+        fetch(`/sessions/${encodeURIComponent(designSession)}`).then(response => {
+          if (!response.ok) throw new Error('Could not load design options.');
+          return response.json();
+        }).then(data => {
+          const options = data.session.layout_options || [];
+          if (options.length < 2) return;
+          options.forEach((option, index) => {
+            const item = document.createElement('option');
+            item.value = index;
+            item.textContent = option.design_name;
+            item.selected = option.design_name === data.session.layout.design_name;
+            choice.append(item);
+          });
+          document.getElementById('design-choice-label').hidden = false;
+          let previousChoice = choice.value;
+          choice.addEventListener('change', async () => {
+            choice.disabled = true;
+            setStatus('Preparing the selected design…', false);
+            try {
+              const response = await fetch(`/sessions/${encodeURIComponent(designSession)}/layout-choice`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ layout_version: 16, option_index: Number(choice.value) }),
+              });
+              const result = await response.json();
+              if (!response.ok) throw new Error(typeof result.detail === 'string' ? result.detail : result.detail?.issues?.join(' ') || 'Could not load this design.');
+              const url = new URL(result.viewer_url, location.href);
+              url.searchParams.set('v', result.session.layout.version);
+              location.href = url.href;
+            } catch (error) { choice.value = previousChoice; choice.disabled = false; setStatus(error.message, true); }
+          });
+        }).catch(error => console.warn(error.message));
+      }
 } catch (err) {
   console.error('failed to build Three.js house', err);
   setStatus('Load error: ' + err.message, true);

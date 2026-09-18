@@ -1,0 +1,44 @@
+{
+  "session_id": "qa-20260917-144424-home-05-1c62c970df",
+  "project_name": "QA 20260917-144424 Home 05",
+  "history": [
+    {
+      "role": "user",
+      "content": "Design a single-floor home, plot 40 feet wide and 50 feet long, east-facing entrance. Exactly 3 bedrooms and 2 bathrooms total. Attach one bathroom each to bedrooms [1]; all remaining bathrooms are common. Include living room, separate dining room, kitchen. No parking. Keep hallway space compact, bedrooms balanced, and kitchen next to dining. Record these requirements and prepare to generate."
+    },
+    {
+      "role": "assistant",
+      "content": "Could you tell me more about the home you'd like to design? Your brief is ready. Click the Generate 3D home button to create your design, or let me know if you would like any other adjustments."
+    }
+  ],
+  "spec": {
+    "plot_width_ft": 40.0,
+    "plot_length_ft": 50.0,
+    "num_bedrooms": 3,
+    "num_bathrooms": 2,
+    "num_floors": 1,
+    "must_have_rooms": [],
+    "style_notes": "Hallway space compact, bedrooms balanced, kitchen next to dining. No parking.",
+    "required_adjacencies": [
+      {
+        "a": "Kitchen",
+        "b": "Dining Room"
+      }
+    ],
+    "entrance_facing": "east",
+    "budget_notes": null,
+    "max_bathroom_area_sqft": 80.0,
+    "max_parking_area_sqft": 250.0,
+    "max_bathroom_bedroom_ratio": 0.75,
+    "attached_bathroom_bedrooms": [
+      1
+    ],
+    "include_dining_room": true
+  },
+  "layout": null,
+  "layout_history": [],
+  "model_3d_version": null,
+  "layout_options": [],
+  "revision_specs": {},
+  "revision_parents": {}
+}

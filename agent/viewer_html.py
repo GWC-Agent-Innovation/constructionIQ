@@ -55,6 +55,9 @@ def build_viewer_html(layout: Layout, spec: HouseSpec,
                       project_name: str | None = None) -> str:
     house_builder = Path(__file__).with_name("three_house.js").read_text(encoding="utf-8")
     walk_tour = Path(__file__).with_name("walk_tour.js").read_text(encoding="utf-8")
+    wall_painter = Path(__file__).with_name("wall_paint.js").read_text(encoding="utf-8")
+    room_editor = Path(__file__).with_name("room_edit.js").read_text(encoding="utf-8")
+    paint_json = json.dumps(layout.wall_colors).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
     studio_theme = (Path(__file__).resolve().parent.parent / "frontend" / "studio-theme.css").read_text(encoding="utf-8")
     scene_json = json.dumps(build_scene(layout).to_dict()).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
 
@@ -166,6 +169,9 @@ body {{
 }}
 .toolbar-actions button:hover {{ border-color: var(--accent); }}
 .toolbar-actions svg {{ width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }}
+.design-choice {{ display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }}
+.design-choice[hidden] {{ display: none; }}
+.design-choice select {{ max-width: 210px; padding: 8px; border-radius: 8px; background: var(--panel-2); color: var(--ink); border: 1px solid var(--muted); }}
 .compass {{
   display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 50%;
   background: var(--panel-2); border: 1px solid var(--line); font-family: 'IBM Plex Mono', monospace;
@@ -182,6 +188,25 @@ body {{
 .stage-wrap {{ flex: 1; min-height: 0; position: relative; width: 100%; background: #05070a; overflow: hidden; }}
 .stage-wrap canvas {{ display: block; width: 100%; height: 100%; cursor: grab; }}
 .stage-wrap canvas:active {{ cursor: grabbing; }}
+.paint-panel {{ position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: min(510px, calc(100% - 32px)); box-sizing: border-box; padding: 14px 16px; border: 1px solid #68617b; border-radius: 18px; background: #191d2ef5; color: #eef1fa; box-shadow: 0 12px 40px #0007; backdrop-filter: blur(16px); z-index: 5; }}
+.paint-panel[hidden] {{ display: none; }}
+.is-walking .paint-panel {{ bottom: 180px; }}
+.paint-heading, .paint-controls {{ display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }}
+.paint-heading strong {{ flex: 1; font-size: 13px; }}
+.paint-heading button, .paint-controls button {{ color: #eef1fa; border: 1px solid #797389; background: #303247; border-radius: 8px; padding: 7px 10px; cursor: pointer; }}
+.paint-controls {{ margin-top: 10px; }}
+.paint-controls button[data-paint-color] {{ width: 28px; height: 28px; border-radius: 50%; padding: 0; background: var(--swatch); border: 2px solid #ffffff66; }}
+.paint-controls button[aria-pressed="true"] {{ outline: 2px solid #9de7ee; outline-offset: 2px; }}
+.paint-controls input[type="color"] {{ width: 34px; height: 30px; padding: 0; border: 0; background: transparent; cursor: pointer; }}
+.paint-controls input[type="text"] {{ width: 76px; height: 30px; box-sizing: border-box; padding: 0 8px; border: 1px solid #797389; border-radius: 8px; background: #191d2e; color: #eef1fa; font: 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .02em; }}
+.paint-controls input[type="text"]:invalid {{ border-color: #d97575; }}
+.paint-controls label {{ font-size: 11px; }}
+.sr-only {{ position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }}
+.paint-panel button:disabled, .paint-panel input:disabled {{ opacity: .4; cursor: default; }}
+.paint-panel button:focus-visible, .paint-panel input:focus-visible {{ outline: 2px solid #9de7ee; outline-offset: 3px; }}
+#paint-status {{ margin: 9px 0 0; font-size: 11px; color: #b9c9dd; }}
+.is-painting canvas {{ cursor: crosshair; }}
+@media (max-width: 560px) {{ .is-walking .paint-panel {{ bottom: 220px; }} .paint-panel {{ padding: 10px; }} }}
 .walk-panel {{ position: absolute; bottom: 20px; left: 24px; right: 24px; display: grid; grid-template-columns: 130px minmax(0, 360px) 130px; justify-content: space-between; align-items: end; gap: 16px; color: #edf2ee; pointer-events: none; }}
 .walk-panel[hidden] {{ display: none; }}
 .walk-info {{ position: relative; padding: 5px; border: 1px solid #ffffff20; border-radius: 999px; background: #111a14e8; backdrop-filter: blur(12px); pointer-events: auto; width: 100%; max-width: 300px; justify-self: center; }}
@@ -258,6 +283,14 @@ body {{
 
 .plan-view {{ flex: 1; min-height: 0; overflow: auto; background: #fbfdfb; color: #18251d; padding: 20px; }}
 .plan-view svg {{ display: block; width: 100%; height: auto; }}
+.plan-view svg .room-hit, .plan-view svg .room-edge {{ pointer-events: none; }}
+.plan-view svg.is-editing .room-hit, .plan-view svg.is-editing .room-edge {{ pointer-events: auto; }}
+.plan-view svg.is-editing .room-hit:hover {{ fill: rgba(46,139,87,0.12); }}
+.plan-view svg .room-hit.is-selected {{ fill: rgba(46,139,87,0.28); }}
+.plan-view svg.is-editing .room-edge:hover {{ fill: rgba(46,139,87,0.35); }}
+#room-edit-toggle[aria-pressed="true"] {{ background: var(--accent); color: #ffffff; }}
+#room-edit-status {{ font-size: 12px; color: var(--muted); min-height: 1.4em; }}
+#room-edit-status.is-error {{ color: #c0392b; }}
 .plan-heading h2 {{ margin: 0 0 6px; }}
 .plan-heading p, .alignment-details p {{ font-size: 12px; line-height: 1.5; }}
 .alignment-details {{ margin-top: 24px; }}
@@ -400,10 +433,13 @@ footer {{ margin-top: 18px; font-size: 0.75rem; color: var(--muted); }}
       <div class="toolbar-actions">
         <button id="view-model" aria-pressed="true" aria-controls="stage-wrap">3D Model</button>
         <button id="view-plan" aria-pressed="false" aria-controls="plan-view">2D Plan</button>
+        <button id="room-edit-toggle" aria-pressed="false" title="Drag a room edge to resize it, or click two rooms to swap them">Edit rooms</button>
         <button id="print-plan" title="Print the 2D plan and alignment details">Print</button>
         <button id="reset-view">Reset Camera</button>
         <button id="top-view">Top View</button>
         <button id="walk-tour" aria-pressed="false" disabled>Walk inside</button>
+        <button id="paint-toggle" aria-pressed="false" aria-controls="paint-panel" disabled>Paint walls</button>
+        <label id="design-choice-label" class="design-choice" hidden>Design <select id="design-choice" aria-label="Choose a validated design"></select></label>
         <button id="fullscreen-btn" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
       </div>
     </div>
@@ -442,6 +478,7 @@ footer {{ margin-top: 18px; font-size: 0.75rem; color: var(--muted); }}
         <header class="plan-heading">
           <h2>{title} — Floor plan</h2>
           <p>{plot_w:g} × {plot_l:g} ft plot · {entrance} entrance · Revision {layout.version}</p>
+          <p id="room-edit-status" role="status" aria-live="polite"></p>
         </header>
         <div class="plan-diagram">{plan_svg}</div>
         <section class="alignment-details">
@@ -459,6 +496,22 @@ footer {{ margin-top: 18px; font-size: 0.75rem; color: var(--muted); }}
         <canvas id="stage-canvas"></canvas>
         <div class="poster"><p>Preparing your 3D home...</p></div>
         <div class="hud-caption" id="mv-status">Loading 3D viewer&hellip;</div>
+        <section id="paint-panel" class="paint-panel" hidden aria-label="Wall paint tools">
+          <div class="paint-heading"><strong id="paint-wall-label">Select a wall</strong><button id="paint-close" type="button" aria-label="Close paint tools">Done</button></div>
+          <div class="paint-controls">
+            <button type="button" data-paint-color="#ece6da" style="--swatch:#ece6da" aria-label="Warm white" title="Warm white &middot; #ECE6DA"></button>
+            <button type="button" data-paint-color="#d4c3a5" style="--swatch:#d4c3a5" aria-label="Sand" title="Sand &middot; #D4C3A5"></button>
+            <button type="button" data-paint-color="#a9b8a3" style="--swatch:#a9b8a3" aria-label="Sage" title="Sage &middot; #A9B8A3"></button>
+            <button type="button" data-paint-color="#8daabe" style="--swatch:#8daabe" aria-label="Sky blue" title="Sky blue &middot; #8DAABE"></button>
+            <button type="button" data-paint-color="#c68e78" style="--swatch:#c68e78" aria-label="Terracotta" title="Terracotta &middot; #C68E78"></button>
+            <button type="button" data-paint-color="#b7a4bf" style="--swatch:#b7a4bf" aria-label="Lavender" title="Lavender &middot; #B7A4BF"></button>
+            <label for="paint-color">Custom</label><input id="paint-color" type="color" value="#ece6da" aria-label="Custom wall color">
+            <label for="paint-color-hex" class="sr-only">Hex code</label>
+            <input id="paint-color-hex" type="text" inputmode="text" maxlength="7" pattern="#[0-9A-Fa-f]{{6}}" placeholder="#ECE6DA" value="#ECE6DA" aria-label="Wall color hex code" spellcheck="false" autocomplete="off">
+            <button type="button" id="paint-reset">Reset wall</button><button type="button" id="paint-undo">Undo</button>
+          </div>
+          <p id="paint-status" role="status" aria-live="polite">Click an interior wall. Drag to look around.</p>
+        </section>
         <section class="walk-panel" id="walk-panel" hidden aria-label="Home walking tour">
           <div class="walk-stick-wrap">
             <div class="walk-dpad" role="group" aria-label="Hold directional buttons to walk">
@@ -525,6 +578,7 @@ function selectDrawingView(model) {{
   document.getElementById('reset-view').disabled = !model;
   document.getElementById('top-view').disabled = !model;
   document.getElementById('walk-tour').disabled = !model || !document.getElementById('stage-wrap').classList.contains('is-ready');
+  document.getElementById('paint-toggle').disabled = !model || !document.getElementById('stage-wrap').classList.contains('is-ready');
 }}
 document.getElementById('view-model').onclick = () => selectDrawingView(true);
 document.getElementById('view-plan').onclick = () => selectDrawingView(false);
@@ -649,9 +703,14 @@ window.setTimeout(() => {{
     try {{
       const chatResult = await requestJson(`/sessions/${{sessionId}}/messages`, {{ message: text, auto_generate: true }});
       addAiMessage('bot', chatResult.reply);
+      if (!chatResult.edit_applied) {{
+        setBusy(false, 'Ready to modify your home');
+        hideOverlay();
+        return;
+      }}
       setBusy(true, 'Rebuilding your 3D home\\u2026 this can take a few minutes.');
       updateOverlay('Rebuilding your 3D home\\u2026', 'This can take a few minutes while we redesign and re-render your model.');
-      const genResult = await requestJson(`/sessions/${{sessionId}}/generate`, {{ edit_request: text, build_3d: true }});
+      const genResult = chatResult;
       const buildFailure = (genResult.warnings || []).find(message => message.startsWith('3D model build failed:'));
       if (buildFailure) throw new Error(buildFailure);
       const viewer = genResult.viewer_url;
@@ -671,9 +730,24 @@ window.setTimeout(() => {{
     }}
   }}
 
+  async function loadHistory() {{
+    try {{
+      const res = await fetch(`/sessions/${{sessionId}}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const history = data.session?.history || [];
+      if (!history.length) return;
+      log.replaceChildren();
+      for (const turn of history) addAiMessage(turn.role === 'user' ? 'user' : 'bot', turn.content);
+    }} catch (err) {{
+      // The static greeting already shown is a fine fallback; this is best-effort.
+    }}
+  }}
+
   if (!sessionId) {{
     setBusy(true, 'Open this model through the ConstructIQ app to make changes here.', true);
   }} else {{
+    loadHistory();
     input.addEventListener('input', showListening);
     input.addEventListener('focus', showListening);
     form.addEventListener('submit', (e) => {{
@@ -694,8 +768,17 @@ window.setTimeout(() => {{
 }})();
 </script>
 
+<script>
+{room_editor}
+(function() {{
+  const sessionId = (location.pathname.match(/\\/sessions\\/([^/]+)\\/assets\\//) || [])[1];
+  if (sessionId) createRoomEditor({{ sessionId, layoutVersion: {layout.version} }});
+}})();
+</script>
+
 <script id="scene-data" type="application/json">{scene_json}</script>
 <script id="rooms-data" type="application/json">{furnish_rooms}</script>
+<script id="paint-data" type="application/json">{paint_json}</script>
 <script type="importmap">
 {{
   "imports": {{
@@ -712,6 +795,7 @@ const [THREE, {{ OrbitControls }}] = await Promise.all([
 
 {house_builder}
 {walk_tour}
+{wall_painter}
 
 const status = document.getElementById('mv-status');
 const wrap = document.getElementById('stage-wrap');
@@ -973,7 +1057,9 @@ function buildFurniture(roomsData, furnitureGroup, labelGroup) {{
 }}
 
 try {{
-  const house = buildHouse(JSON.parse(document.getElementById('scene-data').textContent));
+  const roomsData = JSON.parse(document.getElementById('rooms-data').textContent);
+  const wallColors = JSON.parse(document.getElementById('paint-data').textContent);
+  const house = buildHouse({{ ...JSON.parse(document.getElementById('scene-data').textContent), paintRooms: roomsData, wallColors }});
   scene.add(house);
   const box = new THREE.Box3().setFromObject(house);
       const center = box.getCenter(new THREE.Vector3());
@@ -996,7 +1082,11 @@ try {{
       const solidMaterials = [];
       house.traverse((obj) => {{
         if (obj.name && obj.name.toLowerCase().startsWith('roof')) roofParts.push(obj);
-        if (obj.isMesh && obj.material && !solidMaterials.includes(obj.material)) solidMaterials.push(obj.material);
+        if (obj.isMesh && obj.material) {{
+          for (const material of Array.isArray(obj.material) ? obj.material : [obj.material]) {{
+            if (!solidMaterials.includes(material)) solidMaterials.push(material);
+          }}
+        }}
       }});
       roofParts.forEach((r) => {{ r.visible = false; }});
 
@@ -1005,7 +1095,6 @@ try {{
       roofToggle.addEventListener('change', () => {{ roofParts.forEach((r) => {{ r.visible = roofToggle.checked; }}); }});
       wireToggle.addEventListener('change', () => {{ solidMaterials.forEach((m) => {{ m.wireframe = wireToggle.checked; }}); }});
 
-      const roomsData = JSON.parse(document.getElementById('rooms-data').textContent);
       const furnitureGroup = new THREE.Group();
       const labelGroup = new THREE.Group();
       buildFurniture(roomsData, furnitureGroup, labelGroup);
@@ -1031,6 +1120,42 @@ try {{
       tour = createWalkTour({{ camera, controls, canvas, wrap,
         data: JSON.parse(document.getElementById('scene-data').textContent),
         rooms: roomsData, setStatus }});
+      createWallPainter({{ camera, canvas, house, furnitureGroup, wrap, version: {layout.version}, colors: wallColors }});
+      const designSession = location.pathname.match(/\\/sessions\\/([^/]+)\\/assets\\//)?.[1];
+      if (designSession) {{
+        const choice = document.getElementById('design-choice');
+        fetch(`/sessions/${{encodeURIComponent(designSession)}}`).then(response => {{
+          if (!response.ok) throw new Error('Could not load design options.');
+          return response.json();
+        }}).then(data => {{
+          const options = data.session.layout_options || [];
+          if (options.length < 2) return;
+          options.forEach((option, index) => {{
+            const item = document.createElement('option');
+            item.value = index;
+            item.textContent = option.design_name;
+            item.selected = option.design_name === data.session.layout.design_name;
+            choice.append(item);
+          }});
+          document.getElementById('design-choice-label').hidden = false;
+          let previousChoice = choice.value;
+          choice.addEventListener('change', async () => {{
+            choice.disabled = true;
+            setStatus('Preparing the selected design…', false);
+            try {{
+              const response = await fetch(`/sessions/${{encodeURIComponent(designSession)}}/layout-choice`, {{
+                method: 'POST', headers: {{ 'Content-Type': 'application/json' }},
+                body: JSON.stringify({{ layout_version: {layout.version}, option_index: Number(choice.value) }}),
+              }});
+              const result = await response.json();
+              if (!response.ok) throw new Error(typeof result.detail === 'string' ? result.detail : result.detail?.issues?.join(' ') || 'Could not load this design.');
+              const url = new URL(result.viewer_url, location.href);
+              url.searchParams.set('v', result.session.layout.version);
+              location.href = url.href;
+            }} catch (error) {{ choice.value = previousChoice; choice.disabled = false; setStatus(error.message, true); }}
+          }});
+        }}).catch(error => console.warn(error.message));
+      }}
 }} catch (err) {{
   console.error('failed to build Three.js house', err);
   setStatus('Load error: ' + err.message, true);

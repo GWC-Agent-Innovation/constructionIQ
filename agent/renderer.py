@@ -121,7 +121,7 @@ def render_svg(layout: Layout, wall_style: str = "double", show_dimensions: bool
     panel_w, panel_h = plot_w + 2 * PADDING, plot_h + 2 * PADDING + 90
     parts = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{panel_w:g}" '
              f'height="{panel_h*len(floors):g}" viewBox="0 0 {panel_w:g} {panel_h*len(floors):g}" '
-             'font-family="Arial, sans-serif">',
+             f'data-scale="{SCALE:g}" font-family="Arial, sans-serif">',
              '<title>ConstructIQ floor plan</title>',
              '<defs><marker id="dim" viewBox="0 0 10 10" refX="5" refY="5" '
              'markerWidth="5" markerHeight="5" orient="auto-start-reverse">'
@@ -170,6 +170,22 @@ def render_svg(layout: Layout, wall_style: str = "double", show_dimensions: bool
                               else (ox+fixed*SCALE+offset, oy+lo*SCALE, ox+fixed*SCALE+offset, oy+hi*SCALE))
                     parts.append(_line(*coords, stroke="#65776d", width=.8))
                 parts.append('</g>')
+        parts.append('<g class="room-edit-targets">')
+        for room in rooms:
+            rx, ry = ox + room.x * SCALE, oy + room.y * SCALE
+            rw, rh = room.width * SCALE, room.length * SCALE
+            parts.append(f'<rect class="room-hit" data-room="{escape(room.id, quote=True)}" '
+                        f'data-x="{room.x:g}" data-y="{room.y:g}" data-width="{room.width:g}" '
+                        f'data-length="{room.length:g}" x="{rx:g}" y="{ry:g}" width="{rw:g}" '
+                        f'height="{rh:g}" fill="transparent"/>')
+            strip = 10
+            edges = (("north", rx, ry - strip/2, rw, strip), ("south", rx, ry+rh - strip/2, rw, strip),
+                    ("west", rx - strip/2, ry, strip, rh), ("east", rx+rw - strip/2, ry, strip, rh))
+            for edge, ex, ey, ew, eh in edges:
+                parts.append(f'<rect class="room-edge" data-room="{escape(room.id, quote=True)}" '
+                            f'data-edge="{edge}" x="{ex:g}" y="{ey:g}" width="{ew:g}" height="{eh:g}" '
+                            'fill="transparent"/>')
+        parts.append('</g>')
         if show_labels:
             for room in rooms:
                 lines = textwrap.wrap(room.name, width=max(8, int(room.width*SCALE/8)-2))

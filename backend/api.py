@@ -10,6 +10,7 @@ import asyncio
 import logging
 import re
 from pathlib import Path
+from typing import Literal
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Path as ApiPath, status
@@ -23,7 +24,9 @@ from agent import spec_store
 from agent.logging_setup import configure_server_logging
 from agent.pipeline import generate_and_save
 from agent.spec_agent import run_turn
-from agent.schemas import SessionState
+from agent.schemas import SessionState, Wall, ChatTurn
+from agent.project_undo import is_undo_request, undo_last_edit
+from agent.room_edit import resize_room, swap_rooms
 from agent.viewer_html import build_viewer_html
 
 # Mirror console output into data/logs/backend.log before anything else prints,
@@ -160,9 +163,48 @@ async def get_session(session_id: str = ApiPath(pattern=r"^[A-Za-z0-9_-]{1,80}$"
 async def add_message(body: MessageRequest, session_id: str = ApiPath(pattern=r"^[A-Za-z0-9_-]{1,80}$")) -> dict:
     async with _lock_for(session_id):
         session = _load_session_or_404(session_id)
+        original = session.model_copy(deep=True)
+        if session.layout is not None:
+            session.revision_specs.setdefault(session.layout.version, session.spec.model_copy(deep=True))
+        if is_undo_request(body.message):
+            session.history.append(ChatTurn(role='user', content=body.message))
+            output, issues = await run_in_threadpool(undo_last_edit, session)
+            applied = output is not None
+            reply = 'Restored the previous saved design.' if applied else ' '.join(issues)
+            session.history.append(ChatTurn(role='assistant', content=reply))
+            await run_in_threadpool(spec_store.save, session)
+            response = _session_response(session)
+            response.update(reply=reply, edit_applied=applied, issues=issues)
+            return response
+        edit_applied = False
+        edit_issues = []
         print(f"\n[Chat] [{session_id}] User: {body.message}", flush=True)
         try:
-            reply = await run_in_threadpool(run_turn, session, body.message, body.auto_generate)
+            tool_called: list[bool] = []
+            reply = await run_in_threadpool(run_turn, session, body.message, body.auto_generate, tool_called)
+            if body.auto_generate:
+                # Not just a spec diff: the model can legitimately re-record
+                # an unchanged field (e.g. re-submitting identical style_notes
+                # after being asked to apply a request it had already noted)
+                # - that's still a genuine attempt worth rebuilding for, not
+                # a silent no-op the user has to notice and re-ask about.
+                if session.spec != original.spec or (tool_called and tool_called[0]):
+                    output, edit_issues = await run_in_threadpool(
+                        generate_and_save, session, body.message, True, False, True,
+                    )
+                    edit_applied = output is not None
+                    if not edit_applied:
+                        session.spec = original.spec
+                        session.layout = original.layout
+                        session.layout_history = original.layout_history
+                        session.model_3d_version = original.model_3d_version
+                        session.layout_options = original.layout_options
+                        reply = "Your previous design has been kept. " + " ".join(edit_issues)
+                    else:
+                        reply = "Your changes have been applied to the floor plan and 3D model."
+                else:
+                    reply = "No changes applied. " + reply
+                session.history[-1].content = reply
             await run_in_threadpool(spec_store.save, session)
             print(f"[Chat] [{session_id}] AI Architect: {reply[:120]}...\n", flush=True)
         except Exception as exc:
@@ -171,7 +213,97 @@ async def add_message(body: MessageRequest, session_id: str = ApiPath(pattern=r"
                                 detail=f"Requirement agent failed: {exc}") from exc
     response = _session_response(session)
     response["reply"] = reply
+    response["edit_applied"] = edit_applied
+    response["issues"] = edit_issues
     return response
+
+
+class LayoutChoiceRequest(BaseModel):
+    layout_version: int = Field(ge=1)
+    option_index: int = Field(ge=0, le=2)
+
+
+@app.post("/sessions/{session_id}/layout-choice")
+async def choose_layout(body: LayoutChoiceRequest, session_id: str = ApiPath(pattern=r"^[A-Za-z0-9_-]{1,80}$")) -> dict:
+    async with _lock_for(session_id):
+        session = _load_session_or_404(session_id)
+        if session.layout is None or session.layout.version != body.layout_version:
+            raise HTTPException(status_code=409, detail="The plan has changed. Reload to see current design options.")
+        if body.option_index >= len(session.layout_options):
+            raise HTTPException(status_code=404, detail="Design option not found.")
+        output, issues = await run_in_threadpool(
+            generate_and_save, session, None, True, False, True,
+            session.layout_options[body.option_index],
+        )
+        if output is None:
+            raise HTTPException(status_code=422, detail={"issues": issues})
+        return _session_response(session)
+
+
+class WallPaintRequest(BaseModel):
+    layout_version: int = Field(ge=1)
+    room_id: str = Field(min_length=1, max_length=100)
+    wall: Wall
+    color: str | None = Field(default=None, pattern=r"^#[0-9a-fA-F]{6}$")
+
+
+@app.post("/sessions/{session_id}/wall-paint")
+async def paint_wall(body: WallPaintRequest, session_id: str = ApiPath(pattern=r"^[A-Za-z0-9_-]{1,80}$")) -> dict:
+    async with _lock_for(session_id):
+        session = _load_session_or_404(session_id)
+        if session.layout is None or session.layout.version != body.layout_version:
+            raise HTTPException(status_code=409, detail="The floor plan has changed. Reload before painting.")
+        if not any(room.id == body.room_id for room in session.layout.rooms):
+            raise HTTPException(status_code=404, detail="Room not found in the current plan.")
+        key = f"{body.room_id}:{body.wall}"
+        if body.color is None:
+            session.layout.wall_colors.pop(key, None)
+        else:
+            session.layout.wall_colors[key] = body.color.lower()
+        for previous in session.layout_history:
+            if previous.version == session.layout.version:
+                previous.wall_colors = dict(session.layout.wall_colors)
+        await run_in_threadpool(spec_store.save, session)
+        return {"wall_key": key, "color": session.layout.wall_colors.get(key),
+                "layout_version": session.layout.version}
+
+
+class RoomEditRequest(BaseModel):
+    layout_version: int = Field(ge=1)
+    action: Literal["resize", "swap"]
+    room_id: str = Field(min_length=1, max_length=100)
+    other_room_id: str | None = Field(default=None, min_length=1, max_length=100)
+    edge: Wall | None = None
+    delta_ft: float | None = None
+
+
+@app.post("/sessions/{session_id}/room-edit")
+async def edit_room(body: RoomEditRequest, session_id: str = ApiPath(pattern=r"^[A-Za-z0-9_-]{1,80}$")) -> dict:
+    async with _lock_for(session_id):
+        session = _load_session_or_404(session_id)
+        if session.layout is None or session.layout.version != body.layout_version:
+            raise HTTPException(status_code=409, detail="The floor plan has changed. Reload before editing.")
+        room_ids = {room.id for room in session.layout.rooms}
+        if body.room_id not in room_ids:
+            raise HTTPException(status_code=404, detail="Room not found in the current plan.")
+        if body.action == "resize":
+            if body.edge is None or body.delta_ft is None:
+                raise HTTPException(status_code=422, detail="edge and delta_ft are required to resize a room.")
+            new_layout, issues = resize_room(session.layout, session.spec, body.room_id, body.edge, body.delta_ft)
+        else:
+            if body.other_room_id is None:
+                raise HTTPException(status_code=422, detail="other_room_id is required to swap rooms.")
+            if body.other_room_id not in room_ids:
+                raise HTTPException(status_code=404, detail="Room not found in the current plan.")
+            new_layout, issues = swap_rooms(session.layout, session.spec, body.room_id, body.other_room_id)
+        if new_layout is None:
+            raise HTTPException(status_code=422, detail={"issues": issues})
+        output, issues = await run_in_threadpool(
+            generate_and_save, session, None, True, False, True, new_layout,
+        )
+        if output is None:
+            raise HTTPException(status_code=422, detail={"issues": issues})
+        return _session_response(session)
 
 
 @app.post("/sessions/{session_id}/generate")

@@ -1,0 +1,591 @@
+{
+  "plot_width_ft": 40.0,
+  "plot_length_ft": 40.0,
+  "wall_height_ft": 9.0,
+  "wall_thickness_ft": 0.5,
+  "floor_to_floor_ft": 9.3,
+  "num_floors": 1,
+  "walls": [
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 0.0,
+      "hi": 18.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 22.0,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 24.0,
+      "lo": 0.0,
+      "hi": 0.3999999999999999,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 24.0,
+      "lo": 3.1999999999999997,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 29.0,
+      "lo": 0.0,
+      "hi": 7.4,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 29.0,
+      "lo": 13.6,
+      "hi": 14.4,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 29.0,
+      "lo": 22.6,
+      "hi": 23.4,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 29.0,
+      "lo": 26.199999999999996,
+      "hi": 33.4,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 29.0,
+      "lo": 36.199999999999996,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 34.5,
+      "lo": 23.0,
+      "hi": 33.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 0.0,
+      "hi": 8.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 12.5,
+      "hi": 16.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 20.5,
+      "hi": 26.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 30.0,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 0.0,
+      "hi": 24.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 28.5,
+      "hi": 32.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 36.5,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 7.0,
+      "lo": 29.0,
+      "hi": 29.4,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 7.0,
+      "lo": 32.199999999999996,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 14.0,
+      "lo": 29.0,
+      "hi": 29.4,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 14.0,
+      "lo": 39.6,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 23.0,
+      "lo": 29.0,
+      "hi": 34.9,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 23.0,
+      "lo": 39.6,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 33.0,
+      "lo": 29.0,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 0.0,
+      "hi": 25.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 28.0,
+      "hi": 32.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 36.5,
+      "hi": 40.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 24.0,
+      "lo": 0.3999999999999999,
+      "hi": 3.1999999999999997,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 18.0,
+      "hi": 22.0,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 18.0,
+      "hi": 22.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "h",
+      "fixed": 29.0,
+      "lo": 14.4,
+      "hi": 22.6,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 29.0,
+      "lo": 7.4,
+      "hi": 13.6,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 29.0,
+      "lo": 33.4,
+      "hi": 36.199999999999996,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 29.0,
+      "lo": 23.4,
+      "hi": 26.199999999999996,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 25.0,
+      "hi": 28.0,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 24.5,
+      "hi": 28.5,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 24.5,
+      "hi": 28.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "v",
+      "fixed": 7.0,
+      "lo": 29.4,
+      "hi": 32.199999999999996,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 32.5,
+      "hi": 36.5,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 32.5,
+      "hi": 36.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "v",
+      "fixed": 14.0,
+      "lo": 29.4,
+      "hi": 39.6,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 8.5,
+      "hi": 12.5,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 8.5,
+      "hi": 12.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "v",
+      "fixed": 23.0,
+      "lo": 34.9,
+      "hi": 39.6,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 16.5,
+      "hi": 20.5,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 16.5,
+      "hi": 20.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 32.5,
+      "hi": 36.5,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 32.5,
+      "hi": 36.5,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 26.0,
+      "hi": 30.0,
+      "floor": 0,
+      "bottom": 7.0,
+      "top": 9.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 26.0,
+      "hi": 30.0,
+      "floor": 0,
+      "bottom": 0.0,
+      "top": 3.0
+    }
+  ],
+  "windows": [
+    {
+      "axis": "h",
+      "fixed": 0.0,
+      "lo": 18.0,
+      "hi": 22.0,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 24.5,
+      "hi": 28.5,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "v",
+      "fixed": 0.0,
+      "lo": 32.5,
+      "hi": 36.5,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 8.5,
+      "hi": 12.5,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 16.5,
+      "hi": 20.5,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "v",
+      "fixed": 40.0,
+      "lo": 32.5,
+      "hi": 36.5,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    },
+    {
+      "axis": "h",
+      "fixed": 40.0,
+      "lo": 26.0,
+      "hi": 30.0,
+      "floor": 0,
+      "bottom": 3.0,
+      "top": 7.0
+    }
+  ],
+  "floor_slabs": [
+    {
+      "x": 0.0,
+      "y": 0.0,
+      "width": 40.0,
+      "length": 24.0,
+      "floor": 0,
+      "name": "Bedroom 1"
+    },
+    {
+      "x": 0.0,
+      "y": 24.0,
+      "width": 40.0,
+      "length": 5.0,
+      "floor": 0,
+      "name": "Hallway"
+    },
+    {
+      "x": 0.0,
+      "y": 29.0,
+      "width": 7.0,
+      "length": 11.0,
+      "floor": 0,
+      "name": "Kitchen"
+    },
+    {
+      "x": 7.0,
+      "y": 29.0,
+      "width": 7.0,
+      "length": 11.0,
+      "floor": 0,
+      "name": "Dining Room"
+    },
+    {
+      "x": 14.0,
+      "y": 29.0,
+      "width": 9.0,
+      "length": 11.0,
+      "floor": 0,
+      "name": "Living Room"
+    },
+    {
+      "x": 33.0,
+      "y": 29.0,
+      "width": 7.0,
+      "length": 11.0,
+      "floor": 0,
+      "name": "office"
+    },
+    {
+      "x": 23.0,
+      "y": 29.0,
+      "width": 10.0,
+      "length": 5.5,
+      "floor": 0,
+      "name": "Bathroom"
+    },
+    {
+      "x": 23.0,
+      "y": 34.5,
+      "width": 10.0,
+      "length": 5.5,
+      "floor": 0,
+      "name": "Hallway Alcove"
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "cases": [
+    {
+      "number": 1,
+      "session_id": "qa-20260917-145058-home-01-e0cab3d50a",
+      "checks": {
+        "requirements": true,
+        "generation": true,
+        "assets": true,
+        "edit": true,
+        "paint": true,
+        "undo": true,
+        "stale_protection": true
+      },
+      "seconds": 36.9,
+      "quality": {
+        "hallway_percent": 0.0,
+        "compact_circulation": true,
+        "kitchen_dining_adjacent": true,
+        "balanced_bedrooms": true,
+        "bedroom_area_ratio": 1.0,
+        "design_name": "Reference: one_bed_public_south",
+        "source": "ai_arrangement"
+      },
+      "viewer_url": "http://127.0.0.1:8000/sessions/qa-20260917-145058-home-01-e0cab3d50a/assets/qa-20260917-145058-home-01-e0cab3d50a_3d.html",
+      "embedded_scene_matches": true,
+      "functional_score": 100,
+      "quality_score": 100.0
+    },
+    {
+      "number": 2,
+      "session_id": "qa-20260917-145058-home-02-c5f9e6d717",
+      "checks": {
+        "requirements": true,
+        "generation": true,
+        "assets": true,
+        "edit": true,
+        "paint": true,
+        "undo": true,
+        "stale_protection": true
+      },
+      "seconds": 37.1,
+      "quality": {
+        "hallway_percent": 9.62,
+        "compact_circulation": true,
+        "kitchen_dining_adjacent": true,
+        "balanced_bedrooms": false,
+        "bedroom_area_ratio": 1.89,
+        "design_name": "central_public_with_narrow_hall",
+        "source": "ai_arrangement"
+      },
+      "viewer_url": "http://127.0.0.1:8000/sessions/qa-20260917-145058-home-02-c5f9e6d717/assets/qa-20260917-145058-home-02-c5f9e6d717_3d.html",
+      "embedded_scene_matches": true,
+      "functional_score": 100,
+      "quality_score": 66.7
+    },
+    {
+      "number": 3,
+      "session_id": "qa-20260917-145058-home-03-3d26613c25",
+      "checks": {
+        "requirements": true,
+        "generation": true,
+        "assets": true,
+        "edit": true,
+        "paint": true,
+        "undo": true,
+        "stale_protection": true
+      },
+      "seconds": 30.6,
+      "quality": {
+        "hallway_percent": 21.09,
+        "compact_circulation": false,
+        "kitchen_dining_adjacent": true,
+        "balanced_bedrooms": false,
+        "bedroom_area_ratio": 1.4,
+        "design_name": "Standard layout",
+        "source": "standard_solver"
+      },
+      "viewer_url": "http://127.0.0.1:8000/sessions/qa-20260917-145058-home-03-3d26613c25/assets/qa-20260917-145058-home-03-3d26613c25_3d.html",
+      "embedded_scene_matches": true,
+      "functional_score": 100,
+      "quality_score": 33.3
+    },
+    {
+      "number": 4,
+      "session_id": "qa-20260917-145058-home-04-b3cd58b7b7",
+      "checks": {
+        "requirements": true,
+        "generation": true,
+        "assets": true,
+        "edit": true,
+        "paint": true,
+        "undo": true,
+        "stale_protection": true
+      },
+      "seconds": 40.0,
+      "quality": {
+        "hallway_percent": 6.56,
+        "compact_circulation": true,
+        "kitchen_dining_adjacent": true,
+        "balanced_bedrooms": true,
+        "bedroom_area_ratio": 1.0,
+        "design_name": "Central hall with common bath, bedrooms west",
+        "source": "ai_arrangement"
+      },
+      "viewer_url": "http://127.0.0.1:8000/sessions/qa-20260917-145058-home-04-b3cd58b7b7/assets/qa-20260917-145058-home-04-b3cd58b7b7_3d.html",
+      "embedded_scene_matches": true,
+      "functional_score": 100,
+      "quality_score": 100.0
+    },
+    {
+      "number": 5,
+      "session_id": "qa-20260917-145058-home-05-8882d400b7",
+      "checks": {
+        "requirements": true,
+        "generation": true,
+        "assets": true,
+        "edit": true,
+        "paint": true,
+        "undo": true,
+        "stale_protection": true
+      },
+      "seconds": 38.5,
+      "quality": {
+        "hallway_percent": 15.25,
+        "compact_circulation": false,
+        "kitchen_dining_adjacent": false,
+        "balanced_bedrooms": false,
+        "bedroom_area_ratio": 1.33,
+        "design_name": "Standard layout",
+        "source": "standard_solver"
+      },
+      "viewer_url": "http://127.0.0.1:8000/sessions/qa-20260917-145058-home-05-8882d400b7/assets/qa-20260917-145058-home-05-8882d400b7_3d.html",
+      "embedded_scene_matches": true,
+      "functional_score": 100,
+      "quality_score": 0.0
+    },
+    {
+      "number": 6,
+      "session_id": "qa-20260917-145058-home-06-c5bcce6169",
+      "checks": {
+        "requirements": true,
+        "generation": true,
+        "assets": true,
+        "edit": true,
+        "paint": true,
+        "undo": true,
+        "stale_protection": true
+      },
+      "seconds": 33.6,
+      "quality": {
+        "hallway_percent": 16.3,
+        "compact_circulation": false,
+        "kitchen_dining_adjacent": false,
+        "balanced_bedrooms": false,
+        "bedroom_area_ratio": 1.27,
+        "design_name": "Standard layout",
+        "source": "standard_solver"
+      },
+      "viewer_url": "http://127.0.0.1:8000/sessions/qa-20260917-145058-home-06-c5bcce6169/assets/qa-20260917-145058-home-06-c5bcce6169_3d.html",
+      "embedded_scene_matches": true,
+      "functional_score": 100,
+      "quality_score": 0.0
+    }
+  ],
+  "functional_score": 60.0,
+  "quality_score": 30.0,
+  "check_totals": {
+    "requirements": 6,
+    "generation": 6,
+    "assets": 6,
+    "edit": 6,
+    "paint": 6,
+    "undo": 6,
+    "stale_protection": 6
+  },
+  "combined_score": 51.0
+}

@@ -1,0 +1,45 @@
+{
+  "session_id": "qa-20260917-144424-home-06-aaf2ff4cd0",
+  "project_name": "QA 20260917-144424 Home 06",
+  "history": [
+    {
+      "role": "user",
+      "content": "Design a single-floor home, plot 45 feet wide and 45 feet long, west-facing entrance. Exactly 3 bedrooms and 3 bathrooms total. Attach one bathroom each to bedrooms [1, 2]; all remaining bathrooms are common. Include living room, separate dining room, kitchen. No parking. Keep hallway space compact, bedrooms balanced, and kitchen next to dining. Record these requirements and prepare to generate."
+    },
+    {
+      "role": "assistant",
+      "content": "Your plot is 45 ft × 45 ft, with a west‑facing entrance, three bedrooms and three bathrooms (bedrooms 1 and 2 each have an attached bathroom, the third bathroom is common). You’ve asked for a living room, a separate dining room, a kitchen, a compact hallway, and no parking.  \n\nWhen you’re ready, click “Generate 3D home,” and let me know if you’d like any final tweaks."
+    }
+  ],
+  "spec": {
+    "plot_width_ft": 45.0,
+    "plot_length_ft": 45.0,
+    "num_bedrooms": 3,
+    "num_bathrooms": 3,
+    "num_floors": 1,
+    "must_have_rooms": [],
+    "style_notes": null,
+    "required_adjacencies": [
+      {
+        "a": "Kitchen",
+        "b": "Dining Room"
+      }
+    ],
+    "entrance_facing": "west",
+    "budget_notes": null,
+    "max_bathroom_area_sqft": 80.0,
+    "max_parking_area_sqft": 25.0,
+    "max_bathroom_bedroom_ratio": 0.75,
+    "attached_bathroom_bedrooms": [
+      1,
+      2
+    ],
+    "include_dining_room": true
+  },
+  "layout": null,
+  "layout_history": [],
+  "model_3d_version": null,
+  "layout_options": [],
+  "revision_specs": {},
+  "revision_parents": {}
+}

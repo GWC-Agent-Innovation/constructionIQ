@@ -1,0 +1,94 @@
+{
+  "started": "20260917-144328",
+  "mode": "Live Ollama via local API; no mocks",
+  "weights": {
+    "requirements": 15,
+    "generation": 25,
+    "assets": 10,
+    "edit": 20,
+    "paint": 10,
+    "undo": 10,
+    "stale_protection": 10
+  },
+  "cases": [
+    {
+      "number": 1,
+      "brief": "Design a single-floor home, plot 30 feet wide and 30 feet long, south-facing entrance. Exactly 1 bedrooms and 1 bathrooms total. All bathrooms are common, no attached bathrooms. Include living room, separate dining room, kitchen. No parking. Keep hallway space compact, bedrooms balanced, and kitchen next to dining. Record these requirements and prepare to generate.",
+      "edit_request": "Remove the separate dining room and combine dining with living.",
+      "checks": {
+        "requirements": false,
+        "generation": false,
+        "assets": false,
+        "edit": false,
+        "paint": false,
+        "undo": false,
+        "stale_protection": false
+      },
+      "events": [
+        {
+          "endpoint": "messages",
+          "status": 502,
+          "response": {
+            "detail": "Requirement agent failed: 'charmap' codec can't encode character '\\u202f' in position 84: character maps to <undefined>"
+          }
+        }
+      ],
+      "session_id": "qa-20260917-144328-home-01-bdf829fbad",
+      "error": "HTTPStatusError: Server error '502 Bad Gateway' for url 'http://127.0.0.1:8000/sessions/qa-20260917-144328-home-01-bdf829fbad/messages'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502",
+      "seconds": 6.4
+    },
+    {
+      "number": 2,
+      "brief": "Design a single-floor home, plot 26 feet wide and 30 feet long, west-facing entrance. Exactly 2 bedrooms and 1 bathrooms total. All bathrooms are common, no attached bathrooms. Include living room, separate dining room, kitchen. No parking. Keep hallway space compact, bedrooms balanced, and kitchen next to dining. Record these requirements and prepare to generate.",
+      "edit_request": "Remove bedroom 2.",
+      "checks": {
+        "requirements": false,
+        "generation": false,
+        "assets": false,
+        "edit": false,
+        "paint": false,
+        "undo": false,
+        "stale_protection": false
+      },
+      "events": [
+        {
+          "endpoint": "messages",
+          "status": 502,
+          "response": {
+            "detail": "Requirement agent failed: 'charmap' codec can't encode character '\\u202f' in position 86: character maps to <undefined>"
+          }
+        }
+      ],
+      "session_id": "qa-20260917-144328-home-02-5dfe2390f2",
+      "error": "HTTPStatusError: Server error '502 Bad Gateway' for url 'http://127.0.0.1:8000/sessions/qa-20260917-144328-home-02-5dfe2390f2/messages'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502",
+      "seconds": 10.7
+    },
+    {
+      "number": 3,
+      "brief": "Design a single-floor home, plot 40 feet wide and 40 feet long, south-facing entrance. Exactly 2 bedrooms and 2 bathrooms total. Attach one bathroom each to bedrooms [1]; all remaining bathrooms are common. Include living room, separate dining room, kitchen. No parking. Keep hallway space compact, bedrooms balanced, and kitchen next to dining. Record these requirements and prepare to generate.",
+      "edit_request": "Remove the common bathroom.",
+      "checks": {
+        "requirements": false,
+        "generation": false,
+        "assets": false,
+        "edit": false,
+        "paint": false,
+        "undo": false,
+        "stale_protection": false
+      },
+      "events": [
+        {
+          "endpoint": "messages",
+          "status": 502,
+          "response": {
+            "detail": "Requirement agent failed: 'charmap' codec can't encode character '\\u202f' in position 86: character maps to <undefined>"
+          }
+        }
+      ],
+      "session_id": "qa-20260917-144328-home-03-65f97f834b",
+      "error": "HTTPStatusError: Server error '502 Bad Gateway' for url 'http://127.0.0.1:8000/sessions/qa-20260917-144328-home-03-65f97f834b/messages'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502",
+      "seconds": 5.7
+    }
+  ],
+  "functional_score": 0.0
+}
